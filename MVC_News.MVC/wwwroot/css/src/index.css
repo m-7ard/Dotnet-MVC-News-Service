@@ -1,6 +1,3 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
 @layer components {
   .mixin-button-like {
     @apply flex items-center box-border transition-colors cursor-pointer select-none;
@@ -62,20 +59,20 @@
     @apply cursor-pointer relative rounded-full;
   }
   .mixin-checkbox-like [data-role=inner-part] {
-    @apply after:content-["."] 
-                after:flex 
+    @apply after:content-["."]
+                after:flex
                 after:opacity-0
                 after:aspect-square
                 after:h-2
                 after:w-2
                 after:pointer-events-none
-                transition-colors 
+                transition-colors
                 rounded-full;
   }
   .mixin-checkbox-like > input {
-    @apply absolute 
-            inset-0 
-            opacity-0 
+    @apply absolute
+            inset-0
+            opacity-0
             cursor-pointer;
   }
   .mixin-checkbox-sm {
@@ -159,6 +156,9 @@
     @apply bg-gray-50 border border-gray-900;
   }
 }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 html {
   font-family: "Roboto", sans-serif;
   height: 100%;
@@ -171,4 +171,6 @@ body,
 
 button:focus {
   outline: none;
-}/*# sourceMappingURL=index.css.map */
+}
+
+/*# sourceMappingURL=index.css.map */

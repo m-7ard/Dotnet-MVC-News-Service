@@ -1,8 +1,9 @@
+@use "./mixins.scss";
+@use "./themes.scss";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-@import "./mixins.scss";
-@import "./themes.scss";
 
 html {
     font-family: "Roboto", sans-serif;
