@@ -1,0 +1,19 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import "./mixins.scss";
+@import "./themes.scss";
+
+html {
+    font-family: "Roboto", sans-serif;
+    height: 100%;
+}
+
+body,
+#root {
+    height: 100%;
+}
+
+button:focus {
+    outline: none;
+}

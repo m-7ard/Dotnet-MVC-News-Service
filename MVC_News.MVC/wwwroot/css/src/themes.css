@@ -1,0 +1,68 @@
+@layer components {
+  .theme-input-generic-white {
+    @apply border border-gray-900 flex flex-grow;
+  }
+  .theme-input-generic-white > input {
+    @apply text-gray-900 bg-white focus:bg-gray-200;
+  }
+  .theme-button-generic-white {
+    @apply border border-gray-900 text-gray-900;
+  }
+  .theme-button-generic-white:not(.theme-button-generic-white[data-active=true]) {
+    @apply bg-white hover:bg-gray-200;
+  }
+  .theme-button-generic-white[data-active=true] {
+    @apply bg-gray-200;
+  }
+  .theme-button-generic-yellow {
+    @apply border border-gray-900 text-gray-900;
+  }
+  .theme-button-generic-yellow:not(.theme-button-generic-yellow[data-active=true]) {
+    @apply bg-yellow-300 hover:bg-yellow-400;
+  }
+  .theme-button-generic-yellow[data-active=true] {
+    @apply bg-yellow-400;
+  }
+  .theme-button-generic-green {
+    @apply border border-gray-900 text-gray-900;
+  }
+  .theme-button-generic-green:not(.theme-button-generic-green[data-active=true]) {
+    @apply bg-green-300 hover:bg-green-400;
+  }
+  .theme-button-generic-green[data-active=true] {
+    @apply bg-green-400;
+  }
+  .theme-button-generic-red {
+    @apply border border-gray-900 text-gray-900;
+  }
+  .theme-button-generic-red:not(.theme-button-generic-red[data-active=true]) {
+    @apply bg-red-300 hover:bg-red-400;
+  }
+  .theme-button-generic-red[data-active=true] {
+    @apply bg-red-400;
+  }
+  .theme-checkbox-generic-white {
+    @apply border border-gray-900 bg-white hover:bg-gray-200;
+  }
+  .theme-checkbox-generic-white--active [data-role=inner-part], .theme-checkbox-generic-white:has(:checked) [data-role=inner-part] {
+    @apply bg-gray-900;
+  }
+  .theme-textarea-generic-white {
+    @apply border border-gray-900 text-gray-900 bg-white;
+  }
+  .theme-textarea-generic-white > textarea {
+    @apply bg-white focus:bg-gray-200;
+  }
+  .theme-textarea-generic-white [data-role=footer] {
+    @apply bg-transparent border-gray-900;
+  }
+  .theme-textarea-generic-white [data-role=counter] {
+    @apply border-gray-900;
+  }
+  .theme-Pcard-generic-white {
+    @apply bg-white divide-gray-900 border-gray-900;
+  }
+  .theme-panel-generic-white {
+    @apply bg-gray-50 border border-gray-900;
+  }
+}/*# sourceMappingURL=themes.css.map */

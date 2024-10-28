@@ -1,0 +1,90 @@
+@layer components {
+  .mixin-button-like {
+    @apply flex items-center box-border transition-colors cursor-pointer select-none;
+  }
+  .mixin-button-sm {
+    @apply gap-0.5 px-2 py-1 text-sm leading-none;
+  }
+  .mixin-button-base {
+    @apply gap-2 px-4 py-1 text-base;
+  }
+  .mixin-textarea-any > textarea {
+    @apply block w-full transition-colors leading-none resize-none p-2;
+  }
+  .mixin-textarea-any [data-role=footer] {
+    @apply w-full border-t;
+  }
+  .mixin-textarea-any [data-role=counter] {
+    @apply w-fit ml-auto px-2 text-xs border-l;
+  }
+  .mixin-char-input-like {
+    @apply after:content-["."] relative;
+  }
+  .mixin-char-input-like > input {
+    @apply absolute inset-0 transition-colors;
+  }
+  .mixin-char-input-sm {
+    @apply mixin-button-sm;
+  }
+  .mixin-char-input-sm > input {
+    @apply mixin-button-sm absolute inset-0 transition-colors;
+  }
+  .mixin-char-input-base {
+    @apply mixin-button-base;
+    @apply px-2;
+  }
+  .mixin-char-input-base > input {
+    @apply mixin-button-base absolute inset-0 transition-colors;
+    @apply px-2;
+  }
+  .mixin-page-like {
+    @apply flex flex-col grow overflow-auto border-x border-gray-900;
+  }
+  .mixin-page-base {
+    @apply px-4 py-4 gap-y-4 max-w-xl w-full;
+  }
+  .mixin-page-content-like {
+    @apply flex flex-col;
+  }
+  .mixin-page-content-base {
+    @apply gap-4;
+  }
+  .mixin-panel-like {
+    @apply flex flex-col grow max-h-full;
+  }
+  .mixin-panel-base {
+    @apply px-4 py-4 gap-y-4 max-w-72 sm:max-w-prose;
+  }
+  .mixin-checkbox-like {
+    @apply cursor-pointer relative rounded-full;
+  }
+  .mixin-checkbox-like [data-role=inner-part] {
+    @apply after:content-["."] 
+                after:flex 
+                after:opacity-0
+                after:aspect-square
+                after:h-2
+                after:w-2
+                after:pointer-events-none
+                transition-colors 
+                rounded-full;
+  }
+  .mixin-checkbox-like > input {
+    @apply absolute 
+            inset-0 
+            opacity-0 
+            cursor-pointer;
+  }
+  .mixin-checkbox-sm {
+    @apply p-1 text-sm leading-none;
+  }
+  .mixin-checkbox-sm > input {
+    @apply p-1 text-sm leading-none absolute inset-0 transition-colors;
+  }
+  .mixin-Pcard-like {
+    @apply divide-y border;
+  }
+  .mixin-Pcard-base [data-role=section] {
+    @apply py-2 px-4;
+  }
+}/*# sourceMappingURL=mixins.css.map */

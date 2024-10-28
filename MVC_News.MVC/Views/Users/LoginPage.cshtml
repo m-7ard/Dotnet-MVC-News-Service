@@ -1,0 +1,48 @@
+@model MVC_Classifieds.Api.Models.Users.LoginPageModel;
+
+@{
+    ViewData["Title"] = "Login";
+}
+
+<div class="mixin-page-like mixin-page-base mx-auto">
+    <header class="text-xl font-bold">
+        Login
+    </header>
+    <div
+        class="bg-gray-200 border-gray-300 border rounded px-2 py-1 text-sm flex flex-row overflow-hidden justify-between">
+        <div class="truncate">
+            Don't have an account?
+        </div>
+        <a class="text-blue-600 hover:underline" href="/register">Go to Register</a>
+    </div>
+    <form class="flex flex-col gap-4 p-2 bg-white border-gray-300 border rounded" action="/login" method="post">
+        <!-- FORM  -->
+        <partial name="Elements/Form/FormErrors" model=@Model.Errors.GetValueOrDefault("_") />
+
+        <div class="mixin-formfield-like mixin-formfield-base">
+            <partial name="Elements/Form/FormFieldLabel" model=@Html.Raw("Email") />
+            <div class="mixin-char-input-like mixin-char-input-base theme-input-generic-white">
+                <input asp-for="Email"></input>
+            </div>
+            <partial name="Elements/Form/FormFieldErrors" model=@Model.Errors.GetValueOrDefault("Email") />
+        </div>
+
+        <div class="mixin-formfield-like mixin-formfield-base">
+            <partial name="Elements/Form/FormFieldLabel" model=@Html.Raw("Password") />
+            <div class="mixin-char-input-like mixin-char-input-base theme-input-generic-white">
+                <input asp-for="Password" type="password"></input>
+            </div>
+            <partial name="Elements/Form/FormFieldErrors" model=@Model.Errors.GetValueOrDefault("Password") />
+        </div>
+
+        <footer class="flex flex-row gap-2 justify-end">
+            <button class="mixin-button-like mixin-button-base theme-button-generic-gray" type="reset">
+                Reset
+            </button>
+            <button class="mixin-button-like mixin-button-base theme-button-generic-green" type="submit">
+                Submit
+            </button>
+        </footer>
+        <!-- FORM  -->
+    </form>
+</div>
