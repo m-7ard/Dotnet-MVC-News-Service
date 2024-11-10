@@ -1,0 +1,5 @@
+MVC_News.MVC/.env
+**/Debug/**
+
+# Allow everything inside the Tests folder
+Files/Media/Tests/*
