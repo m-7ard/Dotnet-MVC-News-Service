@@ -3,11 +3,17 @@ using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using MVC_News.Application.Handlers.Users.Register;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Application.Interfaces.Services;
+using MVC_News.Domain.DomainFactories;
 using MVC_News.Infrastructure;
+using MVC_News.Infrastructure.Repositories;
 using MVC_News.Infrastructure.Services;
+using MVC_News.MVC.Filters;
+using MVC_News.MVC.Middleware;
+using MVC_News.MVC.Services;
 using MVC_News.MVC.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +32,7 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
         options.LoginPath = "/login/";
     });
 builder.Services.AddAuthorization();
+builder.Services.AddDirectoryBrowser(); // For media
 
 ///
 ///
@@ -34,6 +41,7 @@ builder.Services.AddAuthorization();
 
 builder.Services.AddControllersWithViews(options =>
 {
+    options.Filters.Add<GlobalDataInjectorFilter>();
 });
 
 ///
@@ -91,6 +99,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Regis
 /// 
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 ///
@@ -139,11 +148,32 @@ using (var scope = app.Services.CreateScope())
         logger.LogError(ex, "An error occurred while resetting the database.");
     }
 
+    var repo = localService.GetRequiredService<IUserRepository>();
+    var hasher = localService.GetRequiredService<IPasswordHasher>();
+    await repo.CreateAsync(
+        UserFactory.BuildNew("admin@mail.com", hasher.Hash("adminword"), "admin", true)
+    );
 }
+///
+///
+/// Media config
+/// 
 
+var mediaProvider = new PhysicalFileProvider(DirectoryService.GetMediaDirectory());
+
+app.UseFileServer(new FileServerOptions
+{
+    FileProvider = mediaProvider,
+    RequestPath = "/media",
+    EnableDirectoryBrowsing = true
+});
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 app.Run();
+
+public partial class Program {  }

@@ -12,4 +12,5 @@ public class ApplicationErrorCodes
     public const string FileInvalidExtension = "FileInvalidExtension";
     public const string FileCountExceeded = "FileCountExceeded";
     public const string FileNoFiles = "FileNoFiles";
+    public const string NotAllowed = "NotAllowed";
 }

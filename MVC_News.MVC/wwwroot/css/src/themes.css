@@ -32,6 +32,15 @@
   .theme-button-generic-green[data-active=true] {
     @apply bg-green-400;
   }
+  .theme-button-generic-blue {
+    @apply border border-gray-900 text-gray-900;
+  }
+  .theme-button-generic-blue:not(.theme-button-generic-blue[data-active=true]) {
+    @apply bg-blue-300 hover:bg-blue-400;
+  }
+  .theme-button-generic-blue[data-active=true] {
+    @apply bg-blue-400;
+  }
   .theme-button-generic-red {
     @apply border border-gray-900 text-gray-900;
   }

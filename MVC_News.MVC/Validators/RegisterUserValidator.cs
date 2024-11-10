@@ -1,5 +1,5 @@
 using FluentValidation;
-using MVC_News.Application.DTOs.Users.Register;
+using MVC_News.MVC.DTOs.Contracts.Users.Register;
 
 namespace MVC_News.MVC.Validators;
 

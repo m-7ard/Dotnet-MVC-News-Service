@@ -1,0 +1,23 @@
+
+@using MVC_News.MVC.Models.Articles;
+@using MVC_News.MVC.Models.Partials;
+@model ReadArticlePageModel;
+@{
+    ViewData["Title"] = Model.Article.Title;
+}
+
+<div class="mixin-page-like mixin-page-base mixin-content-grid">
+    <div class="flex flex-col gap-2" data-track="lg">
+        <img src="@Model.Article.HeaderImage" />
+    </div>
+    <div class="flex flex-col gap-2" data-track="base">
+        <div class="mixin-article-any">
+            <header>
+                <h1>
+                    @Model.Article.Title
+                </h1>
+            </header>
+            @Html.Raw(Model.Markup)
+        </div>
+    </div>
+</div>

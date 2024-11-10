@@ -13,7 +13,7 @@
 
     .mixin-textarea-any {
         > textarea {
-            @apply block w-full transition-colors leading-none resize-none p-2;
+            @apply block w-full transition-colors leading-none resize-none p-2 whitespace-pre-wrap;
         }
 
         [data-role="footer"] {
@@ -54,11 +54,11 @@
     }
 
     .mixin-page-like {
-        @apply flex flex-col grow overflow-auto border-x border-gray-900;
+        @apply flex flex-col grow overflow-auto;
     }
 
     .mixin-page-base {
-        @apply px-4 py-4 gap-y-4 max-w-xl w-full;
+        @apply px-4 py-4 gap-y-4;
     }
 
     .mixin-page-content-like {
@@ -115,6 +115,60 @@
     .mixin-Pcard-base {
         [data-role="section"] {
             @apply py-2 px-4;
+        }
+    }
+
+    .mixin-content-grid {
+        > [data-track] {
+            @apply w-full mx-auto;
+        }
+    
+        > [data-track="full"] {
+            @apply max-w-full;
+        }
+
+        > [data-track="lg"] {
+            @apply max-w-[900px];
+        }
+
+        > [data-track="base"] {
+            @apply max-w-[700px];
+        }
+
+        > [data-track="sm"] {
+            @apply max-w-[450px];
+        }
+    }
+
+    .mixin-article-any {
+        @apply flex flex-col gap-4;
+
+        header {
+            @apply flex flex-col gap-1;
+        }
+
+        h1 {
+            @apply font-bold text-3xl;
+        }
+
+        strong {
+            @apply font-bold;
+        }
+
+        h2 {
+            @apply font-bold text-2xl;
+        }
+
+        a {
+            @apply font-bold underline;
+        }
+
+        figure {
+            @apply flex flex-col gap-1;
+        }
+
+        figcaption {
+            @apply text-xs text-gray-600;
         }
     }
 }

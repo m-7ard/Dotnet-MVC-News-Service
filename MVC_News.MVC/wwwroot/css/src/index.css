@@ -9,7 +9,7 @@
     @apply gap-2 px-4 py-1 text-base;
   }
   .mixin-textarea-any > textarea {
-    @apply block w-full transition-colors leading-none resize-none p-2;
+    @apply block w-full transition-colors leading-none resize-none p-2 whitespace-pre-wrap;
   }
   .mixin-textarea-any [data-role=footer] {
     @apply w-full border-t;
@@ -38,10 +38,10 @@
     @apply px-2;
   }
   .mixin-page-like {
-    @apply flex flex-col grow overflow-auto border-x border-gray-900;
+    @apply flex flex-col grow overflow-auto;
   }
   .mixin-page-base {
-    @apply px-4 py-4 gap-y-4 max-w-xl w-full;
+    @apply px-4 py-4 gap-y-4;
   }
   .mixin-page-content-like {
     @apply flex flex-col;
@@ -87,6 +87,45 @@
   .mixin-Pcard-base [data-role=section] {
     @apply py-2 px-4;
   }
+  .mixin-content-grid > [data-track] {
+    @apply w-full mx-auto;
+  }
+  .mixin-content-grid > [data-track=full] {
+    @apply max-w-full;
+  }
+  .mixin-content-grid > [data-track=lg] {
+    @apply max-w-[900px];
+  }
+  .mixin-content-grid > [data-track=base] {
+    @apply max-w-[700px];
+  }
+  .mixin-content-grid > [data-track=sm] {
+    @apply max-w-[450px];
+  }
+  .mixin-article-any {
+    @apply flex flex-col gap-4;
+  }
+  .mixin-article-any header {
+    @apply flex flex-col gap-1;
+  }
+  .mixin-article-any h1 {
+    @apply font-bold text-3xl;
+  }
+  .mixin-article-any strong {
+    @apply font-bold;
+  }
+  .mixin-article-any h2 {
+    @apply font-bold text-2xl;
+  }
+  .mixin-article-any a {
+    @apply font-bold underline;
+  }
+  .mixin-article-any figure {
+    @apply flex flex-col gap-1;
+  }
+  .mixin-article-any figcaption {
+    @apply text-xs text-gray-600;
+  }
 }
 @layer components {
   .theme-input-generic-white {
@@ -121,6 +160,15 @@
   }
   .theme-button-generic-green[data-active=true] {
     @apply bg-green-400;
+  }
+  .theme-button-generic-blue {
+    @apply border border-gray-900 text-gray-900;
+  }
+  .theme-button-generic-blue:not(.theme-button-generic-blue[data-active=true]) {
+    @apply bg-blue-300 hover:bg-blue-400;
+  }
+  .theme-button-generic-blue[data-active=true] {
+    @apply bg-blue-400;
   }
   .theme-button-generic-red {
     @apply border border-gray-900 text-gray-900;

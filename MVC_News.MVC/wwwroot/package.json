@@ -30,5 +30,6 @@
         "typescript": "^5.6.3",
         "webpack": "^5.95.0",
         "webpack-cli": "^5.1.4"
-    }
+    },
+    "dependencies": {}
 }

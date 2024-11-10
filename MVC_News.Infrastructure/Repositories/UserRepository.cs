@@ -1,8 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Domain.Entities;
-using MVC_News.Infrastructure;
 using MVC_News.Infrastructure.Mappers;
+
+namespace MVC_News.Infrastructure.Repositories;
 
 public class UserRepository : IUserRepository
 {
@@ -32,5 +33,11 @@ public class UserRepository : IUserRepository
         var newDbEntity = UserMapper.FromDomainToDbEntity(user);
         _dbContext.Entry(oldDbEntity).CurrentValues.SetValues(newDbEntity);
         await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<User?> GetUserById(Guid id)
+    {
+        var entity = await _dbContext.User.SingleOrDefaultAsync(d => d.Id == id);
+        return entity is null ? null : UserMapper.FromDbEntityToDomain(entity);
     }
 }

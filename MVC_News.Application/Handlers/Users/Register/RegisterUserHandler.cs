@@ -34,7 +34,7 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, OneOf<Re
         }
 
         var newUser = await _userRepository.CreateAsync(
-            UserFactory.BuildNewUser(
+            UserFactory.BuildNew(
                 email: request.Email,
                 passwordHash: _passwordHasher.Hash(request.Password),
                 displayName: request.DisplayName,

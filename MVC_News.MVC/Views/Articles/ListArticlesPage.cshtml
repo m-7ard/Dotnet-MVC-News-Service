@@ -1,0 +1,53 @@
+
+@using MVC_News.MVC.Models.Articles;
+@using MVC_News.MVC.Models.Partials;
+@model ListArticlesPageModel;
+@{
+    ViewData["Title"] = "Create Article";
+}
+
+<div class="mixin-page-like mixin-page-base mixin-content-grid">
+    <div class="flex flex-col gap-2" data-track="base">
+        <header class="flex flex-row gap-[inherit] items-center justify-between">
+            <div class="text-2xl">
+                Articles
+            </div>
+            <a href="/articles/create" class="mixin-button-like mixin-button-base theme-button-generic-green">
+                Create Article
+            </a>
+        </header>
+        <div class="grid grid-cols-2 gap-x-2 gap-y-4 overflow-hidden">
+            @foreach (var article in Model.Articles)
+            {
+                <div class="flex flex-col gap-1 overflow-hidden p-2 border border-gray-900 bg-white">
+                    <a href="/articles/@article.Id"><img src="@article.HeaderImage" /></a>
+                    <a href="/articles/@article.Id" >
+                        <div class="text-xl font-bold line-clamp-2 hover:underline">
+                            @article.Title
+                        </div>
+                    </a> 
+                    <div class="line-clamp-3 text-sm">
+                        @article.Content
+                    </div>
+                    <footer class="flex flex-row gap-2 justify-between items-center">
+                        <div class="text-xs">
+                            @article.Author.DisplayName
+                        </div>
+                        <div class="text-xs text-gray-500">
+                            @article.DateCreated.ToLocalTime()
+                        </div>
+                    </footer>
+                    <a href="/articles/@article.Id/update" class="mixin-button-like mixin-button-base theme-button-generic-green justify-center">
+                        Update
+                    </a>
+                    <a href="/articles/@article.Id/delete" class="mixin-button-like mixin-button-base theme-button-generic-red justify-center">
+                        Delete
+                    </a>
+                </div>
+            }
+        </div>
+
+        
+    </div>
+
+</div>

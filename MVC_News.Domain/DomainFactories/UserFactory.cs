@@ -4,7 +4,7 @@ namespace MVC_News.Domain.DomainFactories;
 
 public class UserFactory
 {
-    public static User BuildExistingUser(Guid id, string email, string passwordHash, string displayName, bool isAdmin)
+    public static User BuildExisting(Guid id, string email, string passwordHash, string displayName, bool isAdmin)
     {
         return new User(
             id: id,
@@ -15,7 +15,7 @@ public class UserFactory
         );
     }
 
-    public static User BuildNewUser(string email, string passwordHash, string displayName, bool isAdmin)
+    public static User BuildNew(string email, string passwordHash, string displayName, bool isAdmin)
     {
         return new User(
             id: Guid.NewGuid(),

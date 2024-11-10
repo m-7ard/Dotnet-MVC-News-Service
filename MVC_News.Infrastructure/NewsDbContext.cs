@@ -11,6 +11,7 @@ public class NewsDbContext : DbContext
     }
 
     public DbSet<UserDbEntity> User { get; set; } = null!;
+    public DbSet<ArticleDbEntity> Article { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

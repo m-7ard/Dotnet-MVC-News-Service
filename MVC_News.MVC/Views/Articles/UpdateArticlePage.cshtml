@@ -1,0 +1,64 @@
+
+@using MVC_News.MVC.Models.Articles;
+@using MVC_News.MVC.Models.Partials;
+@model UpdateArticlePageModel;
+@{
+    ViewData["Title"] = "Update Article";
+}
+
+<div class="mixin-page-like mixin-page-base mixin-content-grid">
+    <div class="flex flex-col gap-2" data-track="base">
+        <div class="text-2xl">
+            Update Article
+        </div>
+
+        <form class="flex flex-col gap-2">
+            @await Html.PartialAsync("Reusables/_FormErrors", Model.Errors.TryGetValue("_", out var formErrors) ? formErrors : null)
+
+            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                label: "Header Image URL",
+                errors: Model.Errors.TryGetValue("headerImage", out var headerImageErrors) ? headerImageErrors : null,
+                partialRoute: "Reusables/_CharField",
+                partialProps: new CharFieldPartialViewModel(
+                    value: Model.HeaderImage,
+                    name: "headerImage",
+                    inputAttrs: new Dictionary<string, string>()
+                )
+            ))
+            
+            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                label: "Title",
+                errors: Model.Errors.TryGetValue("title", out var titleErrors) ? titleErrors : null,
+                partialRoute: "Reusables/_CharField",
+                partialProps: new CharFieldPartialViewModel(
+                    value: Model.Title,
+                    name: "title",
+                    inputAttrs: new Dictionary<string, string>()
+                )
+            ))
+
+            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                label: "Content",
+                errors: Model.Errors.TryGetValue("content", out var contentErrors) ? contentErrors : null,
+                partialRoute: "Reusables/_Textarea",
+                partialProps: new TextareaPartialViewModel(
+                    value: Model.Content,
+                    name: "content",
+                    textareaAttrs: new Dictionary<string, string>()
+                    {
+                        { "rows", "20" }                    
+                    }
+                )
+            ))
+            <footer class="flex flex-row gap-[inherit]">
+                <button type="submit" formmethod="post" formaction="/articles/preview" class="mixin-button-like mixin-button-base theme-button-generic-white ml-auto">
+                    Preview
+                </button>
+                <button type="submit" formmethod="post" formaction="/articles/@Model.Id/update" class="mixin-button-like mixin-button-base theme-button-generic-green">
+                    Submit
+                </button>
+            </footer>
+        </form>
+    </div>
+
+</div>

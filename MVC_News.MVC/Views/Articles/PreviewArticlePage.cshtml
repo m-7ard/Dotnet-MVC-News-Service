@@ -1,0 +1,36 @@
+
+@using MVC_News.MVC.Models.Articles;
+@using MVC_News.MVC.Models.Partials;
+@model PreviewArticlePageModel;
+@{
+    ViewData["Title"] = Model.Article.Title;
+}
+
+<div class="mixin-page-like mixin-page-base mixin-content-grid">
+    <form class="flex flex-row gap-2" data-track="base">
+        <input hidden name="headerImage" value="@Model.Article.HeaderImage">
+        <input hidden name="title" value="@Model.Article.Title">
+        <textarea name="content" class="whitespace-pre-wrap" hidden>@Model.Article.Content</textarea>
+        <footer class="flex flex-row grow gap-2 justify-end">
+            <button type="submit" formmethod="GET" formaction="/articles/create" class="mixin-button-like mixin-button-base theme-button-generic-white ml-auto">
+                Keep Editing
+            </button>
+            <button type="submit" formmethod="POST" formaction="/articles/create" class="mixin-button-like mixin-button-base theme-button-generic-green">
+                Create
+            </button>
+        </footer>
+    </form>
+    <div class="flex flex-col gap-2" data-track="lg">
+        <img src="@Model.Article.HeaderImage" />
+    </div>
+    <div class="flex flex-col gap-2" data-track="base">
+        <div class="mixin-article-any">
+            <header>
+                <h1>
+                    @Model.Article.Title
+                </h1>
+            </header>
+            @Html.Raw(Model.Markup)
+        </div>
+    </div>
+</div>

@@ -1,47 +1,95 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - MVC_News.MVC</title>
     <link rel="stylesheet" href="~/css/dist/output.css" asp-append-version="true" />
-    
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">MVC_News.MVC</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
+
+<body class="flex flex-col bg-orange-50">
+    <header class="flex flex-col shrink-0 bg-orange-50 border-b border-gray-900 divide-y divide-gray-900 overflow-hidden">
+        <div class="px-4 py-2 gap-2 overflow-x-auto">
+            <div class="flex flex-row max-w-[1000px] w-full mx-auto gap-2">
+                <button type="button" class="mixin-button-like mixin-button-sm theme-button-generic-white gap-2 shrink-0">
+                    <div>Menu</div>
+                    <div>☰</div>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
+                <a href="/" class="mixin-button-like mixin-button-sm theme-button-generic-white gap-2 shrink-0">
+                    <div>Home</div>
+                    <div>🏠︎</div>
+                </a>
+                @if (!User.Identity!.IsAuthenticated)
+                {
+                    <a href="/register" class="mixin-button-like mixin-button-sm theme-button-generic-yellow ml-auto shrink-0">
+                        Register
+                    </a>
+                    <a href="/login" class="mixin-button-like mixin-button-sm theme-button-generic-yellow shrink-0">
+                        Login
+                    </a>
+                }
+                else
+                {
+                
+                    <a href="/articles" class="mixin-button-like mixin-button-sm theme-button-generic-yellow ml-auto shrink-0">
+                        Manage Content
+                    </a>
+                    <a href="/logout" class="mixin-button-like mixin-button-sm theme-button-generic-red shrink-0">
+                        Logout
+                    </a>
+                }
+            </div>
+        </div>
+        <div class="px-4 py-2 gap-2 overflow-x-auto">
+            <div class="flex flex-row max-w-[1000px] w-full mx-auto gap-2">
+                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                    Frontpage
+                </div>
+                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                    World
+                </div>
+                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                    US
+                </div>
+                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                    Europe
+                </div>
+                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                    Sport
+                </div>
+                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                    Tech
+                </div>
+                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                    Economy
+                </div>
+                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                    Culture
+                </div>
+                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                    Arts
+                </div>
+                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                    Travel
                 </div>
             </div>
-        </nav>
+        </div>
     </header>
-    <div class="container">
-        <main role="main" class="pb-3">
+    <div class="flex grow">
+        <main class="h-full w-full">
             @RenderBody()
         </main>
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
+        <div>
             &copy; 2024 - MVC_News.MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    
+
     <script src="~/js/dist/bundle.js" asp-append-version="true"></script>
     @RenderSection("Scripts", required: false)
 </body>
+
 </html>

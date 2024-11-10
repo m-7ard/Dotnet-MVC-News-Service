@@ -1,0 +1,13 @@
+@using MVC_News.MVC.Models.Partials
+@model TextareaPartialViewModel;
+
+<div class="mixin-textarea-any theme-textarea-generic-white"}>
+    <textarea
+        name=@Model.Name 
+        @foreach (var (k, v) in @Model.TextareaAttrs)
+        {
+            @($"{k}={v}")
+            @: 
+        }
+    >@Model.Value</textarea>
+</div>

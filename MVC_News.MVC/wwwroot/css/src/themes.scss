@@ -46,6 +46,19 @@
         }
     }
 
+    .theme-button-generic-blue {
+        $root: &;
+        @apply border border-gray-900 text-gray-900 ;
+
+        &:not(&[data-active="true"]) {
+            @apply bg-blue-300 hover:bg-blue-400;
+        }
+
+        &[data-active="true"] {
+            @apply bg-blue-400;
+        }
+    }
+    
     .theme-button-generic-red {
         $root: &;
         @apply border border-gray-900 text-gray-900 ;

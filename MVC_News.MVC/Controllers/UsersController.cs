@@ -1,12 +1,19 @@
+using System.Net;
 using System.Security.Claims;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
+using MVC_Classifieds.Api.Models.Users;
+using MVC_News.Application.Handlers.Users.Login;
+using MVC_News.Application.Handlers.Users.Register;
 using MVC_News.Domain.Entities;
+using MVC_News.MVC.DTOs.Contracts.Users.Login;
+using MVC_News.MVC.DTOs.Contracts.Users.Register;
+using MVC_News.MVC.Errors;
 
-namespace MVC_Classifieds.Api.Controllers;
+namespace MVC_News.MVC.Controllers;
 
 public class UsersController : Controller
 {
@@ -46,20 +53,22 @@ public class UsersController : Controller
         return View(new LoginPageModel(
             email: "",
             password: "",
-            errors: new Dictionary<string, List<string>>() {}
+            errors: new Dictionary<string, List<string>>() { }
         ));
     }
 
     [HttpPost("/login")]
     public async Task<IActionResult> LoginPage([FromForm] LoginUserRequestDTO request)
-    { 
+    {
         var validation = _loginUserValidator.Validate(request);
         if (!validation.IsValid)
         {
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
             return View(new LoginPageModel(
                 email: request.Email,
                 password: request.Password,
-                errors: _errorHandlingService.FluentToApiErrors(validation.Errors)
+                errors: PlainMvcErrorHandlingService.FluentToApiErrors(validation.Errors)
             ));
         }
 
@@ -68,13 +77,15 @@ public class UsersController : Controller
             password: request.Password
         );
         var result = await _mediator.Send(query);
-        
+
         if (result.TryPickT1(out var errors, out var value))
         {
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
             return View(new LoginPageModel(
                 email: request.Email,
                 password: request.Password,
-                errors: _errorHandlingService.TranslateServiceErrors(errors)
+                errors: PlainMvcErrorHandlingService.TranslateServiceErrors(errors)
             ));
         }
 
@@ -91,7 +102,7 @@ public class UsersController : Controller
             email: "",
             password: "",
             displayName: "",
-            errors: new Dictionary<string, List<string>>() {}
+            errors: new Dictionary<string, List<string>>() { }
         ));
     }
 
@@ -101,11 +112,13 @@ public class UsersController : Controller
         var validation = _registerUserValidator.Validate(request);
         if (!validation.IsValid)
         {
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
             return View(new RegisterPageModel(
                 email: request.Email,
                 password: request.Password,
                 displayName: request.DisplayName,
-                errors: _errorHandlingService.FluentToApiErrors(validation.Errors)
+                errors: PlainMvcErrorHandlingService.FluentToApiErrors(validation.Errors)
             ));
         }
 
@@ -118,28 +131,31 @@ public class UsersController : Controller
 
         if (result.TryPickT1(out var errors, out var value))
         {
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+
             return View(new RegisterPageModel(
                 email: request.Email,
                 password: request.Password,
                 displayName: request.DisplayName,
-                errors: _errorHandlingService.TranslateServiceErrors(errors)
+                errors: PlainMvcErrorHandlingService.TranslateServiceErrors(errors)
             ));
         }
 
         var user = value.User;
         await SetCookieUser(user);
 
+        Response.StatusCode = (int)HttpStatusCode.Created;
         return Redirect("/");
     }
 
-    [HttpPost("/logout")]
+    [HttpGet("/logout")]
     public async Task<IActionResult> Logout()
     {
         if (!User.Identity!.IsAuthenticated)
         {
-            return RedirectToAction("Frontpage", "Products");
+            return Redirect("/");
         }
-        
+
         await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
         return Redirect("/");
     }

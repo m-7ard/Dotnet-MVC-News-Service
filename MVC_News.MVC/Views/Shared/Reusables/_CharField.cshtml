@@ -1,0 +1,14 @@
+@using MVC_News.MVC.Models.Partials
+@model CharFieldPartialViewModel;
+
+<div class="mixin-char-input-like mixin-char-input-base theme-input-generic-white">
+    <input 
+        value="@Model.Value"
+        name="@Model.Name"
+        @foreach (var (k, v) in @Model.InputAttrs)
+        {
+            @($"{k}={v}")
+            @: 
+        }
+    ></input>
+</div>

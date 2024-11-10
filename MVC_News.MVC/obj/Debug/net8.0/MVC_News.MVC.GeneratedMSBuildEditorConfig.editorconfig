@@ -18,8 +18,56 @@ build_property.GenerateRazorMetadataSourceChecksumAttributes =
 build_property.MSBuildProjectDirectory = C:\Users\maxim\OneDrive\Escritorio\dot_net_work\MVC_News\MVC_News\MVC_News.MVC
 build_property._RazorSourceGeneratorDebug = 
 
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/404NotFound.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcNDA0Tm90Rm91bmQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Articles/CreateArticlePage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXJ0aWNsZXNcQ3JlYXRlQXJ0aWNsZVBhZ2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Articles/Frontpage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXJ0aWNsZXNcRnJvbnRwYWdlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Articles/ListArticlesPage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXJ0aWNsZXNcTGlzdEFydGljbGVzUGFnZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Articles/PreviewArticlePage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXJ0aWNsZXNcUHJldmlld0FydGljbGVQYWdlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Articles/ReadArticlePage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXJ0aWNsZXNcUmVhZEFydGljbGVQYWdlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Articles/UpdateArticlePage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXJ0aWNsZXNcVXBkYXRlQXJ0aWNsZVBhZ2UuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Shared/Other/_MarkupLegend.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXE90aGVyXF9NYXJrdXBMZWdlbmQuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Shared/Reusables/_CharField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFJldXNhYmxlc1xfQ2hhckZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Shared/Reusables/_FormErrors.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFJldXNhYmxlc1xfRm9ybUVycm9ycy5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Shared/Reusables/_FormField.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFJldXNhYmxlc1xfRm9ybUZpZWxkLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Shared/Reusables/_Textarea.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXFJldXNhYmxlc1xfVGV4dGFyZWEuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Shared/_Layout.cshtml]

@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MVC_News.Infrastructure.DbEntities;
 
-namespace MVC_Classifieds.Infrastructure.Configurations;
+namespace MVC_News.Infrastructure.Configurations;
 
 public class UserConfigurations : IEntityTypeConfiguration<UserDbEntity>
 {
