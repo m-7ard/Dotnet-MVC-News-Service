@@ -1,0 +1,10 @@
+@using MVC_News.MVC.Models.Partials
+@model CoverImagePartialViewModel
+
+<div class="relative @Model.ClassName">
+    <img
+        class="absolute w-full h-full object-cover sm:object-cover"
+        src="@Model.Src"
+        alt="@Model.Src"
+    />
+</div>

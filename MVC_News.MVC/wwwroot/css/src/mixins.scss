@@ -167,6 +167,10 @@
             @apply flex flex-col gap-1;
         }
 
+        img {
+            @apply aspect-[16/9] object-contain bg-gray-200 border border-gray-900;
+        }
+
         figcaption {
             @apply text-xs text-gray-600;
         }

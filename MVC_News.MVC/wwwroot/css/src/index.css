@@ -123,6 +123,9 @@
   .mixin-article-any figure {
     @apply flex flex-col gap-1;
   }
+  .mixin-article-any img {
+    @apply aspect-[16/9] object-contain bg-gray-200 border border-gray-900;
+  }
   .mixin-article-any figcaption {
     @apply text-xs text-gray-600;
   }

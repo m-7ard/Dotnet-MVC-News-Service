@@ -41,9 +41,54 @@ public class ArticlesController : Controller
     //
 
     [HttpGet("/")]
-    public IActionResult Frontpage()
+    public async Task<IActionResult> Frontpage()
     {
-        return View();
+        var query = new ListArticlesQuery(
+            authorId: null, 
+            createdAfter: null, 
+            createdBefore: null, 
+            orderBy: "newest", 
+            limitBy: 24
+        );
+        var result = await _mediator.Send(query);
+        if (result.TryPickT1(out var errors, out var value))
+        {
+            return View("~/Views/500BadRequest.cshtml", $"Something went wrong trying to list the frontpage articles.");
+        }
+
+        var articleDTOs = new List<ArticleDTO>();
+        foreach (var article in value.Articles)
+        {
+            var readAuthorQuery = new ReadAuthorQuery(id: article.AuthorId);
+            var readAuthorResult = await _mediator.Send(readAuthorQuery);
+            var author = readAuthorResult.IsT0 ? readAuthorResult.AsT0.Author : new Author(
+                id: Guid.Empty,
+                displayName: "Unkown Author"
+            );
+
+            articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
+        }
+
+        List<ArticleDTO?> mainArticles = [];
+
+        var i = 0;
+        while (i < 3) {
+            if (articleDTOs.Count > i) 
+            {
+                mainArticles.Add(articleDTOs[i]);
+            }
+            else
+            {
+                mainArticles.Add(null);
+            }
+
+            i++;
+        } 
+
+        return View(new FrontpagePageModel(
+            mainArticles: mainArticles,
+            newestArticles: articleDTOs.Skip(3).ToList()
+        ));
     }
 
     // ***************
@@ -69,17 +114,8 @@ public class ArticlesController : Controller
     public async Task<IActionResult> CreateArticlePage([FromForm] CreateArticleRequestDTO request)
     {
         if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId)) {
-            Response.StatusCode = (int)HttpStatusCode.Forbidden;
-
-            return View(new CreateArticlePageModel(
-                title: request.Title,
-                content: request.Content,
-                headerImage: request.HeaderImage,
-                errors: new Dictionary<string, List<string>>()
-                {
-                    { "_", ["User ID is missing from claims."] }
-                }
-            ));
+            Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            return View("~/Views/401Unauthorized.cshtml", $"User ID is missing from claims.");
         }
 
         var validation = _createArticleValidator.Validate(request);
@@ -126,12 +162,16 @@ public class ArticlesController : Controller
     //
 
     [HttpGet("/articles/{id}/update")]
-    public async Task<IActionResult> UpdateArticlePage(string id)
+    public async Task<IActionResult> UpdateArticlePage(
+        string id,
+        [FromQuery] string? headerImage, 
+        [FromQuery] string? title, 
+        [FromQuery] string? content)
     {
         if (!Guid.TryParse(id, out var guid))
         {
             Response.StatusCode = (int)HttpStatusCode.NotFound;
-            return Redirect("/");
+            return View("~/Views/404NotFound.cshtml");
         }
 
         var query = new ReadArticleQuery(id: guid);
@@ -149,34 +189,25 @@ public class ArticlesController : Controller
         Response.StatusCode = (int)HttpStatusCode.OK;
         return View(new UpdateArticlePageModel(
             id: value.Article.Id,
-            title: value.Article.Title,
-            content: value.Article.Content,
-            headerImage: value.Article.HeaderImage,
+            title: title ?? value.Article.Title,
+            content: content ?? value.Article.Content,
+            headerImage: headerImage ?? value.Article.HeaderImage,
             errors: new Dictionary<string, List<string>>()
         ));
     }
 
-    [HttpPut("/articles/{id}/update")]
+    [HttpPost("/articles/{id}/update")]
     public async Task<IActionResult> UpdateArticlePage([FromForm] UpdateArticleRequestDTO request, string id)
     {
         if (!Guid.TryParse(id, out var guid))
         {
-            return Redirect("/");
+            Response.StatusCode = (int)HttpStatusCode.NotFound;
+            return View("~/Views/404NotFound.cshtml");
         }
 
         if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId)) {
-            Response.StatusCode = (int)HttpStatusCode.Forbidden;
-
-            return View(new UpdateArticlePageModel(
-                id: guid,
-                title: request.Title,
-                content: request.Content,
-                headerImage: request.HeaderImage,
-                errors: new Dictionary<string, List<string>>()
-                {
-                    { "_", ["User ID is missing from claims."] }
-                }
-            ));
+            Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            return View("~/Views/401Unauthorized.cshtml", $"User ID is missing from claims.");
         }
 
         var validation = _updateArticleValidator.Validate(request);
@@ -203,7 +234,6 @@ public class ArticlesController : Controller
         if (result.TryPickT1(out var errors, out var value))
         {
             Response.StatusCode = (int)HttpStatusCode.BadRequest;
-
             return View(new UpdateArticlePageModel(
                 id: guid,
                 title: request.Title,
@@ -226,23 +256,30 @@ public class ArticlesController : Controller
     public async Task<IActionResult> ListArticlesPage(
         [FromQuery] Guid? authorId, 
         [FromQuery] DateTime? createdAfter, 
-        [FromQuery] DateTime? createdBefore)
+        [FromQuery] DateTime? createdBefore,
+        [FromQuery] string? orderBy,
+        [FromQuery] int? limitBy)
     {
         var request = new ListArticlesRequestDTO(
             authorId: authorId,
             createdAfter: createdAfter,
-            createdBefore: createdBefore
+            createdBefore: createdBefore,
+            orderBy: orderBy,
+            limitBy: limitBy
         );
 
         var listArticlesQuery = new ListArticlesQuery(
             authorId: request.AuthorId,
             createdAfter: request.CreatedAfter,
-            createdBefore: request.CreatedBefore
+            createdBefore: request.CreatedBefore,
+            orderBy: orderBy,
+            limitBy: limitBy
         );
         var listArticlesResult = await _mediator.Send(listArticlesQuery);
         if (listArticlesResult.TryPickT1(out var errors, out var value))
         {
-            return Redirect("/");
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return View("~/Views/500BadRequest.cshtml", $"Something went wrong trying to list articles.");
         }
 
         var articleDTOs = new List<ArticleDTO>();
@@ -273,7 +310,8 @@ public class ArticlesController : Controller
     {
         if (!Guid.TryParse(id, out var guid))
         {
-            return Redirect("/");
+            Response.StatusCode = (int)HttpStatusCode.NotFound;
+            return View("~/Views/404NotFound.cshtml");
         }
 
         var query = new ReadArticleQuery(id: guid);
@@ -286,7 +324,7 @@ public class ArticlesController : Controller
                 return View("~/Views/404NotFound.cshtml");
             }
 
-            return Redirect("/");
+            return View("~/Views/500BadRequest.cshtml", $"Something went wrong trying to read an article.");
         }
 
         var article = value.Article;
@@ -301,32 +339,82 @@ public class ArticlesController : Controller
     //
     //
 
-    [HttpPost("/articles/preview")]
-    public async Task<IActionResult> PreviewArticlePage([FromForm] PreviewArticleRequestDTO request)
+    [HttpPost("/articles/{id}/update/preview")]
+    public async Task<IActionResult> PreviewUpdateArticlePage(string id, [FromForm] PreviewArticleRequestDTO request)
     {
-        if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var guid)) {
-            Response.StatusCode = (int)HttpStatusCode.Forbidden;
-            return Redirect("/");
+        if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var parsedUserId)) {
+            Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            return View("~/Views/401Unauthorized.cshtml", $"User ID is missing from claims.");
         }
 
-        var query = new ReadAuthorQuery(id: guid);
+        if (!Guid.TryParse(id, out var parsedArticleId)) 
+        {
+            Response.StatusCode = (int)HttpStatusCode.NotFound;
+            return View("~/Views/404NotFound.cshtml");
+        }
+
+        var query = new ReadAuthorQuery(id: parsedUserId);
         var result = await _mediator.Send(query);
 
         if (result.TryPickT1(out var errors, out var value))
         {
-            Response.StatusCode = (int)HttpStatusCode.Forbidden;
-            return Redirect("/");
+            if (errors[0].Code == ApplicationErrorCodes.ModelDoesNotExist)
+            {
+                return View("~/Views/404NotFound.cshtml");
+            }
+            
+            return View("~/Views/500BadRequest.cshtml", $"Something went wrong trying to read the article's author.");
+        }
+        
+        var article = ArticleFactory.BuildNew(
+            id: parsedArticleId,
+            title: request.Title,
+            content: request.Content,
+            headerImage: request.HeaderImage,
+            authorId: parsedUserId
+        );
+
+        return View("PreviewArticlePage", new PreviewArticlePageModel(
+            next: "Update",
+            article: DtoModelService.CreateArticleDTO(
+                article: article,
+                author: value.Author
+            ),
+            markup: MarkupParser.ParseToHtml(article.Content)
+        ));
+    }
+
+    [HttpPost("/articles/create/preview")]
+    public async Task<IActionResult> PreviewArticlePage([FromForm] PreviewArticleRequestDTO request)
+    {
+        if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var parsedUserId)) {
+            Response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            return View("~/Views/401Unauthorized.cshtml", $"User ID is missing from claims.");
+        }
+
+        var query = new ReadAuthorQuery(id: parsedUserId);
+        var result = await _mediator.Send(query);
+
+        if (result.TryPickT1(out var errors, out var value))
+        {
+            if (errors[0].Code == ApplicationErrorCodes.ModelDoesNotExist)
+            {
+                return View("~/Views/404NotFound.cshtml");
+            }
+            
+            return View("~/Views/500BadRequest.cshtml", $"Something went wrong trying to read the article's author.");
         }
 
         var article = ArticleFactory.BuildNew(
-            id: Guid.NewGuid(),
+            id: Guid.Empty,
             title: request.Title,
-            content: request.Title,
+            content: request.Content,
             headerImage: request.HeaderImage,
-            authorId: guid
+            authorId: parsedUserId
         );
 
-        return View(new PreviewArticlePageModel(
+        return View("PreviewArticlePage", new PreviewArticlePageModel(
+            next: "Create",
             article: DtoModelService.CreateArticleDTO(
                 article: article,
                 author: value.Author

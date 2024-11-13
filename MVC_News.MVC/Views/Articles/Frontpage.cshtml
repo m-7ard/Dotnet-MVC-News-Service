@@ -1,17 +1,113 @@
-
 @using MVC_News.MVC.Models.Articles
 @using MVC_News.MVC.Models.Partials
-@model CreateArticlePageModel
+@model FrontpagePageModel
 @{
-    ViewData["Title"] = "Create Article";
+    ViewData["Title"] = "Frontpage";
 }
 
-<div class="mixin-page-like mixin-page-base mixin-content-grid">
-    <div class="flex flex-col gap-2" data-track="full">
-        <div class="text-4xl">
-            Frontpage
-        </div>
-
-    </div>
+<div class="mixin-page-like mixin-page-base mixin-content-grid grow">
+    <header class="flex flex-row gap-4 aspect-[2.25] p-4" data-track="full">
+        @if (Model.MainArticles[0] is not null)
+        {
+            <section class="flex flex-col gap-4 grow basis-2/3 overflow-hidden">
+                <div class="flex flex-col gap-2 grow overflow-hidden">
+                    @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
+                        className: "w-full grow border border-gray-900",
+                        src: Model.MainArticles[0]!.HeaderImage
+                    ))
+                    <div>
+                        <div class="text-lg line-clamp-2">
+                            @Model.MainArticles[0]!.Title
+                        </div>
+                        <div class="flex flex-row gap-2 overflow-hidden">
+                            <div class="text-xs truncate">
+                                @Model.MainArticles[0]!.Author.DisplayName
+                            </div>
+                            <div class="text-xs text-gray-500 ml-auto">
+                                @Model.MainArticles[0]!.DateCreated
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        }
+        <section class="flex flex-col gap-4 grow basis-1/3 overflow-hidden">
+            @if (Model.MainArticles[1] is not null) 
+            {
+                <div class="flex flex-col gap-2 grow overflow-hidden">
+                    @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
+                        className: "w-full grow border border-gray-900",
+                        src: Model.MainArticles[1]!.HeaderImage
+                    ))
+                    <div>
+                        <div class="text-lg line-clamp-2">
+                            @Model.MainArticles[1]!.Title
+                        </div>
+                        <div class="flex flex-row gap-2 overflow-hidden">
+                            <div class="text-xs truncate">
+                                @Model.MainArticles[1]!.Author.DisplayName
+                            </div>
+                            <div class="text-xs text-gray-500 ml-auto">
+                                @Model.MainArticles[1]!.DateCreated
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+            @if (Model.MainArticles[1] is not null) {
+                <div class="flex flex-col gap-2 grow overflow-hidden">
+                    @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
+                        className: "w-full grow border border-gray-900",
+                        src: Model.MainArticles[2]!.HeaderImage
+                    ))
+                    <div>
+                        <div class="text-lg line-clamp-2">
+                            @Model.MainArticles[2]!.Title
+                        </div>
+                        <div class="flex flex-row gap-2 overflow-hidden">
+                            <div class="text-xs truncate">
+                                @Model.MainArticles[2]!.Author.DisplayName
+                            </div>
+                            <div class="text-xs text-gray-500 ml-auto">
+                                @Model.MainArticles[2]!.DateCreated
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </section>
+    </header>
+    <div class="h-0 border-t border-gray-900 w-full"></div>
+    <main class="flex flex-col gap-4 aspect-[2.25]" data-track="base">
+        <header class="flex flex-row justify-center">
+            <div class="text-xl font-bold">
+                New Arrivals
+            </div>
+        </header>
+        <ol class="grid grid-cols-2 gap-4">
+            @foreach (var article in Model.NewestArticles)
+            {
+                <li class="flex flex-col gap-2 grow overflow-hidden aspect-[1.25]">
+                    @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
+                        className: "w-full grow border border-gray-900",
+                        src: article.HeaderImage
+                    ))
+                    <div>
+                        <div class="text-xl font-bold line-clamp-2">
+                            @article.Title
+                        </div>
+                        <div class="flex flex-row gap-2 overflow-hidden">
+                            <div class="text-xs truncate">
+                                @article.Author.DisplayName
+                            </div>
+                            <div class="text-xs text-gray-500 ml-auto">
+                                @article.DateCreated
+                            </div>
+                        </div>
+                    </div>
+                </li>
+            }
+        </ol>
+    </main>
 
 </div>

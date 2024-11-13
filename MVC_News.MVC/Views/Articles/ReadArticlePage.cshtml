@@ -8,7 +8,10 @@
 
 <div class="mixin-page-like mixin-page-base mixin-content-grid">
     <div class="flex flex-col gap-2" data-track="lg">
-        <img src="@Model.Article.HeaderImage" />
+        @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
+            className: "aspect-[16/9]",
+            src: Model.Article.HeaderImage
+        ))
     </div>
     <div class="flex flex-col gap-2" data-track="base">
         <div class="mixin-article-any">

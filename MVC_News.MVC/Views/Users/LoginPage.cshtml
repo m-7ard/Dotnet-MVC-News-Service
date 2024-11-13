@@ -8,17 +8,17 @@
 }
 
 <div class="mixin-page-like mixin-page-base mixin-content-grid">
-    <div class="flex flex-col gap-2" data-track="base">
-        <header class="text-xl font-bold">
-            Login
-        </header>
-        <div class="bg-gray-200 border-gray-900 border px-2 py-1 text-sm flex flex-row overflow-hidden justify-between">
+    <div class="flex flex-col gap-4" data-track="base">
+        <div class="bg-gray-200 border-gray-900 border px-2 py-1 text-sm flex flex-row gap-2 overflow-hidden justify-between ml-auto">
             <div class="truncate">
                 Don't have an account?
             </div>
             <a class="text-blue-800 hover:underline" href="/register">Go to Register</a>
         </div>
-        <form class="flex flex-col gap-4" action="/login" method="post">
+        <header class="text-xl font-bold">
+            Login
+        </header>
+        <form class="flex flex-col gap-2" action="/login" method="post">
             @await Html.PartialAsync("Reusables/_FormErrors", Model.Errors.TryGetValue("_", out var formErrors) ? formErrors : null)
            
             @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
@@ -48,9 +48,8 @@
                 )
             ))
 
-
-            <footer class="flex flex-row gap-2 justify-end">
-                <button class="mixin-button-like mixin-button-base theme-button-generic-gray" type="reset">
+            <footer class="flex flex-row gap-2 justify-end mt-2">
+                <button class="mixin-button-like mixin-button-base theme-button-generic-white" type="reset">
                     Reset
                 </button>
                 <button class="mixin-button-like mixin-button-base theme-button-generic-green" type="submit">

@@ -1,4 +1,6 @@
+using System.Linq.Expressions;
 using Microsoft.EntityFrameworkCore;
+using MVC_News.Application.Contracts.Criteria;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Domain.Entities;
 using MVC_News.Infrastructure.DbEntities;
@@ -25,7 +27,7 @@ public class ArticleRepository : IArticleRepository
 
     public async Task UpdateAsync(Article article)
     {
-        var oldDbEntity = _dbContext.Article.SingleAsync(d => d.Id == article.Id);
+        var oldDbEntity = await _dbContext.Article.SingleAsync(d => d.Id == article.Id);
         var newDbEntity = ArticleMapper.FromDomainToDbEntity(article);
         _dbContext.Entry(oldDbEntity).CurrentValues.SetValues(newDbEntity);
         await _dbContext.SaveChangesAsync();
@@ -37,28 +39,46 @@ public class ArticleRepository : IArticleRepository
         return entity is null ? null : ArticleMapper.FromDbEntityToDomain(entity);
     }
 
-    public async Task<List<Article>> FilterAllAsync(DateTime? createdAfter, DateTime? createdBefore, Guid? authorId)
+    public async Task<List<Article>> FilterAllAsync(FilterAllArticlesCriteria criteria)
     {
         IQueryable<ArticleDbEntity> query = _dbContext.Article.Include(d => d.Author);
         
-        if (createdAfter is not null && createdBefore is not null && createdAfter > createdBefore)
+        if (criteria.CreatedAfter is not null && criteria.CreatedBefore is not null && criteria.CreatedAfter > criteria.CreatedBefore)
         {
-            createdBefore = null;
+            criteria.CreatedBefore = null;
         }
 
-        if (createdAfter is not null)
+        if (criteria.CreatedAfter is not null)
         {
-            query = query.Where(article => article.DateCreated > createdAfter);
+            query = query.Where(article => article.DateCreated > criteria.CreatedAfter);
         }
 
-        if (createdBefore is not null)
+        if (criteria.CreatedBefore is not null)
         {
-            query = query.Where(article => article.DateCreated < createdBefore);
+            query = query.Where(article => article.DateCreated < criteria.CreatedBefore);
         }
 
-        if (authorId is not null)
+        if (criteria.AuthorId is not null)
         {
-            query = query.Where(article => article.AuthorId == authorId);
+            query = query.Where(article => article.AuthorId == criteria.AuthorId);
+        }
+
+        if (criteria.OrderBy is not null)
+        {
+            Dictionary<string, Expression<Func<ArticleDbEntity, object>>> fieldMappings = new()
+            {
+                { "DateCreated", p => p.DateCreated },
+            };
+
+            if (fieldMappings.TryGetValue(criteria.OrderBy.Item1, out var orderByExpression))
+            {
+                query = criteria.OrderBy.Item2 ? query.OrderBy(orderByExpression) : query.OrderByDescending(orderByExpression);
+            }
+        }
+
+        if (criteria.LimitBy is not null)
+        {
+            query = query.Take(criteria.LimitBy.Value);
         }
 
         var articles = await query.ToListAsync();
