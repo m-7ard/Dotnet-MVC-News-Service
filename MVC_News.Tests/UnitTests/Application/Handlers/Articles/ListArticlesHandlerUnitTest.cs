@@ -1,6 +1,5 @@
 using Moq;
-using MVC_News.Application.Errors;
-using MVC_News.Application.Handlers.Articles.Create;
+using MVC_News.Application.Contracts.Criteria;
 using MVC_News.Application.Handlers.Articles.List;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Domain.Entities;
@@ -46,15 +45,21 @@ public class ListArticlesHandlerUnitTest
         var command = new ListArticlesQuery(
             authorId: null,
             createdAfter: null,
-            createdBefore: null
+            createdBefore: null,
+            orderBy: null,
+            limitBy: null
+        );
+
+        var criteria = new FilterAllArticlesCriteria(
+            createdAfter: command.CreatedAfter, 
+            createdBefore: command.CreatedBefore,
+            authorId: command.AuthorId,
+            orderBy: new Tuple<string, bool>("DateCreated", false),
+            limitBy: command.LimitBy
         );
 
         _mockArticleRepository
-            .Setup(repo => repo.FilterAllAsync(
-                command.CreatedAfter, 
-                command.CreatedBefore,
-                command.AuthorId
-            ))
+            .Setup(repo => repo.FilterAllAsync(criteria))
             .ReturnsAsync(_articles_all);
 
         // ACT

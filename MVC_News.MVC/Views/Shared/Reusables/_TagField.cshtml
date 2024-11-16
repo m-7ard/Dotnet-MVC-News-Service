@@ -1,0 +1,38 @@
+@using MVC_News.MVC.Models.Partials
+@using System.Text.Json
+@model TagFieldPartialViewModel
+
+@{
+    var tagFieldItemClass = "mixin-button-like mixin-button-base theme-button-generic-white";
+    var id = $"TAG_FIELD_{Guid.NewGuid()}";
+    Console.WriteLine("9999999999999999999999999999999999999");
+    Console.WriteLine(Model.Value.Count());
+}
+
+<div class="flex flex-col gap-1" role="tag-field" id="@id">
+    <div class="flex flex-row gap-1">
+        <div class="mixin-button-like mixin-button-base theme-button-generic-white" role="TAG_FIELD_SUBMIT">
+            Add Tag
+        </div>
+        <div class="mixin-char-input-like mixin-char-input-base theme-input-generic-white">
+            <input type="text" role="TAG_FIELD_INPUT"></input>
+        </div>
+    </div>
+    <ul class="flex flex-row flex-wrap gap-1 p-1 bg-gray-200 border border-gray-900" role="TAG_FIELD_LIST">
+        <!-- Empty hidden input so the value is sent as a list -->
+        <input hidden name="@Model.Name" />
+
+    </ul>
+    <li class="@tagFieldItemClass hidden" role="TAG_FIELD_ITEM" data-template="TAG_FIELD_ITEM">
+        #value
+        <input disabled hidden name="@Model.Name" value="#value" />
+    </li>
+</div>
+<script>
+    const tags = @Html.Raw(Json.Serialize(Model.Value));
+
+    window.addEventListener("load", () => {
+        const item = document.getElementById("@id");
+        new TagField(item, tags);
+    })
+</script>

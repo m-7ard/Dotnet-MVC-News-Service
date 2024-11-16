@@ -51,7 +51,15 @@
                 )
             ))
             @await Html.PartialAsync("Other/_MarkupLegend")
-
+            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                label: "Content",
+                errors: null,
+                partialRoute: "Reusables/_TagField",
+                partialProps: new TagFieldPartialViewModel(
+                    name: "tags",
+                    value: Model.Tags
+                )
+            ))
             <footer class="flex flex-row gap-[inherit]">
                 <button type="submit" formmethod="POST" formaction="/articles/create/preview" class="mixin-button-like mixin-button-base theme-button-generic-white ml-auto">
                     Preview

@@ -2,7 +2,7 @@ namespace MVC_News.Infrastructure.DbEntities;
 
 public class ArticleDbEntity
 {
-    public ArticleDbEntity(Guid id, string title, string content, DateTime dateCreated, Guid authorId, string headerImage)
+    public ArticleDbEntity(Guid id, string title, string content, DateTime dateCreated, Guid authorId, string headerImage, string[] tags)
     {
         Id = id;
         Title = title;
@@ -10,6 +10,7 @@ public class ArticleDbEntity
         DateCreated = dateCreated;
         AuthorId = authorId;
         HeaderImage = headerImage;
+        Tags = tags;
     }
 
     public Guid Id { get; private set; }
@@ -17,6 +18,7 @@ public class ArticleDbEntity
     public string Content { get; set; }
     public string HeaderImage { get; set; }
     public DateTime DateCreated { get; set; }
+    public string[] Tags { get; set; }
     
     // User FK
     public Guid AuthorId { get; set; }

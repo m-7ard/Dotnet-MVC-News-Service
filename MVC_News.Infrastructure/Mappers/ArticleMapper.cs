@@ -13,7 +13,8 @@ public static class ArticleMapper
             content: source.Content,
             headerImage: source.HeaderImage,
             dateCreated: source.DateCreated,
-            authorId: source.AuthorId
+            authorId: source.AuthorId,
+            tags: source.Tags.ToArray()
         );
     }
 
@@ -25,7 +26,8 @@ public static class ArticleMapper
             content: source.Content,
             headerImage: source.HeaderImage,
             dateCreated: source.DateCreated,
-            authorId: source.AuthorId
+            authorId: source.AuthorId,
+            tags: source.Tags.ToList()
         );
     }
 }

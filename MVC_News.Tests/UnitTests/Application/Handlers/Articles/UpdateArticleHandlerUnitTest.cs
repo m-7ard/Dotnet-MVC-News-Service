@@ -29,7 +29,8 @@ public class UpdateArticleHandlerUnitTest
             content: _mockArticle + "_update",
             headerImage: _mockArticle.HeaderImage + "_updated",
             dateCreated: _mockArticle.DateCreated,
-            authorId: _mockArticle.AuthorId
+            authorId: _mockArticle.AuthorId,
+            tags: new List<string>() { "tag_update" }
         );
 
         _mockArticleRepository = new Mock<IArticleRepository>();
@@ -49,7 +50,8 @@ public class UpdateArticleHandlerUnitTest
             title: _updateArticle.Title,
             content: _updateArticle.Content,
             authorId: _admin_001.Id,
-            headerImage: _updateArticle.HeaderImage
+            headerImage: _updateArticle.HeaderImage,
+            tags: _mockArticle.Tags
         );
 
         _mockArticleRepository
@@ -86,7 +88,8 @@ public class UpdateArticleHandlerUnitTest
             title: _updateArticle.Title,
             content: _updateArticle.Content,
             authorId: _user_001.Id,
-            headerImage: _updateArticle.HeaderImage
+            headerImage: _updateArticle.HeaderImage,
+            tags: _mockArticle.Tags
         );
 
         _mockArticleRepository
@@ -117,7 +120,8 @@ public class UpdateArticleHandlerUnitTest
             title: _updateArticle.Title,
             content: _updateArticle.Content,
             authorId: invalidGuid,
-            headerImage: _updateArticle.HeaderImage
+            headerImage: _updateArticle.HeaderImage,
+            tags: _mockArticle.Tags
         );
 
         _mockArticleRepository
@@ -143,7 +147,8 @@ public class UpdateArticleHandlerUnitTest
             title: _updateArticle.Title,
             content: _updateArticle.Content,
             authorId: Guid.NewGuid(),
-            headerImage: _updateArticle.HeaderImage
+            headerImage: _updateArticle.HeaderImage,
+            tags: _mockArticle.Tags
         );
 
         // ACT

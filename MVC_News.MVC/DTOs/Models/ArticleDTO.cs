@@ -2,7 +2,7 @@ namespace MVC_News.MVC.DTOs.Models;
 
 public class ArticleDTO
 {
-    public ArticleDTO(Guid id, string title, string content, string headerImage, DateTime dateCreated, AuthorDTO author)
+    public ArticleDTO(Guid id, string title, string content, string headerImage, DateTime dateCreated, AuthorDTO author, List<string> tags)
     {
         Id = id;
         Title = title;
@@ -10,6 +10,7 @@ public class ArticleDTO
         HeaderImage = headerImage;
         DateCreated = dateCreated;
         Author = author;
+        Tags = tags;
     }
 
     public Guid Id { get; }
@@ -18,4 +19,5 @@ public class ArticleDTO
     public string HeaderImage { get; }
     public DateTime DateCreated { get; }
     public AuthorDTO Author { get; }
+    public List<string> Tags { get; }
 }

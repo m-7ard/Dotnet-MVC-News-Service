@@ -13,7 +13,8 @@ public class DtoModelService
             content: article.Content,
             headerImage: article.HeaderImage,
             dateCreated: article.DateCreated,
-            author: CreateAuthorDTO(author)
+            author: CreateAuthorDTO(author),
+            tags: article.Tags
         );
     }
 

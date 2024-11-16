@@ -37,7 +37,8 @@ public class CreateArticleHandlerUnitTest
             title: mockArticle.Title,
             content: mockArticle.Content,
             authorId: mockArticle.AuthorId,
-            headerImage: mockArticle.HeaderImage
+            headerImage: mockArticle.HeaderImage,
+            tags: mockArticle.Tags
         );
 
         _mockUserRepository
@@ -67,7 +68,8 @@ public class CreateArticleHandlerUnitTest
             title: mockArticle.Title,
             content: mockArticle.Content,
             authorId: mockArticle.AuthorId,
-            headerImage: mockArticle.HeaderImage
+            headerImage: mockArticle.HeaderImage,
+            tags: mockArticle.Tags
         );
 
         _mockUserRepository
@@ -94,7 +96,8 @@ public class CreateArticleHandlerUnitTest
             title: mockArticle.Title,
             content: mockArticle.Content,
             authorId: mockArticle.AuthorId,
-            headerImage: mockArticle.HeaderImage
+            headerImage: mockArticle.HeaderImage,
+            tags: mockArticle.Tags
         );
 
         // ACT

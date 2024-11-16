@@ -24,5 +24,10 @@ public class ArticleConfigurations : IEntityTypeConfiguration<ArticleDbEntity>
 
         builder.Property(d => d.DateCreated)
             .HasDefaultValueSql("GETDATE()");
+
+        builder.Property(e => e.Tags)
+            .HasConversion(
+                v => string.Join(',', v),
+                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
     }
 }

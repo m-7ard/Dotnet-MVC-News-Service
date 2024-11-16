@@ -1,6 +1,7 @@
 
 @using MVC_News.MVC.Models.Articles;
 @using MVC_News.MVC.Models.Partials;
+@using System.Text.Json
 @model PreviewArticlePageModel;
 @{
     ViewData["Title"] = Model.Article.Title;
@@ -11,6 +12,14 @@
         <input hidden name="headerImage" value="@Model.Article.HeaderImage">
         <input hidden name="title" value="@Model.Article.Title">
         <textarea name="content" class="whitespace-pre-wrap" hidden>@Model.Article.Content</textarea>
+        
+        <!-- Empty hidden input so the value is sent as a list -->
+        <input hidden name="tags" />
+        @foreach (var tag in Model.Article.Tags)
+        {
+            <input hidden name="tags" value="@tag">        
+        }
+
         <footer class="flex flex-row grow gap-2 justify-end">
             @if (Model.Next == "Create")
             {

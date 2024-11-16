@@ -1,6 +1,7 @@
 using MediatR;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Interfaces.Repositories;
+using MVC_News.Domain.DomainFactories;
 using OneOf;
 
 namespace MVC_News.Application.Handlers.Articles.Update;
@@ -56,13 +57,19 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleCommand, OneOf<
             };
         }
 
-        article.Title = request.Title;
-        article.Content = request.Content;
-        article.HeaderImage = request.HeaderImage;
-        await _articleRepository.UpdateAsync(article);
+        var updatedArticle = ArticleFactory.BuildExisting(
+            id: request.Id,
+            title: request.Title,
+            content: request.Content,
+            headerImage: request.HeaderImage,
+            dateCreated: article.DateCreated,
+            authorId: article.AuthorId,
+            tags: request.Tags
+        );
+        await _articleRepository.UpdateAsync(updatedArticle);
 
         return new UpdateArticleResult(
-            article: article
+            article: updatedArticle
         );
     }
 }

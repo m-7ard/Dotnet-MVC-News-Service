@@ -25,7 +25,8 @@ public class Mixins
             content: $"content_{seed}",
             headerImage: $"url/${seed}",
             dateCreated: DateTime.Now,
-            authorId: authorId
+            authorId: authorId,
+            tags: new List<string>() { $"tag_{seed}" }
         );
 
         return article;

@@ -1,8 +1,11 @@
 using System.Net;
 using System.Security.Claims;
+using System.Text.Json;
+using System.Web;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Handlers.Articles.Create;
 using MVC_News.Application.Handlers.Articles.List;
@@ -19,6 +22,7 @@ using MVC_News.MVC.DTOs.Models;
 using MVC_News.MVC.Errors;
 using MVC_News.MVC.Models.Articles;
 using MVC_News.MVC.Services;
+using Sprache;
 
 namespace MVC_News.MVC.Controllers;
 
@@ -27,6 +31,11 @@ public class ArticlesController : Controller
     private readonly ISender _mediator;
     private readonly IValidator<CreateArticleRequestDTO> _createArticleValidator;
     private readonly IValidator<UpdateArticleRequestDTO> _updateArticleValidator;
+
+    private List<string> ProcessRequestTags(List<string> tags)
+    {
+        return tags.Where(item => !string.IsNullOrEmpty(item)).ToList();
+    }
 
     public ArticlesController(ISender mediator, IValidator<CreateArticleRequestDTO> createArticleValidator, IValidator<UpdateArticleRequestDTO> updateArticleValidator)
     {
@@ -100,12 +109,14 @@ public class ArticlesController : Controller
     public IActionResult CreateArticlePage(
         [FromQuery] string? headerImage, 
         [FromQuery] string? title, 
-        [FromQuery] string? content)
+        [FromQuery] string? content,
+        [FromQuery] List<string>? tags)
     {
         return View(new CreateArticlePageModel(
             title: title ?? "",
             content: content ?? "",
             headerImage: headerImage ?? "",
+            tags: tags is null ? new List<string>() : ProcessRequestTags(tags),
             errors: new Dictionary<string, List<string>>()
         ));
     }
@@ -113,6 +124,8 @@ public class ArticlesController : Controller
     [HttpPost("/articles/create")]
     public async Task<IActionResult> CreateArticlePage([FromForm] CreateArticleRequestDTO request)
     {
+        request.Tags = ProcessRequestTags(request.Tags);
+
         if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var userId)) {
             Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             return View("~/Views/401Unauthorized.cshtml", $"User ID is missing from claims.");
@@ -127,6 +140,7 @@ public class ArticlesController : Controller
                 title: request.Title,
                 content: request.Content,
                 headerImage: request.HeaderImage,
+                tags: request.Tags,
                 errors: PlainMvcErrorHandlingService.FluentToApiErrors(validation.Errors)
             ));
         }
@@ -136,7 +150,8 @@ public class ArticlesController : Controller
             title: request.Title,
             content: request.Content,
             headerImage: request.HeaderImage,
-            authorId: userId
+            authorId: userId,
+            tags: request.Tags.ToList()
         );
         var result = await _mediator.Send(command);
 
@@ -148,6 +163,7 @@ public class ArticlesController : Controller
                 title: request.Title,
                 content: request.Content,
                 headerImage: request.HeaderImage,
+                tags: request.Tags,
                 errors: PlainMvcErrorHandlingService.TranslateServiceErrors(errors)
             ));
         }
@@ -166,8 +182,11 @@ public class ArticlesController : Controller
         string id,
         [FromQuery] string? headerImage, 
         [FromQuery] string? title, 
-        [FromQuery] string? content)
+        [FromQuery] string? content,
+        [FromQuery] List<string>? tags)
     {
+        tags = tags is null ? null : ProcessRequestTags(tags);
+
         if (!Guid.TryParse(id, out var guid))
         {
             Response.StatusCode = (int)HttpStatusCode.NotFound;
@@ -186,12 +205,19 @@ public class ArticlesController : Controller
             }
         }
 
+        Console.WriteLine("query tags: ");
+        Console.WriteLine(tags?.Count());
+
+        Console.WriteLine("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
+        Console.WriteLine(value.Article.Tags.Count());
+
         Response.StatusCode = (int)HttpStatusCode.OK;
         return View(new UpdateArticlePageModel(
             id: value.Article.Id,
             title: title ?? value.Article.Title,
             content: content ?? value.Article.Content,
             headerImage: headerImage ?? value.Article.HeaderImage,
+            tags: tags.IsNullOrEmpty() ? value.Article.Tags : tags!.ToList(),
             errors: new Dictionary<string, List<string>>()
         ));
     }
@@ -199,6 +225,15 @@ public class ArticlesController : Controller
     [HttpPost("/articles/{id}/update")]
     public async Task<IActionResult> UpdateArticlePage([FromForm] UpdateArticleRequestDTO request, string id)
     {
+        var tags = ProcessRequestTags(request.Tags.ToList());
+        Console.WriteLine("tags[555]");
+        Console.WriteLine("tags[555]");
+        Console.WriteLine("tags[555]");
+        Console.WriteLine("tags[555]");
+        Console.WriteLine("tags[555]");
+        Console.WriteLine("tags[555]");
+        Console.WriteLine(tags[0]);
+
         if (!Guid.TryParse(id, out var guid))
         {
             Response.StatusCode = (int)HttpStatusCode.NotFound;
@@ -218,6 +253,7 @@ public class ArticlesController : Controller
                 title: request.Title,
                 content: request.Content,
                 headerImage: request.HeaderImage,
+                tags: tags,
                 errors: PlainMvcErrorHandlingService.FluentToApiErrors(validation.Errors)
             ));
         }
@@ -227,7 +263,8 @@ public class ArticlesController : Controller
             title: request.Title,
             content: request.Content,
             headerImage: request.HeaderImage,
-            authorId: userId
+            authorId: userId,
+            tags: tags
         );
         var result = await _mediator.Send(command);
 
@@ -239,6 +276,7 @@ public class ArticlesController : Controller
                 title: request.Title,
                 content: request.Content,
                 headerImage: request.HeaderImage,
+                tags: tags,
                 errors: PlainMvcErrorHandlingService.TranslateServiceErrors(errors)
             ));
         }
@@ -342,6 +380,16 @@ public class ArticlesController : Controller
     [HttpPost("/articles/{id}/update/preview")]
     public async Task<IActionResult> PreviewUpdateArticlePage(string id, [FromForm] PreviewArticleRequestDTO request)
     {
+        var tags = ProcessRequestTags(request.Tags.ToList());
+        Console.WriteLine("tags[0]");
+        Console.WriteLine("tags[0]");
+        Console.WriteLine("tags[0]");
+        Console.WriteLine("tags[0]");
+        Console.WriteLine("tags[0]");
+        Console.WriteLine("tags[0]");
+        Console.WriteLine(tags[0]);
+
+
         if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var parsedUserId)) {
             Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             return View("~/Views/401Unauthorized.cshtml", $"User ID is missing from claims.");
@@ -371,7 +419,8 @@ public class ArticlesController : Controller
             title: request.Title,
             content: request.Content,
             headerImage: request.HeaderImage,
-            authorId: parsedUserId
+            authorId: parsedUserId,
+            tags: tags
         );
 
         return View("PreviewArticlePage", new PreviewArticlePageModel(
@@ -385,8 +434,10 @@ public class ArticlesController : Controller
     }
 
     [HttpPost("/articles/create/preview")]
-    public async Task<IActionResult> PreviewArticlePage([FromForm] PreviewArticleRequestDTO request)
+    public async Task<IActionResult> PreviewCreateArticlePage([FromForm] PreviewArticleRequestDTO request)
     {
+        var tags = ProcessRequestTags(request.Tags.ToList());
+
         if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var parsedUserId)) {
             Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             return View("~/Views/401Unauthorized.cshtml", $"User ID is missing from claims.");
@@ -410,7 +461,8 @@ public class ArticlesController : Controller
             title: request.Title,
             content: request.Content,
             headerImage: request.HeaderImage,
-            authorId: parsedUserId
+            authorId: parsedUserId,
+            tags: tags
         );
 
         return View("PreviewArticlePage", new PreviewArticlePageModel(
