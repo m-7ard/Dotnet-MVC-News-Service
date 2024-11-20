@@ -4,9 +4,9 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers.Articles.Update;
 
-public class UpdateArticleCommand : IRequest<OneOf<UpdateArticleResult, List<PlainApplicationError>>>
+public class UpdateArticleCommand : IRequest<OneOf<UpdateArticleResult, List<ApplicationError>>>
 {
-    public UpdateArticleCommand(Guid id, string title, string content, string headerImage, Guid authorId, List<string> tags)
+    public UpdateArticleCommand(Guid id, string title, string content, string headerImage, Guid authorId, List<string> tags, bool isPremium)
     {
         Id = id;
         Title = title;
@@ -14,6 +14,7 @@ public class UpdateArticleCommand : IRequest<OneOf<UpdateArticleResult, List<Pla
         HeaderImage = headerImage;
         AuthorId = authorId;
         Tags = tags;
+        IsPremium = isPremium;
     }
 
     public Guid Id { get; }
@@ -21,6 +22,7 @@ public class UpdateArticleCommand : IRequest<OneOf<UpdateArticleResult, List<Pla
     public string Content { get; }
     public string HeaderImage { get; }
     public List<string> Tags { get; }
+    public bool IsPremium { get; }
 
     public Guid AuthorId { get; }
 }

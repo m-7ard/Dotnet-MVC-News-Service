@@ -16,7 +16,9 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetUserByEmailAsync(string email)
     {
-        var entity = await _dbContext.User.SingleOrDefaultAsync(d => d.Email == email);
+        var entity = await _dbContext.User
+            .Include(d => d.Subscriptions)
+            .SingleOrDefaultAsync(d => d.Email == email);
         return entity is null ? null : UserMapper.FromDbEntityToDomain(entity);
     }
 
@@ -37,7 +39,9 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetUserById(Guid id)
     {
-        var entity = await _dbContext.User.SingleOrDefaultAsync(d => d.Id == id);
+        var entity = await _dbContext.User
+            .Include(d => d.Subscriptions)
+            .SingleOrDefaultAsync(d => d.Id == id);
         return entity is null ? null : UserMapper.FromDbEntityToDomain(entity);
     }
 }

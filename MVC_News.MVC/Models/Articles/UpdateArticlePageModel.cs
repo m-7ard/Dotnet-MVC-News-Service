@@ -2,7 +2,7 @@ namespace MVC_News.MVC.Models.Articles;
 
 public class UpdateArticlePageModel : BaseViewModel
 {
-    public UpdateArticlePageModel(string title, string content, Dictionary<string, List<string>> errors, string headerImage, Guid id, List<string> tags)
+    public UpdateArticlePageModel(string title, string content, Dictionary<string, List<string>> errors, string headerImage, Guid id, List<string> tags, bool isPremium)
     {
         Title = title;
         Content = content;
@@ -10,6 +10,7 @@ public class UpdateArticlePageModel : BaseViewModel
         HeaderImage = headerImage;
         Id = id;
         Tags = tags;
+        IsPremium = isPremium;
     }
 
     public Guid Id { get; }
@@ -18,4 +19,5 @@ public class UpdateArticlePageModel : BaseViewModel
     public string HeaderImage { get; }
     public List<string> Tags { get; }
     public Dictionary<string, List<string>> Errors { get; }
+    public bool IsPremium { get; }
 }

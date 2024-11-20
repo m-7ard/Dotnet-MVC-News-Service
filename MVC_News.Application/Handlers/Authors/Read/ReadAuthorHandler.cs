@@ -6,7 +6,7 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers.Authors.Read;
 
-public class ReadAuthorHandler : IRequestHandler<ReadAuthorQuery, OneOf<ReadAuthorResult, List<PlainApplicationError>>>
+public class ReadAuthorHandler : IRequestHandler<ReadAuthorQuery, OneOf<ReadAuthorResult, List<ApplicationError>>>
 {
     private readonly IUserRepository _userRepository;
 
@@ -15,16 +15,16 @@ public class ReadAuthorHandler : IRequestHandler<ReadAuthorQuery, OneOf<ReadAuth
         _userRepository = userRepository;
     }
 
-    public async Task<OneOf<ReadAuthorResult, List<PlainApplicationError>>> Handle(ReadAuthorQuery request, CancellationToken cancellationToken)
+    public async Task<OneOf<ReadAuthorResult, List<ApplicationError>>> Handle(ReadAuthorQuery request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetUserById(request.Id);
         if (user is null)
         {
-            return new List<PlainApplicationError>()
+            return new List<ApplicationError>()
             {
-                new PlainApplicationError(
+                new ApplicationError(
                     message: $"Author of id \"{request.Id}\" does not exist.",
-                    fieldName: "_",
+                    path: ["_"],
                     code: ApplicationErrorCodes.ModelDoesNotExist
                 )
             };

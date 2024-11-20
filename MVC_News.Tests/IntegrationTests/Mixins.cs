@@ -31,7 +31,8 @@ public class Mixins
                 email: $"user_{seed}@mail.com",
                 passwordHash: _passwordHasher.Hash("userword"),
                 displayName: $"user_{seed}",
-                isAdmin: isAdmin
+                isAdmin: isAdmin,
+                subscriptions: []
             )
         );
 

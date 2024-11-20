@@ -23,7 +23,8 @@ public static class UserMapper
             email: source.Email,
             passwordHash: source.PasswordHash,
             displayName: source.DisplayName,
-            isAdmin: source.IsAdmin
+            isAdmin: source.IsAdmin,
+            subscriptions: source.Subscriptions.Select(SubscriptionMapper.FromDbEntityToDomain).ToList()
         );
     }
 }

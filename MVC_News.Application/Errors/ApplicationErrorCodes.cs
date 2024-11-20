@@ -13,4 +13,5 @@ public class ApplicationErrorCodes
     public const string FileCountExceeded = "FileCountExceeded";
     public const string FileNoFiles = "FileNoFiles";
     public const string NotAllowed = "NotAllowed";
+    public const string DomainError = "DomainError";
 }

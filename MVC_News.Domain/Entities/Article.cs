@@ -1,8 +1,12 @@
+using MVC_News.Domain.Errors;
+using OneOf;
+using OneOf.Types;
+
 namespace MVC_News.Domain.Entities;
 
 public class Article
 {
-    public Article(Guid id, string title, string content, DateTime dateCreated, string headerImage, Guid authorId, List<string> tags)
+    public Article(Guid id, string title, string content, DateTime dateCreated, string headerImage, Guid authorId, List<string> tags, bool isPremium)
     {
         Id = id;
         Title = title;
@@ -11,6 +15,7 @@ public class Article
         HeaderImage = headerImage;
         AuthorId = authorId;
         Tags = tags;
+        IsPremium = isPremium;
     }
 
     public Guid Id { get; private set; }
@@ -20,4 +25,33 @@ public class Article
     public DateTime DateCreated { get; set; }
     public Guid AuthorId { get; set; }
     public List<string> Tags { get; set; }
+    public bool IsPremium { get; set; }
+
+    public OneOf<bool, List<DomainError>> CanBeAccessedBy(User user) {
+        if (!IsPremium)
+        {
+            return true;
+        }
+
+        if (user.IsAdmin)
+        {
+            return true;
+        }
+
+        if (user.Subscriptions.Any(subscription => subscription.ExpirationDate < DateTime.Now))
+        {
+            return true;
+        }
+
+        var errors = new List<DomainError>
+        {
+            new DomainError(
+                message: "User does not have the permission to view this article.",
+                path: new List<string>() { "userId" },
+                code: "USER_NOT_ALLOWED"
+            )
+        };
+
+        return errors;
+    }
 }

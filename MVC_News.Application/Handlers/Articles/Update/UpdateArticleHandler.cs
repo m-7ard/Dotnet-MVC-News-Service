@@ -6,7 +6,7 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers.Articles.Update;
 
-public class UpdateArticleHandler : IRequestHandler<UpdateArticleCommand, OneOf<UpdateArticleResult, List<PlainApplicationError>>>
+public class UpdateArticleHandler : IRequestHandler<UpdateArticleCommand, OneOf<UpdateArticleResult, List<ApplicationError>>>
 {
     private readonly IArticleRepository _articleRepository;
     private readonly IUserRepository _userRepository;
@@ -17,16 +17,16 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleCommand, OneOf<
         _userRepository = userRepository;
     }
 
-    public async Task<OneOf<UpdateArticleResult, List<PlainApplicationError>>> Handle(UpdateArticleCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<UpdateArticleResult, List<ApplicationError>>> Handle(UpdateArticleCommand request, CancellationToken cancellationToken)
     {
         var article = await _articleRepository.GetByIdAsync(request.Id);
         if (article is null)
         {
-            return new List<PlainApplicationError>()
+            return new List<ApplicationError>()
             {
-                new PlainApplicationError(
+                new ApplicationError(
                     message: $"Article of id \"{request.Id}\" does not exist.",
-                    fieldName: "_",
+                    path: ["_"],
                     code: ApplicationErrorCodes.ModelDoesNotExist
                 )
             };
@@ -35,11 +35,11 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleCommand, OneOf<
         var user = await _userRepository.GetUserById(request.AuthorId);
         if (user is null)
         {
-            return new List<PlainApplicationError>()
+            return new List<ApplicationError>()
             {
-                new PlainApplicationError(
+                new ApplicationError(
                     message: $"User of id \"{request.Id}\" does not exist.",
-                    fieldName: "_",
+                    path: ["_"],
                     code: ApplicationErrorCodes.ModelDoesNotExist
                 )
             };
@@ -47,11 +47,11 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleCommand, OneOf<
 
         if (!user.IsAdmin)
         {
-            return new List<PlainApplicationError>()
+            return new List<ApplicationError>()
             {
-                new PlainApplicationError(
+                new ApplicationError(
                     message: $"User is not authorised to update articles.",
-                    fieldName: "_",
+                    path: ["_"],
                     code: ApplicationErrorCodes.NotAllowed
                 )
             };
@@ -64,7 +64,8 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleCommand, OneOf<
             headerImage: request.HeaderImage,
             dateCreated: article.DateCreated,
             authorId: article.AuthorId,
-            tags: request.Tags
+            tags: request.Tags,
+            isPremium: request.IsPremium
         );
         await _articleRepository.UpdateAsync(updatedArticle);
 

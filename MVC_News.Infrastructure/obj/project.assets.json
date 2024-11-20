@@ -1009,6 +1009,9 @@
       "MVC_News.Domain/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "OneOf": "3.0.271"
+        },
         "compile": {
           "bin/placeholder/MVC_News.Domain.dll": {}
         },

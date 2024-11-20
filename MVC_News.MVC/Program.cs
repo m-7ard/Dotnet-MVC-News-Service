@@ -41,6 +41,7 @@ builder.Services.AddDirectoryBrowser(); // For media
 
 builder.Services.AddControllersWithViews(options =>
 {
+    options.Filters.Add<ControllerExceptionFilter>();
     options.Filters.Add<GlobalDataInjectorFilter>();
 });
 
@@ -151,7 +152,7 @@ using (var scope = app.Services.CreateScope())
     var repo = localService.GetRequiredService<IUserRepository>();
     var hasher = localService.GetRequiredService<IPasswordHasher>();
     await repo.CreateAsync(
-        UserFactory.BuildNew("admin@mail.com", hasher.Hash("adminword"), "admin", true)
+        UserFactory.BuildNew("admin@mail.com", hasher.Hash("adminword"), "admin", true, [])
     );
 }
 ///

@@ -7,7 +7,7 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers.Users.Register;
 
-public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, OneOf<RegisterUserResult, List<PlainApplicationError>>>
+public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, OneOf<RegisterUserResult, List<ApplicationError>>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
@@ -18,16 +18,16 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, OneOf<Re
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<OneOf<RegisterUserResult, List<PlainApplicationError>>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<RegisterUserResult, List<ApplicationError>>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
         var existingUser = await _userRepository.GetUserByEmailAsync(request.Email);
         if (existingUser is not null)
         {
-            return new List<PlainApplicationError>()
+            return new List<ApplicationError>()
             {
-                new PlainApplicationError(
+                new ApplicationError(
                     message: $"User with email \"{request.Email}\" already exists.",
-                    fieldName: "Email",
+                    path: ["Email"],
                     code: ApplicationErrorCodes.ModelAlreadyExists
                 )
             };
@@ -38,7 +38,8 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, OneOf<Re
                 email: request.Email,
                 passwordHash: _passwordHasher.Hash(request.Password),
                 displayName: request.DisplayName,
-                isAdmin: false
+                isAdmin: false,
+                subscriptions: []
             )
         );
 

@@ -4,7 +4,7 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers.Articles.List;
 
-public class ListArticlesQuery : IRequest<OneOf<ListArticlesResult, List<PlainApplicationError>>>
+public class ListArticlesQuery : IRequest<OneOf<ListArticlesResult, List<ApplicationError>>>
 {
     public ListArticlesQuery(Guid? authorId, DateTime? createdAfter, DateTime? createdBefore, string? orderBy, int? limitBy)
     {

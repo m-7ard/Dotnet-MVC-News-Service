@@ -56,18 +56,17 @@
     @apply px-4 py-4 gap-y-4 max-w-72 sm:max-w-prose;
   }
   .mixin-checkbox-like {
-    @apply cursor-pointer relative rounded-full;
+    @apply cursor-pointer relative w-fit;
   }
   .mixin-checkbox-like [data-role=inner-part] {
     @apply after:content-["."]
                 after:flex
                 after:opacity-0
                 after:aspect-square
-                after:h-2
-                after:w-2
+                after:h-4
+                after:w-4
                 after:pointer-events-none
-                transition-colors
-                rounded-full;
+                transition-colors;
   }
   .mixin-checkbox-like > input {
     @apply absolute

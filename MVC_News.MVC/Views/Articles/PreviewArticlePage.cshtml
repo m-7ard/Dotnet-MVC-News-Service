@@ -5,6 +5,8 @@
 @model PreviewArticlePageModel;
 @{
     ViewData["Title"] = Model.Article.Title;
+    Console.WriteLine("0000000000000000000000000000000000000000000000");
+    Console.WriteLine(Model.Article.IsPremium);
 }
 
 <div class="mixin-page-like mixin-page-base mixin-content-grid">
@@ -12,7 +14,16 @@
         <input hidden name="headerImage" value="@Model.Article.HeaderImage">
         <input hidden name="title" value="@Model.Article.Title">
         <textarea name="content" class="whitespace-pre-wrap" hidden>@Model.Article.Content</textarea>
-        
+        @if (Model.Article.IsPremium)
+        {
+            <input hidden name="isPremium" value="true"/>
+        }
+        else
+        {
+            <input hidden name="isPremium" value="false"/>
+        }
+
+
         <!-- Empty hidden input so the value is sent as a list -->
         <input hidden name="tags" />
         @foreach (var tag in Model.Article.Tags)

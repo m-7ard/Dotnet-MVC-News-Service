@@ -59,6 +59,17 @@
                     value: Model.Tags
                 )
             ))
+
+            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                label: "Is a Premium Article?",
+                errors: null,
+                partialRoute: "Reusables/_CheckboxField",
+                partialProps: new CheckboxFieldPartialViewModel(
+                    name: "isPremium",
+                    value: Model.IsPremium
+                ),
+                isRow: true
+            ))
             <footer class="flex flex-row gap-[inherit]">
                 <button type="submit" formmethod="POST" formaction="/articles/@Model.Id/update/preview" class="mixin-button-like mixin-button-base theme-button-generic-white ml-auto">
                     Preview

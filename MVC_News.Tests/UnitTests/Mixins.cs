@@ -11,7 +11,8 @@ public class Mixins
             email: $"user_{seed}@mail.com",
             passwordHash: $"user_{seed}_passwordHash",
             displayName: $"user_{seed}",
-            isAdmin: isAdmin
+            isAdmin: isAdmin,
+            subscriptions: []
         );
 
         return user;

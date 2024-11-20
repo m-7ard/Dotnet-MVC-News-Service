@@ -4,9 +4,9 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers.Articles.Create;
 
-public class CreateArticleCommand : IRequest<OneOf<CreateArticleResult, List<PlainApplicationError>>>
+public class CreateArticleCommand : IRequest<OneOf<CreateArticleResult, List<ApplicationError>>>
 {
-    public CreateArticleCommand(Guid id, string title, string content, Guid authorId, string headerImage, List<string> tags)
+    public CreateArticleCommand(Guid id, string title, string content, Guid authorId, string headerImage, List<string> tags, bool isPremium)
     {
         Id = id;
         Title = title;
@@ -14,6 +14,7 @@ public class CreateArticleCommand : IRequest<OneOf<CreateArticleResult, List<Pla
         AuthorId = authorId;
         HeaderImage = headerImage;
         Tags = tags;
+        IsPremium = isPremium;
     }
 
     public Guid Id { get; }
@@ -22,4 +23,5 @@ public class CreateArticleCommand : IRequest<OneOf<CreateArticleResult, List<Pla
     public string HeaderImage { get; }
     public Guid AuthorId { get; }
     public List<string> Tags { get; }
+    public bool IsPremium { get; }
 }

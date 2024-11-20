@@ -6,7 +6,7 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers.Articles.List;
 
-public class ListArticlesHandler : IRequestHandler<ListArticlesQuery, OneOf<ListArticlesResult, List<PlainApplicationError>>>
+public class ListArticlesHandler : IRequestHandler<ListArticlesQuery, OneOf<ListArticlesResult, List<ApplicationError>>>
 {
     private readonly IArticleRepository _articleRepository;
     private readonly List<int> _allowedLimitBy = [24, 48, 72];
@@ -16,7 +16,7 @@ public class ListArticlesHandler : IRequestHandler<ListArticlesQuery, OneOf<List
         _articleRepository = articleRepository;
     }
 
-    public async Task<OneOf<ListArticlesResult, List<PlainApplicationError>>> Handle(ListArticlesQuery request, CancellationToken cancellationToken)
+    public async Task<OneOf<ListArticlesResult, List<ApplicationError>>> Handle(ListArticlesQuery request, CancellationToken cancellationToken)
     {
         Tuple<string, bool>? orderBy = new Tuple<string, bool>("DateCreated", false);
         if (request.OrderBy == "newest")

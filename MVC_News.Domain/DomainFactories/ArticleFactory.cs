@@ -4,7 +4,7 @@ namespace MVC_News.Domain.DomainFactories;
 
 public class ArticleFactory
 {
-    public static Article BuildExisting(Guid id, string title, string content, string headerImage, DateTime dateCreated, Guid authorId, List<string> tags)
+    public static Article BuildExisting(Guid id, string title, string content, string headerImage, DateTime dateCreated, Guid authorId, List<string> tags, bool isPremium)
     {
         return new Article(
             id: id,
@@ -13,11 +13,12 @@ public class ArticleFactory
             headerImage: headerImage,
             dateCreated: dateCreated,
             authorId: authorId,
-            tags: tags
+            tags: tags,
+            isPremium: isPremium
         );
     }
 
-    public static Article BuildNew(Guid id, string title, string content, string headerImage, Guid authorId, List<string> tags)
+    public static Article BuildNew(Guid id, string title, string content, string headerImage, Guid authorId, List<string> tags, bool isPremium)
     {
         return new Article(
             id: id,
@@ -26,7 +27,8 @@ public class ArticleFactory
             headerImage: headerImage,
             dateCreated: new DateTime(),
             authorId: authorId,
-            tags: tags
+            tags: tags,
+            isPremium: isPremium
         );
     }
 }

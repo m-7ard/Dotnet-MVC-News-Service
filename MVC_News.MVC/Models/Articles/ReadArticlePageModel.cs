@@ -1,15 +1,15 @@
-using MVC_News.Domain.Entities;
+using MVC_News.MVC.DTOs.Models;
 
 namespace MVC_News.MVC.Models.Articles;
 
 public class ReadArticlePageModel : BaseViewModel
 {
-    public ReadArticlePageModel(Article article, string markup)
+    public ReadArticlePageModel(ArticleDTO article, string markup)
     {
         Article = article;
         Markup = markup;
     }
 
-    public Article Article { get; }
+    public ArticleDTO Article { get; }
     public string Markup { get; }
 }

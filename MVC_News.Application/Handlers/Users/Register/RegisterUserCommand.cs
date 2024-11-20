@@ -4,7 +4,7 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers.Users.Register;
 
-public class RegisterUserCommand : IRequest<OneOf<RegisterUserResult, List<PlainApplicationError>>>
+public class RegisterUserCommand : IRequest<OneOf<RegisterUserResult, List<ApplicationError>>>
 {
     public RegisterUserCommand(string email, string password, string displayName)
     {

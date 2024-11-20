@@ -6,7 +6,7 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers.Articles.Create;
 
-public class CreateArticleHandler : IRequestHandler<CreateArticleCommand, OneOf<CreateArticleResult, List<PlainApplicationError>>>
+public class CreateArticleHandler : IRequestHandler<CreateArticleCommand, OneOf<CreateArticleResult, List<ApplicationError>>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IArticleRepository _articleRepository;
@@ -17,16 +17,16 @@ public class CreateArticleHandler : IRequestHandler<CreateArticleCommand, OneOf<
         _articleRepository = articleRepository;
     }
 
-    public async Task<OneOf<CreateArticleResult, List<PlainApplicationError>>> Handle(CreateArticleCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<CreateArticleResult, List<ApplicationError>>> Handle(CreateArticleCommand request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetUserById(request.AuthorId);
         if (user is null)
         {
-            return new List<PlainApplicationError>()
+            return new List<ApplicationError>()
             {
-                new PlainApplicationError(
+                new ApplicationError(
                     message: $"User of id \"{request.Id}\" does not exist.",
-                    fieldName: "_",
+                    path: ["_"],
                     code: ApplicationErrorCodes.ModelDoesNotExist
                 )
             };
@@ -34,11 +34,11 @@ public class CreateArticleHandler : IRequestHandler<CreateArticleCommand, OneOf<
 
         if (!user.IsAdmin)
         {
-            return new List<PlainApplicationError>()
+            return new List<ApplicationError>()
             {
-                new PlainApplicationError(
+                new ApplicationError(
                     message: $"User is not authorised to create articles.",
-                    fieldName: "_",
+                    path: ["_"],
                     code: ApplicationErrorCodes.NotAllowed
                 )
             };
@@ -51,7 +51,8 @@ public class CreateArticleHandler : IRequestHandler<CreateArticleCommand, OneOf<
                 content: request.Content,
                 headerImage: request.HeaderImage,
                 authorId: request.AuthorId,
-                tags: request.Tags
+                tags: request.Tags,
+                isPremium: request.IsPremium
             )
         );
 

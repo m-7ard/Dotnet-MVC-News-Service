@@ -4,7 +4,7 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers.Users.Login;
 
-public class LoginUserQuery : IRequest<OneOf<LoginUserResult, List<PlainApplicationError>>>
+public class LoginUserQuery : IRequest<OneOf<LoginUserResult, List<ApplicationError>>>
 {
     public LoginUserQuery(string email, string password)
     {

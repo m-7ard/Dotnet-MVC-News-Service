@@ -1,24 +1,52 @@
 @using MVC_News.MVC.Models.Partials
 @model FormFieldVPartialiewModel;
 
-<div class="flex flex-col gap-1">
-    <div class="text-sm text-black">
-        @Model.Label
-    </div>
-    <partial name=@Model.PartialRoute model=@Model.PartialProps />
-    @if (Model.Errors is null)
-    {
-
-    }
-    else
-    {
-        <div class="text-xs text-red-800">
-            @for (var i = 0; i < Model.Errors.Count; i++)
-            {
-                <div>
-                    &#8226 @Model.Errors[i]
-                </div>
-            }
+@if (Model.IsRow)
+{
+    <div class="flex flex-col gap-1">
+        <div class="flex flex-row gap-2 items-center">
+            <div class="text-sm text-black leading-none">
+                @Model.Label
+            </div>
+            <partial name=@Model.PartialRoute model=@Model.PartialProps />
         </div>
-    }
-</div>
+        @if (Model.Errors is null)
+        {
+
+        }
+        else
+        {
+            <div class="text-xs text-red-800">
+                @for (var i = 0; i < Model.Errors.Count; i++)
+                {
+                    <div>
+                        &#8226 @Model.Errors[i]
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}
+else{
+    <div class="flex flex-col gap-1">
+        <div class="text-sm text-black">
+            @Model.Label
+        </div>
+        <partial name=@Model.PartialRoute model=@Model.PartialProps />
+        @if (Model.Errors is null)
+        {
+
+        }
+        else
+        {
+            <div class="text-xs text-red-800">
+                @for (var i = 0; i < Model.Errors.Count; i++)
+                {
+                    <div>
+                        &#8226 @Model.Errors[i]
+                    </div>
+                }
+            </div>
+        }
+    </div>
+}

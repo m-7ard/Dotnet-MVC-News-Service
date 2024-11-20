@@ -14,7 +14,8 @@ public class DtoModelService
             headerImage: article.HeaderImage,
             dateCreated: article.DateCreated,
             author: CreateAuthorDTO(author),
-            tags: article.Tags
+            tags: article.Tags,
+            isPremium: article.IsPremium
         );
     }
 

@@ -6,7 +6,7 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers.Users.Login;
 
-public class LoginUserHandler : IRequestHandler<LoginUserQuery, OneOf<LoginUserResult, List<PlainApplicationError>>>
+public class LoginUserHandler : IRequestHandler<LoginUserQuery, OneOf<LoginUserResult, List<ApplicationError>>>
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
@@ -17,16 +17,16 @@ public class LoginUserHandler : IRequestHandler<LoginUserQuery, OneOf<LoginUserR
         _passwordHasher = passwordHasher;
     }
 
-    public async Task<OneOf<LoginUserResult, List<PlainApplicationError>>> Handle(LoginUserQuery request, CancellationToken cancellationToken)
+    public async Task<OneOf<LoginUserResult, List<ApplicationError>>> Handle(LoginUserQuery request, CancellationToken cancellationToken)
     {
         var user = await _userRepository.GetUserByEmailAsync(request.Email);
         if (user is null)
         {
-            return new List<PlainApplicationError>()
+            return new List<ApplicationError>()
             {
-                new PlainApplicationError(
+                new ApplicationError(
                     message: $"Email or Password is incorrect.",
-                    fieldName: "_",
+                    path: ["_"],
                     code: ApplicationErrorCodes.Custom
                 )
             };
@@ -34,11 +34,11 @@ public class LoginUserHandler : IRequestHandler<LoginUserQuery, OneOf<LoginUserR
 
         if (_passwordHasher.Verify(user.PasswordHash, request.Password) is false)
         {
-            return new List<PlainApplicationError>()
+            return new List<ApplicationError>()
             {
-                new PlainApplicationError(
+                new ApplicationError(
                     message: $"Email or Password is incorrect.",
-                    fieldName: "_",
+                    path: ["_"],
                     code: ApplicationErrorCodes.Custom
                 )
             };

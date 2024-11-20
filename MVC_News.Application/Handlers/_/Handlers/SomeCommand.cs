@@ -4,6 +4,6 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers._.Handlers;
 
-public class SomeCommand : IRequest<OneOf<SomeResult, List<PlainApplicationError>>>
+public class SomeCommand : IRequest<OneOf<SomeResult, List<ApplicationError>>>
 {
 }

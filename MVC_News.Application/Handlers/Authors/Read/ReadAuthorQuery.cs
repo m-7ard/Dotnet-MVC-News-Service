@@ -4,7 +4,7 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers.Authors.Read;
 
-public class ReadAuthorQuery : IRequest<OneOf<ReadAuthorResult, List<PlainApplicationError>>>
+public class ReadAuthorQuery : IRequest<OneOf<ReadAuthorResult, List<ApplicationError>>>
 {
     public ReadAuthorQuery(Guid id)
     {

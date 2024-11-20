@@ -16,4 +16,7 @@ public class UserDbEntity
     public string PasswordHash { get; set; }
     public string DisplayName { get; set; }
     public bool IsAdmin { get; set; }
+    
+    // Subscription RFK
+    public List<SubscriptionDbEntity> Subscriptions { get; set; } = [];
 }

@@ -68,7 +68,7 @@ public class UsersController : Controller
             return View(new LoginPageModel(
                 email: request.Email,
                 password: request.Password,
-                errors: PlainMvcErrorHandlingService.FluentToApiErrors(validation.Errors)
+                errors: PlainMvcErrorFactory.FluentToApiErrors(validation.Errors)
             ));
         }
 
@@ -85,7 +85,7 @@ public class UsersController : Controller
             return View(new LoginPageModel(
                 email: request.Email,
                 password: request.Password,
-                errors: PlainMvcErrorHandlingService.TranslateServiceErrors(errors)
+                errors: PlainMvcErrorFactory.TranslateServiceErrors(errors)
             ));
         }
 
@@ -118,7 +118,7 @@ public class UsersController : Controller
                 email: request.Email,
                 password: request.Password,
                 displayName: request.DisplayName,
-                errors: PlainMvcErrorHandlingService.FluentToApiErrors(validation.Errors)
+                errors: PlainMvcErrorFactory.FluentToApiErrors(validation.Errors)
             ));
         }
 
@@ -137,7 +137,7 @@ public class UsersController : Controller
                 email: request.Email,
                 password: request.Password,
                 displayName: request.DisplayName,
-                errors: PlainMvcErrorHandlingService.TranslateServiceErrors(errors)
+                errors: PlainMvcErrorFactory.TranslateServiceErrors(errors)
             ));
         }
 

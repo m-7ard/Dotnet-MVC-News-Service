@@ -78,18 +78,17 @@
     }
 
     .mixin-checkbox-like {
-        @apply cursor-pointer relative rounded-full;
+        @apply cursor-pointer relative  w-fit;
 
         [data-role="inner-part"] {
             @apply after:content-['.'] 
                 after:flex 
                 after:opacity-0
                 after:aspect-square
-                after:h-2
-                after:w-2
+                after:h-4
+                after:w-4
                 after:pointer-events-none
-                transition-colors 
-                rounded-full;
+                transition-colors;
         }
 
         > input {
@@ -122,7 +121,7 @@
         > [data-track] {
             @apply w-full mx-auto;
         }
-    
+
         > [data-track="full"] {
             @apply max-w-full;
         }

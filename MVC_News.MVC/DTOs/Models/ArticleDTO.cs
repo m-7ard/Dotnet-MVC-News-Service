@@ -2,7 +2,7 @@ namespace MVC_News.MVC.DTOs.Models;
 
 public class ArticleDTO
 {
-    public ArticleDTO(Guid id, string title, string content, string headerImage, DateTime dateCreated, AuthorDTO author, List<string> tags)
+    public ArticleDTO(Guid id, string title, string content, string headerImage, DateTime dateCreated, AuthorDTO author, List<string> tags, bool isPremium)
     {
         Id = id;
         Title = title;
@@ -11,6 +11,7 @@ public class ArticleDTO
         DateCreated = dateCreated;
         Author = author;
         Tags = tags;
+        IsPremium = isPremium;
     }
 
     public Guid Id { get; }
@@ -20,4 +21,5 @@ public class ArticleDTO
     public DateTime DateCreated { get; }
     public AuthorDTO Author { get; }
     public List<string> Tags { get; }
+    public bool IsPremium { get; }
 }
