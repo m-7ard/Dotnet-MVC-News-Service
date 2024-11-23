@@ -18,4 +18,14 @@ public class User
     public string DisplayName { get; set; }
     public bool IsAdmin { get; set; }
     public List<Subscription> Subscriptions { get; set; }
+
+    public bool HasActiveSubscription()
+    {
+        return Subscriptions.Any(sub => sub.ExpirationDate > DateTime.Now);
+    }
+
+    public Subscription? GetActiveSubscription()
+    {
+        return Subscriptions.Find(sub => sub.ExpirationDate > DateTime.Now);
+    }
 }

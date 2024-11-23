@@ -1,0 +1,69 @@
+@using MVC_Classifieds.Api.Models.Users
+@using MVC_News.MVC.Models.Partials
+
+@{
+    ViewData["Title"] = "Choose Subscription";
+}
+
+<div class="mixin-page-like mixin-page-base mixin-content-grid">
+    <div class="flex flex-col gap-4" data-track="base">
+        <header>
+            <div class="text-2xl font-bold">
+                Choose Subscription
+            </div>
+            <div class="text-sm text-gray-500">
+                A Subscription is Required to View Premium Content
+            </div>
+        </header>
+        <main class="grid sm:grid-cols-3 max-[445px]:grid-cols-1 grid-cols-2 gap-4">
+            <div class="flex flex-col gap-2 p-4 border border-gray-900">
+                <header class="text-bold">
+                    1 Month Subscription
+                </header>
+                <div class="font-bold">
+                    <span class="text-xl">
+                        20$
+                    </span> 
+                    <span class="text-base">
+                        Per Month
+                    </span>
+                </div>
+                <a class="mixin-button-like mixin-button-base theme-button-generic-yellow mt-auto ml-auto" href="/users/checkout-subscription/?duration=1">
+                    Choose
+                </a>
+            </div>
+            <div class="flex flex-col gap-2 p-4 border border-gray-900">
+                <header class="text-bold">
+                    6 Month Subscription
+                </header>
+                <div class="font-bold">
+                    <span class="text-xl">
+                        17$
+                    </span> 
+                    <span class="text-base">
+                        Per Month
+                    </span>
+                </div>
+                <a class="mixin-button-like mixin-button-base theme-button-generic-yellow mt-auto ml-auto" href="/users/checkout-subscription/?duration=2">
+                    Choose
+                </a>
+            </div>
+            <div class="flex flex-col gap-2 p-4 border border-gray-900">
+                <header class="text-bold">
+                    1 Year Subscription
+                </header>
+                <div class="font-bold">
+                    <span class="text-xl">
+                        12$
+                    </span> 
+                    <span class="text-base">
+                        Per Month
+                    </span>
+                </div>
+                <a class="mixin-button-like mixin-button-base theme-button-generic-yellow mt-auto ml-auto" href="/users/checkout-subscription/?duration=3">
+                    Choose
+                </a>
+            </div>
+        </main>
+    </div>
+</div>

@@ -13,7 +13,9 @@ public static class UserMapper
             passwordHash: source.PasswordHash,
             displayName: source.DisplayName,
             isAdmin: source.IsAdmin
-        );
+        ) {
+            Subscriptions = source.Subscriptions.Select(SubscriptionMapper.FromDomainToDbEntity).ToList()
+        };
     }
 
     public static User FromDbEntityToDomain(UserDbEntity source)

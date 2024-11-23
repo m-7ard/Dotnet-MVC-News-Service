@@ -26,14 +26,39 @@ public class UserRepository : IUserRepository
     {
         var dbEntity = UserMapper.FromDomainToDbEntity(user);
         _dbContext.Add(dbEntity);
+        /* Maybe: Persist the subscriptions over here also */
         await _dbContext.SaveChangesAsync();
         return UserMapper.FromDbEntityToDomain(dbEntity);
     }
     public async Task UpdateAsync(User user)
     {
-        var oldDbEntity = _dbContext.User.SingleAsync(d => d.Id == user.Id);
+        var oldDbEntity = await _dbContext.User.Include(d => d.Subscriptions).SingleAsync(d => d.Id == user.Id);
         var newDbEntity = UserMapper.FromDomainToDbEntity(user);
         _dbContext.Entry(oldDbEntity).CurrentValues.SetValues(newDbEntity);
+
+        var oldSubs = oldDbEntity.Subscriptions.ToDictionary(item => item.Id);
+        var updatedSubs = newDbEntity.Subscriptions.ToDictionary(item => item.Id);
+
+        foreach (var (id, oldSub) in oldSubs)
+        {
+            if (!updatedSubs.TryGetValue(id, out var updatedSub))
+            {
+                _dbContext.Subscription.Remove(oldSub);
+            }
+            else
+            {
+                _dbContext.Entry(oldSub).CurrentValues.SetValues(newDbEntity);
+            }
+        }
+
+        foreach (var (id, updatedSub) in updatedSubs)
+        {
+            if (!oldSubs.TryGetValue(id, out var newSub))
+            {
+                _dbContext.Subscription.Add(updatedSub);
+            }
+        }
+
         await _dbContext.SaveChangesAsync();
     }
 

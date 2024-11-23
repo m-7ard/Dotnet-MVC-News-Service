@@ -1,0 +1,112 @@
+@using MVC_Classifieds.Api.Models.Users
+@using MVC_News.MVC.Models.Partials
+@using MVC_News.MVC.Models.Users
+@using MVC_News.MVC.Helpers
+@model CheckoutSubscriptionPageModel;
+
+@{
+    ViewData["Title"] = "Checkout Subscription";
+
+    string timeLabel = null!;
+    string priceLabel = null!;
+
+    if (Model.Duration == 1)
+    {
+        timeLabel = "1 Month Subscription";
+        priceLabel = "20$ Per Month";
+    }
+
+    else if (Model.Duration == 2)
+    {
+        timeLabel = "6 Month Subscription";
+        priceLabel = "17$ Per Month";
+    }
+
+    else if (Model.Duration == 3)
+    {
+        timeLabel = "1 Year Subscription";
+        priceLabel = "12$ Per Month";
+    }
+}
+
+<div class="mixin-page-like mixin-page-base mixin-content-grid">
+    <div class="flex flex-col gap-4" data-track="base">
+        <header class="text-2xl">
+            Checkout Subscription
+        </header>
+        <div class="flex flex-col gap-2 p-4 border border-gray-900 bg-white">
+            <header class="text-bold">
+                @timeLabel
+            </header>
+            <div class="font-bold">
+                <span class="text-xl">
+                    @priceLabel
+                </span> 
+            </div>
+        </div>
+        <form class="flex flex-col gap-2" action="/users/checkout-subscription" method="post">
+            <input hidden name="duration" value="@Model.Duration" />
+            @await Html.PartialAsync("Reusables/_FormErrors", Model.Errors.TryGetValue("_", out var formErrors) ? formErrors : null)
+            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                label: "Dummy First Name",
+                errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "FirstName"),
+                partialRoute: "Reusables/_CharField",
+                partialProps: new CharFieldPartialViewModel(
+                    value: "",
+                    name: "firstName",
+                    inputAttrs: new Dictionary<string, string>()
+                    {
+                        { "type", "text" }
+                    }
+                )
+            ))
+            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                label: "Dummy Last Name",
+                errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "LastName"),
+                partialRoute: "Reusables/_CharField",
+                partialProps: new CharFieldPartialViewModel(
+                    value: "",
+                    name: "lastName",
+                    inputAttrs: new Dictionary<string, string>()
+                    {
+                        { "type", "text" }
+                    }
+                )
+            ))
+            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                label: "Dummy Street",
+                errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "Street"),
+                partialRoute: "Reusables/_CharField",
+                partialProps: new CharFieldPartialViewModel(
+                    value: "",
+                    name: "street",
+                    inputAttrs: new Dictionary<string, string>()
+                    {
+                        { "type", "text" }
+                    }
+                )
+            ))
+            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                label: "Dummy Zip",
+                errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "Zip"),
+                partialRoute: "Reusables/_CharField",
+                partialProps: new CharFieldPartialViewModel(
+                    value: "",
+                    name: "zip",
+                    inputAttrs: new Dictionary<string, string>()
+                    {
+                        { "type", "text" }
+                    }
+                )
+            ))
+            <footer class="flex flex-row gap-2 justify-end mt-2">
+                <button class="mixin-button-like mixin-button-base theme-button-generic-white" type="reset">
+                    Reset
+                </button>
+                <button class="mixin-button-like mixin-button-base theme-button-generic-green" type="submit">
+                    Checkout
+                </button>
+            </footer>
+        </form>
+    </div>
+</div>

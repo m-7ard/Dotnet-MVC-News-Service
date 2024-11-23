@@ -3,43 +3,44 @@
 @model FrontpagePageModel
 @{
     ViewData["Title"] = "Frontpage";
-    var smallArticleClass = "h-[250px]";
 }
 
 <div class="mixin-page-like mixin-page-base mixin-content-grid grow">
     <header class="flex flex-col gap-4 p-4" data-track="full">
-        @if (Model.MainArticles[0] is not null)
+        @for (var i = 0; i < Model.MainArticles.Count(); i++)
         {
-            <section class="flex flex-row max-md:flex-col gap-4 grow">
-                <a href="/articles/@Model.MainArticles[0]!.Id" class="w-full grow border border-gray-900 h-72">
+            <section class="flex flex-row max-md:flex-col grow max-md:divide-y md:divide-x divide-gray-900 border border-gray-900">
+                <a href="/articles/@Model.MainArticles[i].Id" class="w-full grow h-72 aspect-square">
                     @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
                         className: "w-full h-full",
-                        src: Model.MainArticles[0]!.HeaderImage
+                        src: Model.MainArticles[i].HeaderImage
                     ))
                 </a>
-                <div class="flex flex-col gap-4 overflow-hidden p-4 border border-gray-900">
-                    <a class="text-2xl font-bold line-clamp-2 hover:underline" href="/articles/@Model.MainArticles[0]!.Id">
-                        @Model.MainArticles[0]!.Title
-                    </a>
-                    <div class="flex flex-row overflow-hidden justify-between">
-                        <div class="text-xs truncate">
-                            @Model.MainArticles[0]!.Author.DisplayName
-                        </div>
-                        <div class="text-xs text-gray-500 truncate">
-                            @Model.MainArticles[0]!.DateCreated
+                <div class="flex flex-col gap-4 overflow-hidden p-4">
+                    <div>
+                        <a class="text-2xl font-bold line-clamp-2 hover:underline" href="/articles/@Model.MainArticles[i].Id">
+                            @Model.MainArticles[i].Title
+                        </a>
+                        <div class="flex flex-row overflow-hidden justify-between">
+                            <div class="text-xs truncate">
+                                @Model.MainArticles[i].Author.DisplayName
+                            </div>
+                            <div class="text-xs text-gray-500 truncate">
+                                @Model.MainArticles[i].DateCreated
+                            </div>
                         </div>
                     </div>
                     <div class="text-base overflow-hidden">
                         <div class="line-clamp-5 max-h-[5lh]">
-                            re:publica 25 will take place from 26-28 May 2025 at STATION Berlin. The motto for next years’
+                            re:publica 25 will take place from 26-28 May 2025 at STATION Berlin. The motto for next years
                             festival for the digital society is “Generation XYZ”. The programme will once again bring the
                             most important topics relating to the internet, its communities and the opportunities and
                             challenges that lie in the digitalization of society to the stages. Join us!
                         </div>
                     </div>
-                    <div class="mixin-button-like mixin-button-base theme-button-generic-white justify-center mt-auto">
+                    <a class="mixin-button-like mixin-button-base theme-button-generic-white justify-center mt-auto"  href="/articles/@Model.MainArticles[i].Id">
                         Keep Reading
-                    </div>
+                    </a>
                 </div>
             </section>
         }
@@ -51,14 +52,14 @@
                 New Arrivals
             </div>
         </header>
-        <ol class="grid grid-cols-2 gap-4">
+        <ol class="grid min-[445px]:grid-cols-2 grid-cols-1 gap-4">
             @foreach (var article in Model.NewestArticles)
             {
-                <li class="flex flex-col gap-2 grow overflow-hidden @smallArticleClass">
+                <li class="flex flex-col gap-2 grow overflow-hidden">
                     @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
-                             className: "w-full grow border border-gray-900",
-                             src: article.HeaderImage
-                             ))
+                        className: "w-full aspect-[16/9] grow border border-gray-900",
+                        src: article.HeaderImage
+                    ))
                     <div class="overflow-hidden">
                         <div class="text-xl font-bold line-clamp-2">
                             @article.Title

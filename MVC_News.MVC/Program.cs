@@ -28,10 +28,13 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
         options.SlidingExpiration = true;
-        options.AccessDeniedPath = "/login/";
+        options.AccessDeniedPath = "/unauthorised/";
         options.LoginPath = "/login/";
     });
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("Admin"));
+});
 builder.Services.AddDirectoryBrowser(); // For media
 
 ///

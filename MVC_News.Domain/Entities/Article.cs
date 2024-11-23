@@ -38,7 +38,7 @@ public class Article
             return true;
         }
 
-        if (user.Subscriptions.Any(subscription => subscription.ExpirationDate < DateTime.Now))
+        if (user.HasActiveSubscription())
         {
             return true;
         }
@@ -48,7 +48,7 @@ public class Article
             new DomainError(
                 message: "User does not have the permission to view this article.",
                 path: new List<string>() { "userId" },
-                code: "USER_NOT_ALLOWED"
+                code: ArticleDomainErrorsCodes.UserNotAllowed
             )
         };
 

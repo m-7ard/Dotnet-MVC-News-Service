@@ -4,7 +4,7 @@ using OneOf;
 
 namespace MVC_News.Application.Handlers._.Handlers;
 
-public class SomeHandler : IRequestHandler<SomeCommand, OneOf<SomeResult, List<ApplicationError>>>
+public class SomeHandler : IRequestHandler<SomeCommand, OneOf<CreateSubscriptionResult, List<ApplicationError>>>
 {
     // private readonly IProductHistoryRepository _productHistoryRepository;
 
@@ -12,7 +12,7 @@ public class SomeHandler : IRequestHandler<SomeCommand, OneOf<SomeResult, List<A
     {
     }
 
-    public async Task<OneOf<SomeResult, List<ApplicationError>>> Handle(SomeCommand request, CancellationToken cancellationToken)
+    public async Task<OneOf<CreateSubscriptionResult, List<ApplicationError>>> Handle(SomeCommand request, CancellationToken cancellationToken)
     {
         await Task.CompletedTask;
         throw new NotImplementedException();

@@ -12,34 +12,43 @@
 <body class="flex flex-col bg-orange-50">
     <header class="flex flex-col shrink-0 bg-orange-50 border-b border-gray-900 divide-y divide-gray-900 overflow-hidden">
         <div class="px-4 py-2 gap-2 overflow-x-auto">
-            <div class="flex flex-row max-w-[1000px] w-full mx-auto gap-2">
-                <button type="button" class="mixin-button-like mixin-button-sm theme-button-generic-white gap-2 shrink-0">
-                    <div>Menu</div>
-                    <div>☰</div>
-                </button>
-                <a href="/" class="mixin-button-like mixin-button-sm theme-button-generic-white gap-2 shrink-0">
-                    <div>Home</div>
-                    <div>🏠︎</div>
-                </a>
-                @if (!User.Identity!.IsAuthenticated)
-                {
-                    <a href="/register" class="mixin-button-like mixin-button-sm theme-button-generic-yellow ml-auto shrink-0">
-                        Register
+            <div class="flex flex-row max-w-[1000px] w-full mx-auto gap-2 justify-between">
+                <ol class="flex flex-row gap-[inherit]">
+                    <button type="button" class="mixin-button-like mixin-button-sm theme-button-generic-white gap-2 shrink-0">
+                        <div>Menu</div>
+                        <div>☰</div>
+                    </button>
+                    <a href="/" class="mixin-button-like mixin-button-sm theme-button-generic-white gap-2 shrink-0">
+                        <div>Home</div>
+                        <div>🏠︎</div>
                     </a>
-                    <a href="/login" class="mixin-button-like mixin-button-sm theme-button-generic-yellow shrink-0">
-                        Login
-                    </a>
-                }
-                else
-                {
-                
-                    <a href="/articles" class="mixin-button-like mixin-button-sm theme-button-generic-yellow ml-auto shrink-0">
-                        Manage Content
-                    </a>
-                    <a href="/logout" class="mixin-button-like mixin-button-sm theme-button-generic-red shrink-0">
-                        Logout
-                    </a>
-                }
+                </ol>
+                <ol class="flex flex-row gap-[inherit]">
+                    @if (!User.Identity!.IsAuthenticated)
+                    {
+                        <a href="/register" class="mixin-button-like mixin-button-sm theme-button-generic-yellow shrink-0">
+                            Register
+                        </a>
+                        <a href="/login" class="mixin-button-like mixin-button-sm theme-button-generic-yellow shrink-0">
+                            Login
+                        </a>
+                    }
+                    else
+                    {
+                        <a href="/users/account" class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                            <div>User</div>
+                        </a>
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <a href="/articles" class="mixin-button-like mixin-button-sm theme-button-generic-yellow shrink-0">
+                                Manage Content
+                            </a>
+                        }
+                        <a href="/logout" class="mixin-button-like mixin-button-sm theme-button-generic-red shrink-0">
+                            Logout
+                        </a>
+                    }
+                </ol>
             </div>
         </div>
         <div class="px-4 py-2 gap-2 overflow-x-auto">

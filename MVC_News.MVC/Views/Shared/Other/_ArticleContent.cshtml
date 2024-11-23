@@ -1,0 +1,33 @@
+@using MVC_News.MVC.Models.Partials
+@model ArticleContentPartialViewModel
+
+<div class="mixin-article-any">
+    <header>
+        <h1>
+            @Model.Article.Title
+        </h1>
+        <div class="flex flex-row overflow-hidden justify-between">
+            <div class="text-xs truncate">
+                @Model.Article.Author.DisplayName
+            </div>
+            <div class="text-xs text-gray-500 truncate">
+                @Model.Article.DateCreated
+            </div>
+        </div>
+        @if (Model.Article.IsPremium)
+        {
+            <div class="mixin-button-like mixin-button-sm theme-button-generic-yellow w-fit">
+                Premium Article
+            </div>
+        }
+    </header>
+    @Html.Raw(Model.Markup)
+</div>
+<footer class="flex flex-row gap-1 flex-wrap p-1 bg-gray-200 border border-gray-900">
+    @foreach (var tag in Model.Article.Tags)
+    {
+        <a class="mixin-button-like mixin-button-base theme-button-generic-white">
+            @tag
+        </a>
+    }
+</footer>

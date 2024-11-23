@@ -1,0 +1,75 @@
+@using MVC_Classifieds.Api.Models.Users
+@using MVC_News.MVC.Models.Partials
+@using MVC_News.MVC.Models.Users
+@model UserAccountPageModel;
+
+@{
+    ViewData["Title"] = "User Account";
+}
+
+<div class="mixin-page-like mixin-page-base mixin-content-grid">
+    <div class="flex flex-col gap-4" data-track="base">
+        <header class="text-2xl">
+            User Account
+        </header>
+        <main class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-2 border border-gray-900 p-4 bg-white">
+                <header class="font-bold">
+                    User Information
+                </header>
+                <div>
+                    <div class="text-sm font-bold">
+                        Email
+                    </div>
+                    <div class="text-sm">
+                        @Model.User.Email
+                    </div>
+                </div>
+                <div>
+                    <div class="text-sm font-bold">
+                        Display Name
+                    </div>
+                    <div class="text-sm">
+                        @Model.User.DisplayName
+                    </div>
+                </div>
+            </div>
+            <div class="flex flex-col gap-2 border border-gray-900 p-4 bg-white">
+                <header class="font-bold">
+                    Subscription
+                </header>
+                @if (Model.Subscription == null)
+                {
+                    <div class="text-sm">
+                        Currently Not Subscribed
+                    </div>
+                    <a class="mixin-button-like mixin-button-base theme-button-generic-yellow justify-center mt-auto" href="/users/choose-subscription">
+                        Choose Subscription
+                    </a>
+                }
+                else
+                {
+                    <div class="text-sm">
+                        Currently Subscribed
+                    </div>
+                    <div class="text-sm">
+                        <span class="font-bold">
+                            Start Date:
+                        </span>
+                        <span>
+                            @Model.Subscription.StartDate
+                        </span>
+                    </div>
+                    <div class="text-sm">
+                        <span class="font-bold">
+                            Expiry Date:
+                        </span>
+                        <span>
+                            @Model.Subscription.ExpirationDate
+                        </span>
+                    </div>
+                }
+            </div>
+        </main>
+    </div>
+</div>

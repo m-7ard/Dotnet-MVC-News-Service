@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Web;
 using FluentValidation;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
@@ -15,6 +16,7 @@ using MVC_News.Application.Handlers.Articles.Update;
 using MVC_News.Application.Handlers.Authors.Read;
 using MVC_News.Domain.DomainFactories;
 using MVC_News.Domain.Entities;
+using MVC_News.Domain.Errors;
 using MVC_News.MVC.DTOs.Contracts.Articles.Create;
 using MVC_News.MVC.DTOs.Contracts.Articles.List;
 using MVC_News.MVC.DTOs.Contracts.Articles.Preview;
@@ -28,11 +30,16 @@ using Sprache;
 
 namespace MVC_News.MVC.Controllers;
 
-public class ArticlesController : Controller
+public class ArticlesController : BaseController
 {
     private readonly ISender _mediator;
     private readonly IValidator<CreateArticleRequestDTO> _createArticleValidator;
     private readonly IValidator<UpdateArticleRequestDTO> _updateArticleValidator;
+
+    private List<string> ProcessRequestTags(List<string> tags)
+    {
+        return tags.Where(item => !string.IsNullOrEmpty(item)).ToList();
+    }
 
     private Guid TryReadArticleId(string? input)
     {
@@ -42,20 +49,6 @@ public class ArticlesController : Controller
         }
 
         return parsedArticleId;
-    }
-
-    private Guid TryReadUserIdFromClaims()
-    {
-        if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var parsedUserId)) {
-            throw new UnauthorizedException($"User ID is missing from claims.");
-        }
-
-        return parsedUserId;
-    }
-
-    private List<string> ProcessRequestTags(List<string> tags)
-    {
-        return tags.Where(item => !string.IsNullOrEmpty(item)).ToList();
     }
 
     public ArticlesController(ISender mediator, IValidator<CreateArticleRequestDTO> createArticleValidator, IValidator<UpdateArticleRequestDTO> updateArticleValidator)
@@ -99,21 +92,7 @@ public class ArticlesController : Controller
             articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
         }
 
-        List<ArticleDTO?> mainArticles = [];
-
-        var i = 0;
-        while (i < 3) {
-            if (articleDTOs.Count > i) 
-            {
-                mainArticles.Add(articleDTOs[i]);
-            }
-            else
-            {
-                mainArticles.Add(null);
-            }
-
-            i++;
-        } 
+        List<ArticleDTO> mainArticles = articleDTOs.Take(3).ToList();
 
         return View(new FrontpagePageModel(
             mainArticles: mainArticles,
@@ -126,6 +105,7 @@ public class ArticlesController : Controller
     //
     //
 
+    [Authorize(Roles = "Admin")]
     [HttpGet("/articles/create")]
     public IActionResult CreateArticlePage(
         [FromQuery] string? headerImage, 
@@ -144,6 +124,7 @@ public class ArticlesController : Controller
         ));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("/articles/create")]
     public async Task<IActionResult> CreateArticlePage([FromForm] CreateArticleRequestDTO request)
     {
@@ -200,6 +181,7 @@ public class ArticlesController : Controller
     //
     //
 
+    [Authorize(Roles = "Admin")]
     [HttpGet("/articles/{id}/update")]
     public async Task<IActionResult> UpdateArticlePage(
         string id,
@@ -237,6 +219,7 @@ public class ArticlesController : Controller
         ));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("/articles/{id}/update")]
     public async Task<IActionResult> UpdateArticlePage([FromForm] UpdateArticleRequestDTO request, string id)
     {
@@ -293,6 +276,7 @@ public class ArticlesController : Controller
     //
     //
 
+    [Authorize(Roles = "Admin")]
     [HttpGet("/articles")]
     public async Task<IActionResult> ListArticlesPage(
         [FromQuery] Guid? authorId, 
@@ -355,9 +339,20 @@ public class ArticlesController : Controller
         var result = await _mediator.Send(articleQuery);
         if (result.TryPickT1(out var articleErrors, out var articleValue))
         {
-            if (articleErrors.First().Code is ApplicationErrorCodes.ModelDoesNotExist)
+            var expectedError = articleErrors.First();
+            
+            if (expectedError.Code is ApplicationErrorCodes.ModelDoesNotExist)
             {
-                throw new NotFoundException(articleErrors.First().Message);
+                throw new NotFoundException(expectedError.Message);
+            }
+
+            if (expectedError.Code is ApplicationErrorCodes.DomainError)
+            {
+                var metadata = (ApplicationDomainErrorMetadata)expectedError.Metadata;
+                if (metadata.OriginalError.Code is ArticleDomainErrorsCodes.UserNotAllowed)
+                {
+                    return Redirect("/users/choose-subscription");
+                }
             }
 
             throw new InternalServerErrorException($"Something went wrong trying to read an article.");
@@ -390,6 +385,7 @@ public class ArticlesController : Controller
     //
     //
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("/articles/{id}/update/preview")]
     public async Task<IActionResult> PreviewUpdateArticlePage(string id, [FromForm] PreviewArticleRequestDTO request)
     {
@@ -431,6 +427,7 @@ public class ArticlesController : Controller
         ));
     }
 
+    [Authorize(Roles = "Admin")]
     [HttpPost("/articles/create/preview")]
     public async Task<IActionResult> PreviewCreateArticlePage([FromForm] PreviewArticleRequestDTO request)
     {

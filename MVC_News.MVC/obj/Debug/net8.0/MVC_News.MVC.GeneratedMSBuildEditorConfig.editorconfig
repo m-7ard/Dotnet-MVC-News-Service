@@ -58,6 +58,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Shared/Other/_ArticleContent.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXE90aGVyXF9BcnRpY2xlQ29udGVudC5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Shared/Other/_MarkupLegend.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXE90aGVyXF9NYXJrdXBMZWdlbmQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
@@ -94,12 +98,24 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Users/CheckoutSubscriptionPage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlcnNcQ2hlY2tvdXRTdWJzY3JpcHRpb25QYWdlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Users/ChooseSubscriptionPage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlcnNcQ2hvb3NlU3Vic2NyaXB0aW9uUGFnZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Users/LoginPage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlcnNcTG9naW5QYWdlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Users/RegisterPage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlcnNcUmVnaXN0ZXJQYWdlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Users/UserAccountPage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlcnNcVXNlckFjY291bnRQYWdlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/_ViewImports.cshtml]
