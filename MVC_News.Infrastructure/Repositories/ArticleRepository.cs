@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using MVC_News.Application.Contracts.Criteria;
 using MVC_News.Application.Interfaces.Repositories;
@@ -82,6 +83,13 @@ public class ArticleRepository : IArticleRepository
         }
 
         var articles = await query.ToListAsync();
+
+        // Done on the server due to JSON field usage
+        if (criteria.Tags is not null)
+        {
+            articles = articles.Where(article => article.Tags.Any(tag => criteria.Tags.Contains(tag))).ToList();
+        }
+
         return articles.Select(ArticleMapper.FromDbEntityToDomain).ToList();
     }
 }

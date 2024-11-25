@@ -1,3 +1,4 @@
+using System.Text.Json;
 using MediatR;
 using MVC_News.Application.Contracts.Criteria;
 using MVC_News.Application.Errors;
@@ -18,6 +19,14 @@ public class ListArticlesHandler : IRequestHandler<ListArticlesQuery, OneOf<List
 
     public async Task<OneOf<ListArticlesResult, List<ApplicationError>>> Handle(ListArticlesQuery request, CancellationToken cancellationToken)
     {
+        Console.WriteLine("---------------------------------");
+        Console.WriteLine("---------------------------------");
+        Console.WriteLine("---------------------------------");
+        Console.WriteLine("---------------------------------");
+        Console.WriteLine("---------------------------------");
+        Console.WriteLine(JsonSerializer.Serialize(request.Tags));
+
+        
         Tuple<string, bool>? orderBy = new Tuple<string, bool>("DateCreated", false);
         if (request.OrderBy == "newest")
         {
@@ -41,7 +50,8 @@ public class ListArticlesHandler : IRequestHandler<ListArticlesQuery, OneOf<List
                 createdAfter: request.CreatedAfter,
                 createdBefore: request.CreatedBefore,
                 orderBy: orderBy,
-                limitBy: limitBy
+                limitBy: limitBy,
+                tags: request.Tags
             )
         );
 

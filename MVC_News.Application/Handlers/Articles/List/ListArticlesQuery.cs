@@ -6,13 +6,14 @@ namespace MVC_News.Application.Handlers.Articles.List;
 
 public class ListArticlesQuery : IRequest<OneOf<ListArticlesResult, List<ApplicationError>>>
 {
-    public ListArticlesQuery(Guid? authorId, DateTime? createdAfter, DateTime? createdBefore, string? orderBy, int? limitBy)
+    public ListArticlesQuery(Guid? authorId, DateTime? createdAfter, DateTime? createdBefore, string? orderBy, int? limitBy, List<string>? tags)
     {
         AuthorId = authorId;
         CreatedAfter = createdAfter;
         CreatedBefore = createdBefore;
         OrderBy = orderBy;
         LimitBy = limitBy;
+        Tags = tags;
     }
 
     public Guid? AuthorId { get; }
@@ -20,4 +21,5 @@ public class ListArticlesQuery : IRequest<OneOf<ListArticlesResult, List<Applica
     public DateTime? CreatedBefore { get; }
     public string? OrderBy { get; }
     public int? LimitBy { get; }
+    public List<string>? Tags { get; }
 }

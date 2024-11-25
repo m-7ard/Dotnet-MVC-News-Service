@@ -1,9 +1,8 @@
-namespace MVC_News.Application.Contracts.Criteria;
+namespace MVC_News.MVC.DTOs.Contracts.Articles.Manage;
 
-
-public class FilterAllArticlesCriteria
+public class ManageArticlesRequestDTO
 {
-    public FilterAllArticlesCriteria(Guid? authorId, DateTime? createdAfter, DateTime? createdBefore, Tuple<string, bool>? orderBy, int? limitBy, List<string>? tags)
+    public ManageArticlesRequestDTO(Guid? authorId, DateTime? createdAfter, DateTime? createdBefore, string? orderBy, int? limitBy, List<string>? tags)
     {
         AuthorId = authorId;
         CreatedAfter = createdAfter;
@@ -16,7 +15,7 @@ public class FilterAllArticlesCriteria
     public Guid? AuthorId { get; set; }
     public DateTime? CreatedAfter { get; set; }
     public DateTime? CreatedBefore { get; set; }
-    public Tuple<string, bool>? OrderBy { get; set; }
-    public int? LimitBy { get; set; }
+    public string? OrderBy { get; }
+    public int? LimitBy { get; }
     public List<string>? Tags { get; }
 }

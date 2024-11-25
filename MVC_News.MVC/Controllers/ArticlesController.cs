@@ -19,6 +19,7 @@ using MVC_News.Domain.Entities;
 using MVC_News.Domain.Errors;
 using MVC_News.MVC.DTOs.Contracts.Articles.Create;
 using MVC_News.MVC.DTOs.Contracts.Articles.List;
+using MVC_News.MVC.DTOs.Contracts.Articles.Manage;
 using MVC_News.MVC.DTOs.Contracts.Articles.Preview;
 using MVC_News.MVC.DTOs.Contracts.Articles.Update;
 using MVC_News.MVC.DTOs.Models;
@@ -71,7 +72,8 @@ public class ArticlesController : BaseController
             createdAfter: null, 
             createdBefore: null, 
             orderBy: "newest", 
-            limitBy: 24
+            limitBy: 24,
+            tags: null
         );
         var result = await _mediator.Send(query);
         if (result.TryPickT1(out var errors, out var value))
@@ -272,7 +274,64 @@ public class ArticlesController : BaseController
     }
 
     // ***************
-    // LIST ALL ARTICLES / FILTER ALL ARTICLES
+    // MANAGE ARTICLES
+    //
+    //
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("/articles/manage")]
+    public async Task<IActionResult> ManageArticlesPage(
+        [FromQuery] Guid? authorId, 
+        [FromQuery] DateTime? createdAfter, 
+        [FromQuery] DateTime? createdBefore,
+        [FromQuery] string? orderBy,
+        [FromQuery] int? limitBy,
+        [FromQuery] List<string>? tags)
+    {
+        var request = new ManageArticlesRequestDTO(
+            authorId: authorId,
+            createdAfter: createdAfter,
+            createdBefore: createdBefore,
+            orderBy: orderBy,
+            limitBy: limitBy,
+            tags: tags
+        );
+
+        var listArticlesQuery = new ListArticlesQuery(
+            authorId: request.AuthorId,
+            createdAfter: request.CreatedAfter,
+            createdBefore: request.CreatedBefore,
+            orderBy: request.OrderBy,
+            limitBy: request.LimitBy,
+            tags: request.Tags
+        );
+        var listArticlesResult = await _mediator.Send(listArticlesQuery);
+        if (listArticlesResult.TryPickT1(out var errors, out var value))
+        {
+            throw new InternalServerErrorException($"Something went wrong trying to list articles.");
+        }
+
+        var articleDTOs = new List<ArticleDTO>();
+        foreach (var article in value.Articles)
+        {
+            var readAuthorQuery = new ReadAuthorQuery(id: article.AuthorId);
+            var readAuthorResult = await _mediator.Send(readAuthorQuery);
+            var author = readAuthorResult.IsT0 ? readAuthorResult.AsT0.Author : new Author(
+                id: Guid.Empty,
+                displayName: "Unkown Author"
+            );
+
+            articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
+        }
+
+        return View(new ManageArticlesPageModel(
+            articles: articleDTOs
+        ));
+    }
+
+    
+    // ***************
+    // LIST ALL ARTICLES / FILTER ALL ARTICLES (READER)
     //
     //
 
@@ -283,22 +342,25 @@ public class ArticlesController : BaseController
         [FromQuery] DateTime? createdAfter, 
         [FromQuery] DateTime? createdBefore,
         [FromQuery] string? orderBy,
-        [FromQuery] int? limitBy)
+        [FromQuery] int? limitBy,
+        [FromQuery] List<string>? tags)
     {
         var request = new ListArticlesRequestDTO(
             authorId: authorId,
             createdAfter: createdAfter,
             createdBefore: createdBefore,
             orderBy: orderBy,
-            limitBy: limitBy
+            limitBy: limitBy,
+            tags: tags
         );
 
         var listArticlesQuery = new ListArticlesQuery(
             authorId: request.AuthorId,
             createdAfter: request.CreatedAfter,
             createdBefore: request.CreatedBefore,
-            orderBy: orderBy,
-            limitBy: limitBy
+            orderBy: request.OrderBy,
+            limitBy: request.LimitBy,
+            tags: request.Tags
         );
         var listArticlesResult = await _mediator.Send(listArticlesQuery);
         if (listArticlesResult.TryPickT1(out var errors, out var value))

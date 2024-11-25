@@ -1,5 +1,6 @@
 using Moq;
 using MVC_News.Application.Errors;
+using MVC_News.Application.Handlers.Users.ChangePassword;
 using MVC_News.Application.Handlers.Users.Login;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Application.Interfaces.Services;

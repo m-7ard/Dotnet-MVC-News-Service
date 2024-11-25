@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@model BaseViewModel
+
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -9,7 +11,7 @@
     <script src="~/js/dist/bundle.js" asp-append-version="true"></script>
 </head>
 
-<body class="flex flex-col bg-orange-50">
+<body class="flex flex-col bg-orange-50 relative">
     <header class="flex flex-col shrink-0 bg-orange-50 border-b border-gray-900 divide-y divide-gray-900 overflow-hidden">
         <div class="px-4 py-2 gap-2 overflow-x-auto">
             <div class="flex flex-row max-w-[1000px] w-full mx-auto gap-2 justify-between">
@@ -40,7 +42,7 @@
                         </a>
                         @if (User.IsInRole("Admin"))
                         {
-                            <a href="/articles" class="mixin-button-like mixin-button-sm theme-button-generic-yellow shrink-0">
+                            <a href="/articles/manage" class="mixin-button-like mixin-button-sm theme-button-generic-yellow shrink-0">
                                 Manage Content
                             </a>
                         }
@@ -56,9 +58,9 @@
                 <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
                     Frontpage
                 </div>
-                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                <a class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0" href="/articles?tags=World">
                     World
-                </div>
+                </a>
                 <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
                     US
                 </div>
@@ -97,7 +99,29 @@
             &copy; 2024 - MVC_News.MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-
+    @if (Model.Message is not null)
+    {
+        <section class="fixed inset-0 flex flex-row justify-center" id="system-message">
+            <div class="bg-white border border-gray-900 divide-y divide-gray-900 shadow w-96 mt-4 h-fit">
+                <header class="flex flex-row justify-between items-center py-2 px-4">
+                    <div class="text-sm font-bold">
+                        System Message
+                    </div>
+                    <button class="mixin-button-like mixin-button-sm theme-button-generic-red" role="close-system-message">
+                        Close
+                    </button>
+                </header>
+                <div class="py-2 px-4 font-sm">
+                    @Model.Message
+                </div>
+            </div>
+        </section>
+    }
+    <script>
+        const systemMessage = document.getElementById("system-message");
+        const systemMessageCloseButton = document.querySelector(`[role="close-system-message"]`);
+        systemMessageCloseButton.addEventListener("click", () => systemMessage.remove());
+    </script>
     @RenderSection("Scripts", required: false)
 </body>
 

@@ -1,6 +1,8 @@
 @using MVC_Classifieds.Api.Models.Users
+@using MVC_News.MVC.Helpers
 @using MVC_News.MVC.Models.Partials
 @using MVC_News.MVC.Models.Users
+@using System.Text.Json
 @model UserAccountPageModel;
 
 @{
@@ -12,7 +14,7 @@
         <header class="text-2xl">
             User Account
         </header>
-        <main class="grid grid-cols-2 gap-4">
+        <main class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="flex flex-col gap-2 border border-gray-900 p-4 bg-white">
                 <header class="font-bold">
                     User Information
@@ -70,6 +72,84 @@
                     </div>
                 }
             </div>
+            <form class="flex flex-col gap-2 border border-gray-900 p-4 bg-white" method="POST" action="/users/account/change-password">
+                <header class="font-bold">
+                    Change Password
+                </header>
+                @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                    label: "Current Password",
+                    errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "CurrentPassword"),
+                    partialRoute: "Reusables/_CharField",
+                    partialProps: new CharFieldPartialViewModel(
+                        value: "",
+                        name: "currentPassword",
+                        inputAttrs: new Dictionary<string, string>()
+                    )
+                ))
+                @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                    label: "New Password",
+                    errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "NewPassword"),
+                    partialRoute: "Reusables/_CharField",
+                    partialProps: new CharFieldPartialViewModel(
+                        value: "",
+                        name: "newPassword",
+                        inputAttrs: new Dictionary<string, string>()
+                        {
+                            { "type", "password" }
+                        }
+                    )
+                ))
+                <button class="mixin-button-like mixin-button-base theme-button-generic-green justify-center mt-auto">
+                    Change Password
+                </button>
+            </form>
+            <form class="flex flex-col gap-2 border border-gray-900 p-4 bg-white" method="POST" action="//">
+                <header class="font-bold">
+                    Change Email
+                </header>
+                @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                    label: "New Email",
+                    errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "NewEmail"),
+                    partialRoute: "Reusables/_CharField",
+                    partialProps: new CharFieldPartialViewModel(
+                        value: "",
+                        name: "newEmail",
+                        inputAttrs: new Dictionary<string, string>()
+                        {
+                            { "type", "email" }
+                        }
+                    )
+                ))
+                @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                    label: "Confirm New Email",
+                    errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "ConfirmNewEmail"),
+                    partialRoute: "Reusables/_CharField",
+                    partialProps: new CharFieldPartialViewModel(
+                        value: "",
+                        name: "confirmNewEmail",
+                        inputAttrs: new Dictionary<string, string>()
+                        {
+                            { "type", "email" }
+                        }
+                    )
+                ))
+                @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                    label: "Password",
+                    errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "Password"),
+                    partialRoute: "Reusables/_CharField",
+                    partialProps: new CharFieldPartialViewModel(
+                        value: "",
+                        name: "Password",
+                        inputAttrs: new Dictionary<string, string>()
+                        {
+                            { "type", "password" }
+                        }
+                    )
+                ))
+                <button class="mixin-button-like mixin-button-base theme-button-generic-green justify-center mt-auto">
+                    Change Password
+                </button>
+            </form>
         </main>
     </div>
 </div>

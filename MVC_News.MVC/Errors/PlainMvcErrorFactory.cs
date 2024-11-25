@@ -28,7 +28,7 @@ public static class PlainMvcErrorFactory
         var result = new Dictionary<string, List<string>>();
         errors.ForEach((error) =>
         {
-            var path = "/" + string.Join("/", error.Path);
+            var path = string.Join("/", error.Path);
             if (result.TryGetValue(path, out var fieldErrors))
             {
                 fieldErrors.Add(error.Message);
