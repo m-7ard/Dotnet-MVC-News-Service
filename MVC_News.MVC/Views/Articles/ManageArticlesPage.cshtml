@@ -2,7 +2,7 @@
 @using MVC_News.MVC.Models.Partials;
 @model ManageArticlesPageModel;
 @{
-    ViewData["Title"] = "Create Article";
+    ViewData["Title"] = "Manage Articles";
 }
 
 <div class="mixin-page-like mixin-page-base mixin-content-grid">
@@ -21,7 +21,7 @@
                 <div class="flex flex-col gap-2 overflow-hidden">
                     <a href="/articles/@article.Id">
                         @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
-                            className: "aspect-[16/9]",
+                            className: "aspect-[16/9] border border-gray-900",
                             src: article.HeaderImage
                         ))
                         <div>

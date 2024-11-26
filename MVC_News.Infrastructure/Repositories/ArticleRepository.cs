@@ -44,6 +44,11 @@ public class ArticleRepository : IArticleRepository
     {
         IQueryable<ArticleDbEntity> query = _dbContext.Article.Include(d => d.Author);
         
+        if (criteria.Title is not null)
+        {
+            query = query.Where(article => article.Title.Contains(criteria.Title));
+        }
+
         if (criteria.CreatedAfter is not null && criteria.CreatedBefore is not null && criteria.CreatedAfter > criteria.CreatedBefore)
         {
             criteria.CreatedBefore = null;
@@ -87,7 +92,7 @@ public class ArticleRepository : IArticleRepository
         // Done on the server due to JSON field usage
         if (criteria.Tags is not null)
         {
-            articles = articles.Where(article => article.Tags.Any(tag => criteria.Tags.Contains(tag))).ToList();
+            articles = articles.Where(article => criteria.Tags.All(tag => article.Tags.Contains(tag))).ToList();
         }
 
         return articles.Select(ArticleMapper.FromDbEntityToDomain).ToList();

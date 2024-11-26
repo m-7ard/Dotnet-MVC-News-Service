@@ -20,6 +20,7 @@ using MVC_News.MVC.DTOs.Contracts.Users.Login;
 using MVC_News.MVC.DTOs.Contracts.Users.Register;
 using MVC_News.MVC.Errors;
 using MVC_News.MVC.Exceptions;
+using MVC_News.MVC.Models;
 using MVC_News.MVC.Models.Users;
 
 namespace MVC_News.MVC.Controllers;
@@ -212,10 +213,10 @@ public class UsersController : BaseController
     //
     //
 
-    [HttpGet("/susers/choose-subscription")]
+    [HttpGet("/users/choose-subscription")]
     public IActionResult ChooseSubscriptionPage()
     {
-        return View();
+        return View(new BaseViewModel());
     }
 
     // ***************

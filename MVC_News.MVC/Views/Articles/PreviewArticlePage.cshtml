@@ -5,8 +5,6 @@
 @model PreviewArticlePageModel;
 @{
     ViewData["Title"] = Model.Article.Title;
-    Console.WriteLine("0000000000000000000000000000000000000000000000");
-    Console.WriteLine(Model.Article.IsPremium);
     var articleContent = new ArticleContentPartialViewModel(article: Model.Article, markup: Model.Markup);
 }
 

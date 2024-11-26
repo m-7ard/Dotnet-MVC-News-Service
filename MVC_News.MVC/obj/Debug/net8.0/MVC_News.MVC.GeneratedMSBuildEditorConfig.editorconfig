@@ -38,8 +38,8 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXJ0aWNsZXNcRnJvbnRwYWdlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Articles/ListArticlesPage.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXJ0aWNsZXNcTGlzdEFydGljbGVzUGFnZS5jc2h0bWw=
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Articles/ListArticlesByTagPage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXJ0aWNsZXNcTGlzdEFydGljbGVzQnlUYWdQYWdlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Articles/ManageArticlesPage.cshtml]
@@ -52,6 +52,10 @@ build_metadata.AdditionalFiles.CssScope =
 
 [C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Articles/ReadArticlePage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXJ0aWNsZXNcUmVhZEFydGljbGVQYWdlLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Articles/SearchArticlesPage.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQXJ0aWNsZXNcU2VhcmNoQXJ0aWNsZXNQYWdlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/maxim/OneDrive/Escritorio/dot_net_work/MVC_News/MVC_News/MVC_News.MVC/Views/Articles/UpdateArticlePage.cshtml]

@@ -9,7 +9,7 @@
     <header class="flex flex-col gap-4 p-4" data-track="full">
         @for (var i = 0; i < Model.MainArticles.Count(); i++)
         {
-            <section class="flex flex-row max-md:flex-col grow max-md:divide-y md:divide-x divide-gray-900 border border-gray-900">
+            <section class="flex flex-row max-md:flex-col grow max-md:divide-y md:divide-x divide-gray-900 border border-gray-900 bg-white">
                 <a href="/articles/@Model.MainArticles[i].Id" class="w-full grow h-72 aspect-square">
                     @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
                         className: "w-full h-full",

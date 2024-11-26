@@ -6,7 +6,6 @@ using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.IdentityModel.Tokens;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Handlers.Articles.Create;
@@ -21,6 +20,7 @@ using MVC_News.MVC.DTOs.Contracts.Articles.Create;
 using MVC_News.MVC.DTOs.Contracts.Articles.List;
 using MVC_News.MVC.DTOs.Contracts.Articles.Manage;
 using MVC_News.MVC.DTOs.Contracts.Articles.Preview;
+using MVC_News.MVC.DTOs.Contracts.Articles.Search;
 using MVC_News.MVC.DTOs.Contracts.Articles.Update;
 using MVC_News.MVC.DTOs.Models;
 using MVC_News.MVC.Errors;
@@ -68,6 +68,7 @@ public class ArticlesController : BaseController
     public async Task<IActionResult> Frontpage()
     {
         var query = new ListArticlesQuery(
+            title: null,
             authorId: null, 
             createdAfter: null, 
             createdBefore: null, 
@@ -281,6 +282,7 @@ public class ArticlesController : BaseController
     [Authorize(Roles = "Admin")]
     [HttpGet("/articles/manage")]
     public async Task<IActionResult> ManageArticlesPage(
+        [FromQuery] string? title, 
         [FromQuery] Guid? authorId, 
         [FromQuery] DateTime? createdAfter, 
         [FromQuery] DateTime? createdBefore,
@@ -289,6 +291,7 @@ public class ArticlesController : BaseController
         [FromQuery] List<string>? tags)
     {
         var request = new ManageArticlesRequestDTO(
+            title: title,
             authorId: authorId,
             createdAfter: createdAfter,
             createdBefore: createdBefore,
@@ -298,6 +301,7 @@ public class ArticlesController : BaseController
         );
 
         var listArticlesQuery = new ListArticlesQuery(
+            title: request.Title,
             authorId: request.AuthorId,
             createdAfter: request.CreatedAfter,
             createdBefore: request.CreatedBefore,
@@ -331,30 +335,78 @@ public class ArticlesController : BaseController
 
     
     // ***************
-    // LIST ALL ARTICLES / FILTER ALL ARTICLES (READER)
+    // LIST ALL ARTICLES BY TAG
     //
     //
 
-    [Authorize(Roles = "Admin")]
-    [HttpGet("/articles")]
-    public async Task<IActionResult> ListArticlesPage(
+    [HttpGet("/articles/tag/{tag}")]
+    public async Task<IActionResult> ListArticlesByTagPage(string tag)
+    {
+        var request = new ListArticlesByTagRequestDTO(
+            tags: [tag]
+        );
+
+        var listArticlesQuery = new ListArticlesQuery(
+            title: null,
+            authorId: null,
+            createdAfter: null,
+            createdBefore: null,
+            orderBy: null,
+            limitBy: null,
+            tags: request.Tags
+        );
+        var listArticlesResult = await _mediator.Send(listArticlesQuery);
+        if (listArticlesResult.TryPickT1(out var errors, out var value))
+        {
+            throw new InternalServerErrorException($"Something went wrong trying to list articles.");
+        }
+
+        var articleDTOs = new List<ArticleDTO>();
+        foreach (var article in value.Articles)
+        {
+            var readAuthorQuery = new ReadAuthorQuery(id: article.AuthorId);
+            var readAuthorResult = await _mediator.Send(readAuthorQuery);
+            var author = readAuthorResult.IsT0 ? readAuthorResult.AsT0.Author : new Author(
+                id: Guid.Empty,
+                displayName: "Unkown Author"
+            );
+
+            articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
+        }
+
+        return View(new ListArticlesPageModel(
+            articles: articleDTOs,
+            tag: tag
+        ));
+    }
+
+    // ***************
+    // SEARCH ARTICLES
+    //
+    //
+
+    [HttpGet("/articles/search")]
+    public async Task<IActionResult> SearchArticlesPage(
         [FromQuery] Guid? authorId, 
+        [FromQuery] string? title, 
         [FromQuery] DateTime? createdAfter, 
         [FromQuery] DateTime? createdBefore,
         [FromQuery] string? orderBy,
         [FromQuery] int? limitBy,
         [FromQuery] List<string>? tags)
-    {
-        var request = new ListArticlesRequestDTO(
+    {   
+        var request = new SearchArticlesRequestDTO(
+            title: title,
             authorId: authorId,
             createdAfter: createdAfter,
             createdBefore: createdBefore,
             orderBy: orderBy,
             limitBy: limitBy,
-            tags: tags
+            tags: tags is null ? null : ProcessRequestTags(tags)
         );
 
         var listArticlesQuery = new ListArticlesQuery(
+            title: request.Title,
             authorId: request.AuthorId,
             createdAfter: request.CreatedAfter,
             createdBefore: request.CreatedBefore,
@@ -381,8 +433,15 @@ public class ArticlesController : BaseController
             articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
         }
 
-        return View(new ListArticlesPageModel(
-            articles: articleDTOs
+        return View(new SearchArticlesPageModel(
+            articles: articleDTOs,
+            authorId: request.AuthorId, 
+            title: request.Title, 
+            createdAfter: request.CreatedAfter, 
+            createdBefore: request.CreatedBefore,
+            orderBy: request.OrderBy,
+            limitBy: request.LimitBy,
+            tags: request.Tags
         ));
     }
 

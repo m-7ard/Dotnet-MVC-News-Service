@@ -2,14 +2,14 @@
 @using MVC_News.MVC.Models.Partials;
 @model ListArticlesPageModel;
 @{
-    ViewData["Title"] = "Create Article";
+    ViewData["Title"] = Model.Tag;
 }
 
 <div class="mixin-page-like mixin-page-base mixin-content-grid">
     <div class="flex flex-col gap-2" data-track="base">
         <header class="flex flex-row gap-[inherit] items-center justify-between">
-            <div class="text-2xl">
-                Articles
+            <div class="text-xl">
+                Articles ›› @Model.Tag
             </div>
         </header>
         <div class="flex flex-col gap-4">

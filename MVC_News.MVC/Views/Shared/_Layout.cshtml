@@ -24,6 +24,10 @@
                         <div>Home</div>
                         <div>🏠︎</div>
                     </a>
+                    <a href="/articles/search" class="mixin-button-like mixin-button-sm theme-button-generic-white gap-2 shrink-0">
+                        <div>Search</div>
+                        <div>❍</div>
+                    </a>
                 </ol>
                 <ol class="flex flex-row gap-[inherit]">
                     @if (!User.Identity!.IsAuthenticated)
@@ -55,36 +59,33 @@
         </div>
         <div class="px-4 py-2 gap-2 overflow-x-auto">
             <div class="flex flex-row max-w-[1000px] w-full mx-auto gap-2">
-                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
-                    Frontpage
-                </div>
-                <a class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0" href="/articles?tags=World">
+                <a class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0" href="/articles/tag/World">
                     World
                 </a>
-                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                <a class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0" href="/articles/tag/US">
                     US
-                </div>
-                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                </a>
+                <a class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0" href="/articles/tag/Europe">
                     Europe
-                </div>
-                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
-                    Sport
-                </div>
-                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                </a>
+                <a class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0" href="/articles/tag/Sports">
+                    Sports
+                </a>
+                <a class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0" href="/articles/tag/Tech">
                     Tech
-                </div>
-                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                </a>
+                <a class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0" href="/articles/tag/Economy">
                     Economy
-                </div>
-                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                </a>
+                <a class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0" href="/articles/tag/Culture">
                     Culture
-                </div>
-                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
+                </a>
+                <a class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0" href="/articles/tag/Arts">
                     Arts
-                </div>
-                <div class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0">
-                    Travel
-                </div>
+                </a>
+                <a class="mixin-button-like mixin-button-sm theme-button-generic-white shrink-0" href="/articles/tag/Culture">
+                    Culture
+                </a>
             </div>
         </div>
     </header>
@@ -93,12 +94,6 @@
             @RenderBody()
         </main>
     </div>
-
-    <footer class="border-top footer text-muted">
-        <div>
-            &copy; 2024 - MVC_News.MVC - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     @if (Model.Message is not null)
     {
         <section class="fixed inset-0 flex flex-row justify-center" id="system-message">

@@ -1,12 +1,8 @@
-using MediatR;
-using MVC_News.Application.Errors;
-using OneOf;
+namespace MVC_News.MVC.DTOs.Contracts.Articles.Search;
 
-namespace MVC_News.Application.Handlers.Articles.List;
-
-public class ListArticlesQuery : IRequest<OneOf<ListArticlesResult, List<ApplicationError>>>
+public class SearchArticlesRequestDTO
 {
-    public ListArticlesQuery(Guid? authorId, DateTime? createdAfter, DateTime? createdBefore, string? orderBy, int? limitBy, List<string>? tags, string? title)
+    public SearchArticlesRequestDTO(Guid? authorId, DateTime? createdAfter, DateTime? createdBefore, string? orderBy, int? limitBy, List<string>? tags, string? title)
     {
         AuthorId = authorId;
         CreatedAfter = createdAfter;
