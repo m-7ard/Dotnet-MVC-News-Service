@@ -1,6 +1,5 @@
 using Moq;
 using MVC_News.Application.Errors;
-using MVC_News.Application.Handlers.Articles.Create;
 using MVC_News.Application.Handlers.Users.Register;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Application.Interfaces.Services;
@@ -16,6 +15,7 @@ public class RegisterUserHandlerUnitTest
 
     public RegisterUserHandlerUnitTest()
     {
+        // Dependencies
         _mockUserRepository = new Mock<IUserRepository>();
         _mockPasswordHasher = new Mock<IPasswordHasher>();
         _handler = new RegisterUserHandler(
@@ -28,7 +28,7 @@ public class RegisterUserHandlerUnitTest
     public async Task RegisterUser_ValidData_Success()
     {
         // ARRANGE
-        var mockUser = Mixins.CreateUser(seed: 1, isAdmin: false);
+        var mockUser = Mixins.CreateUser(seed: 1, isAdmin: false, subscriptions: []);
         var command = new RegisterUserCommand(
             email: mockUser.Email,
             password: "password",
@@ -55,7 +55,7 @@ public class RegisterUserHandlerUnitTest
     public async Task RegisterUser_UserAlreadyExists_Failure()
     {
         // ARRANGE
-        var mockUser = Mixins.CreateUser(seed: 1, isAdmin: false);
+        var mockUser = Mixins.CreateUser(seed: 1, isAdmin: false, subscriptions: []);
         var command = new RegisterUserCommand(
             email: mockUser.Email,
             password: "password",

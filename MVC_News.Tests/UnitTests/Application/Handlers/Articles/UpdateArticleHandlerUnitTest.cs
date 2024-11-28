@@ -20,8 +20,11 @@ public class UpdateArticleHandlerUnitTest
 
     public UpdateArticleHandlerUnitTest()
     {
-        _user_001 = Mixins.CreateUser(seed: 1, isAdmin: false);
-        _admin_001 = Mixins.CreateUser(seed: 2, isAdmin: true);
+        // Users
+        _user_001 = Mixins.CreateUser(seed: 1, isAdmin: false, subscriptions: []);
+        _admin_001 = Mixins.CreateUser(seed: 2, isAdmin: true, subscriptions: []);
+        
+        // Articles
         _mockArticle = Mixins.CreateArticle(seed: 1, authorId: _admin_001.Id);
         _updateArticle = ArticleFactory.BuildExisting(
             id: _mockArticle.Id,
@@ -30,9 +33,11 @@ public class UpdateArticleHandlerUnitTest
             headerImage: _mockArticle.HeaderImage + "_updated",
             dateCreated: _mockArticle.DateCreated,
             authorId: _mockArticle.AuthorId,
-            tags: new List<string>() { "tag_update" }
+            tags: new List<string>() { "tag_update" },
+            isPremium: false
         );
-
+        
+        // Dependencies
         _mockArticleRepository = new Mock<IArticleRepository>();
         _mockUserRepository = new Mock<IUserRepository>();
         _handler = new UpdateArticleHandler(
@@ -51,7 +56,8 @@ public class UpdateArticleHandlerUnitTest
             content: _updateArticle.Content,
             authorId: _admin_001.Id,
             headerImage: _updateArticle.HeaderImage,
-            tags: _mockArticle.Tags
+            tags: _mockArticle.Tags,
+            isPremium: false
         );
 
         _mockArticleRepository
@@ -61,10 +67,6 @@ public class UpdateArticleHandlerUnitTest
         _mockUserRepository
             .Setup(repo => repo.GetUserById(_admin_001.Id))
             .ReturnsAsync(_admin_001);
-
-        _mockArticleRepository
-            .Setup(repo => repo.UpdateAsync(It.IsAny<Article>()))
-            .Returns(Task.CompletedTask);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -89,7 +91,8 @@ public class UpdateArticleHandlerUnitTest
             content: _updateArticle.Content,
             authorId: _user_001.Id,
             headerImage: _updateArticle.HeaderImage,
-            tags: _mockArticle.Tags
+            tags: _mockArticle.Tags,
+            isPremium: false
         );
 
         _mockArticleRepository
@@ -121,7 +124,8 @@ public class UpdateArticleHandlerUnitTest
             content: _updateArticle.Content,
             authorId: invalidGuid,
             headerImage: _updateArticle.HeaderImage,
-            tags: _mockArticle.Tags
+            tags: _mockArticle.Tags,
+            isPremium: false
         );
 
         _mockArticleRepository
@@ -148,7 +152,8 @@ public class UpdateArticleHandlerUnitTest
             content: _updateArticle.Content,
             authorId: Guid.NewGuid(),
             headerImage: _updateArticle.HeaderImage,
-            tags: _mockArticle.Tags
+            tags: _mockArticle.Tags,
+            isPremium: false
         );
 
         // ACT

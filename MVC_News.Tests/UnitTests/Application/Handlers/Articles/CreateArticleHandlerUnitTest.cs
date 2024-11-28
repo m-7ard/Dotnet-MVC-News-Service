@@ -16,9 +16,11 @@ public class CreateArticleHandlerUnitTest
 
     public CreateArticleHandlerUnitTest()
     {
-        _user_001 = Mixins.CreateUser(seed: 1, isAdmin: false);
-        _admin_001 = Mixins.CreateUser(seed: 2, isAdmin: true);
+        // Users
+        _user_001 = Mixins.CreateUser(seed: 1, isAdmin: false, subscriptions: []);
+        _admin_001 = Mixins.CreateUser(seed: 2, isAdmin: true, subscriptions: []);
 
+        // Dependencies
         _mockArticleRepository = new Mock<IArticleRepository>();
         _mockUserRepository = new Mock<IUserRepository>();
         _handler = new CreateArticleHandler(
@@ -38,7 +40,8 @@ public class CreateArticleHandlerUnitTest
             content: mockArticle.Content,
             authorId: mockArticle.AuthorId,
             headerImage: mockArticle.HeaderImage,
-            tags: mockArticle.Tags
+            tags: mockArticle.Tags,
+            isPremium: false
         );
 
         _mockUserRepository
@@ -69,7 +72,8 @@ public class CreateArticleHandlerUnitTest
             content: mockArticle.Content,
             authorId: mockArticle.AuthorId,
             headerImage: mockArticle.HeaderImage,
-            tags: mockArticle.Tags
+            tags: mockArticle.Tags,
+            isPremium: false
         );
 
         _mockUserRepository
@@ -97,7 +101,8 @@ public class CreateArticleHandlerUnitTest
             content: mockArticle.Content,
             authorId: mockArticle.AuthorId,
             headerImage: mockArticle.HeaderImage,
-            tags: mockArticle.Tags
+            tags: mockArticle.Tags,
+            isPremium: false
         );
 
         // ACT

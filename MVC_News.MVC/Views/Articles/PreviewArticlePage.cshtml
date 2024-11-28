@@ -60,7 +60,7 @@
     </form>
     <header class="flex flex-col gap-2" data-track="lg">
         @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
-            className: "aspect-[16/9]",
+            className: "aspect-[16/9] border border-gray-900",
             src: Model.Article.HeaderImage
         ))
     </header>

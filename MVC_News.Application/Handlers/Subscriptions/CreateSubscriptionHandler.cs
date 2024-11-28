@@ -26,15 +26,6 @@ public class CreateSubscriptionHandler : IRequestHandler<CreateSubscriptionComma
                 code: ApplicationErrorCodes.ModelDoesNotExist
             );
         }
-
-        if (user.HasActiveSubscription())
-        {
-            return ApplicationErrorFactory.CreateSingleListError(
-                message: $"User is already subscribed.",
-                path: ["_"],
-                code: ApplicationErrorCodes.StateMismatch
-            );
-        }
     
         var expirationDate = DateTime.Now;
         if (request.SubscriptionDuration == 1)
@@ -54,20 +45,17 @@ public class CreateSubscriptionHandler : IRequestHandler<CreateSubscriptionComma
             return ApplicationErrorFactory.CreateSingleListError(
                 message: $"expirationDate is invalid.",
                 path: ["expirationDate"],
-                code: ApplicationErrorCodes.Custom
+                code: ApplicationErrorCodes.StateMismatch
             );
         }
 
-        var subscription = new Subscription(
-            id: Guid.NewGuid(), 
-            userId: request.UserId, 
-            startDate: DateTime.Now, 
-            expirationDate: expirationDate
-        );
-
-        user.Subscriptions.Add(subscription);
+        var subscriptionResult = user.Subscribe(expirationDate);
+        if (subscriptionResult.IsT1)
+        {
+            return ApplicationErrorFactory.DomainErrorsToApplicationErrors(subscriptionResult.AsT1);
+        }
+        
         await _userRepository.UpdateAsync(user);
-
         return new CreateSubscriptionResult(user: user);
     }
 }

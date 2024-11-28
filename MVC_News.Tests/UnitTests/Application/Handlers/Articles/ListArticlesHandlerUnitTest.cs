@@ -21,9 +21,11 @@ public class ListArticlesHandlerUnitTest
 
     public ListArticlesHandlerUnitTest()
     {
-        _admin_001 = Mixins.CreateUser(seed: 1, isAdmin: true);
-        _admin_002 = Mixins.CreateUser(seed: 2, isAdmin: true);
+        // Users
+        _admin_001 = Mixins.CreateUser(seed: 1, isAdmin: true, subscriptions: []);
+        _admin_002 = Mixins.CreateUser(seed: 2, isAdmin: true, subscriptions: []);
         
+        // Articles
         _article_001 = Mixins.CreateArticle(seed: 1, authorId: _admin_001.Id);
         _article_002 = Mixins.CreateArticle(seed: 2, authorId: _admin_001.Id);
         _article_003 = Mixins.CreateArticle(seed: 3, authorId: _admin_002.Id);
@@ -32,6 +34,7 @@ public class ListArticlesHandlerUnitTest
         _admin_001_articles = new List<Article>() { _article_001, _article_002 };
         _admin_002_articles = new List<Article>() { _article_003 };
 
+        // Dependencies
         _mockArticleRepository = new Mock<IArticleRepository>();
         _handler = new ListArticlesHandler(
             articleRepository: _mockArticleRepository.Object
@@ -47,7 +50,9 @@ public class ListArticlesHandlerUnitTest
             createdAfter: null,
             createdBefore: null,
             orderBy: null,
-            limitBy: null
+            limitBy: null,
+            tags: null,
+            title: null
         );
 
         var criteria = new FilterAllArticlesCriteria(
@@ -55,7 +60,9 @@ public class ListArticlesHandlerUnitTest
             createdBefore: command.CreatedBefore,
             authorId: command.AuthorId,
             orderBy: new Tuple<string, bool>("DateCreated", false),
-            limitBy: command.LimitBy
+            limitBy: command.LimitBy,
+            tags: command.Tags,
+            title: command.Title
         );
 
         _mockArticleRepository

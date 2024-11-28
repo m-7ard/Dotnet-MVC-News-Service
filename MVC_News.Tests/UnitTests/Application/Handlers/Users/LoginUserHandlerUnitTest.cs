@@ -16,6 +16,7 @@ public class LoginUserHandlerUnitTest
 
     public LoginUserHandlerUnitTest()
     {
+        // Dependencies
         _mockUserRepository = new Mock<IUserRepository>();
         _mockPasswordHasher = new Mock<IPasswordHasher>();
         _handler = new LoginUserHandler(
@@ -28,7 +29,7 @@ public class LoginUserHandlerUnitTest
     public async Task LoginUser_ValidData_Success()
     {
         // ARRANGE
-        var mockUser = Mixins.CreateUser(seed: 1, isAdmin: false);
+        var mockUser = Mixins.CreateUser(seed: 1, isAdmin: false, subscriptions: []);
         var command = new LoginUserQuery(
             email: mockUser.Email,
             password: "password"
@@ -53,7 +54,7 @@ public class LoginUserHandlerUnitTest
     public async Task LoginUser_UserDoeNotExist_Failure()
     {
         // ARRANGE
-        var mockUser = Mixins.CreateUser(seed: 1, isAdmin: false);
+        var mockUser = Mixins.CreateUser(seed: 1, isAdmin: false, subscriptions: []);
         var command = new LoginUserQuery(
             email: mockUser.Email,
             password: "password"
@@ -72,7 +73,7 @@ public class LoginUserHandlerUnitTest
     public async Task LoginUser_InvalidPassword_Failure()
     {
         // ARRANGE
-        var mockUser = Mixins.CreateUser(seed: 1, isAdmin: false);
+        var mockUser = Mixins.CreateUser(seed: 1, isAdmin: false, subscriptions: []);
         var command = new LoginUserQuery(
             email: mockUser.Email,
             password: "password"

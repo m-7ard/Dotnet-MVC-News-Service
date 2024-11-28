@@ -10,7 +10,7 @@
         @for (var i = 0; i < Model.MainArticles.Count(); i++)
         {
             <section class="flex flex-row max-md:flex-col grow max-md:divide-y md:divide-x divide-gray-900 border border-gray-900 bg-white">
-                <a href="/articles/@Model.MainArticles[i].Id" class="w-full grow h-72 aspect-square">
+                <a href="/articles/@Model.MainArticles[i].Id" class="w-full h-48 aspect-square basis-1/4">
                     @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
                         className: "w-full h-full",
                         src: Model.MainArticles[i].HeaderImage
@@ -30,8 +30,8 @@
                             </div>
                         </div>
                     </div>
-                    <div class="text-base overflow-hidden">
-                        <div class="line-clamp-5 max-h-[5lh]">
+                    <div class="text-sm overflow-hidden">
+                        <div class="line-clamp-2 max-h-[2lh]">
                             re:publica 25 will take place from 26-28 May 2025 at STATION Berlin. The motto for next years
                             festival for the digital society is “Generation XYZ”. The programme will once again bring the
                             most important topics relating to the internet, its communities and the opportunities and
