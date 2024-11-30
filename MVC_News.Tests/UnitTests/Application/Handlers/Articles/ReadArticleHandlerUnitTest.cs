@@ -1,6 +1,7 @@
 using Moq;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Handlers.Articles.Create;
+using MVC_News.Application.Handlers.Articles.Delete;
 using MVC_News.Application.Handlers.Articles.Read;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Domain.DomainFactories;

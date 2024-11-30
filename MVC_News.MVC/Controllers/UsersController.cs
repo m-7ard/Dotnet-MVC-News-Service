@@ -86,17 +86,18 @@ public class UsersController : BaseController
     //
 
     [HttpGet("/login")]
-    public IActionResult LoginPage()
+    public IActionResult LoginPage(string? returnUrl)
     {
         return View(new LoginPageModel(
             email: "",
             password: "",
-            errors: new Dictionary<string, List<string>>() { }
+            errors: new Dictionary<string, List<string>>(),
+            returnUrl: returnUrl
         ));
     }
 
     [HttpPost("/login")]
-    public async Task<IActionResult> LoginPage([FromForm] LoginUserRequestDTO request)
+    public async Task<IActionResult> LoginPage([FromForm] LoginUserRequestDTO request, string? returnUrl)
     {
         var validation = _loginUserValidator.Validate(request);
         if (!validation.IsValid)
@@ -106,7 +107,8 @@ public class UsersController : BaseController
             return View(new LoginPageModel(
                 email: request.Email,
                 password: request.Password,
-                errors: PlainMvcErrorFactory.FluentToApiErrors(validation.Errors)
+                errors: PlainMvcErrorFactory.FluentToApiErrors(validation.Errors),
+                returnUrl: returnUrl
             ));
         }
 
@@ -123,14 +125,24 @@ public class UsersController : BaseController
             return View(new LoginPageModel(
                 email: request.Email,
                 password: request.Password,
-                errors: PlainMvcErrorFactory.TranslateServiceErrors(errors)
+                errors: PlainMvcErrorFactory.TranslateServiceErrors(errors),
+                returnUrl: returnUrl
             ));
         }
 
         var user = value.User;
         await SetCookieUser(user);
 
-        return Redirect("/");
+        Console.WriteLine("returnUrlreturnUrlreturnUrlreturnUrlreturnUrl");
+        Console.WriteLine("returnUrlreturnUrlreturnUrlreturnUrlreturnUrl");
+        Console.WriteLine("returnUrlreturnUrlreturnUrlreturnUrlreturnUrl");
+        Console.WriteLine("returnUrlreturnUrlreturnUrlreturnUrlreturnUrl");
+        Console.WriteLine(returnUrl);
+        Console.WriteLine(returnUrl);
+        Console.WriteLine(returnUrl);
+        Console.WriteLine(returnUrl);
+
+        return Redirect(returnUrl ?? "/");
     }
 
     // ***************
@@ -224,6 +236,7 @@ public class UsersController : BaseController
     //
     //
 
+    [Authorize]
     [HttpGet("/users/checkout-subscription")]
     public IActionResult CheckoutSubscriptionPage([FromQuery] int? duration)
     {
@@ -284,8 +297,6 @@ public class UsersController : BaseController
             throw new InternalServerErrorException(firstError.Message);
         }
 
-        /* TODO: update password, email, display name; styling consistency; search articles; delete articles; */
-
         return View(new UserAccountPageModel(
             errors: new Dictionary<string, List<string>>(), 
             user: value.User, 
@@ -337,14 +348,12 @@ public class UsersController : BaseController
             ));
         }
 
-        /* TODO: update password, email, display name; styling consistency; search articles; delete articles; */
-
         var pageModel = new UserAccountPageModel(
             errors: new Dictionary<string, List<string>>(), 
             user: value.User, 
             subscription: value.User.GetActiveSubscription()
         );
-        pageModel.Message = "Successfully Changed Password.";
+        pageModel.SystemMessage = "Successfully Changed Password.";
 
         return View(pageModel);
     }

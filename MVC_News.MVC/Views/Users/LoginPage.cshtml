@@ -20,6 +20,7 @@
             Login
         </header>
         <form class="flex flex-col gap-2" action="/login" method="post">
+            <input type="hidden" name="returnUrl" value="@Model.ReturnUrl" />
             @await Html.PartialAsync("Reusables/_FormErrors", Model.Errors.TryGetValue("_", out var formErrors) ? formErrors : null)
            
             @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(

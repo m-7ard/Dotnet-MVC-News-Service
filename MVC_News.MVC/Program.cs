@@ -28,8 +28,8 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
     {
         options.ExpireTimeSpan = TimeSpan.FromMinutes(20);
         options.SlidingExpiration = true;
-        options.AccessDeniedPath = "/unauthorised/";
-        options.LoginPath = "/login/";
+        options.AccessDeniedPath = "/unauthorised";
+        options.LoginPath = "/login";
     });
 builder.Services.AddAuthorization(options =>
 {

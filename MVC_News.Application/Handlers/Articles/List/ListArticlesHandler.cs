@@ -36,17 +36,17 @@ public class ListArticlesHandler : IRequestHandler<ListArticlesQuery, OneOf<List
             limitBy = request.LimitBy.Value;
         }
 
-        var articles = await _articleRepository.FilterAllAsync(
-            new FilterAllArticlesCriteria(
-                title: request.Title,
-                authorId: request.AuthorId,
-                createdAfter: request.CreatedAfter,
-                createdBefore: request.CreatedBefore,
-                orderBy: orderBy,
-                limitBy: limitBy,
-                tags: request.Tags
-            )
+        var criteria = new FilterAllArticlesCriteria(
+            title: request.Title,
+            authorId: request.AuthorId,
+            createdAfter: request.CreatedAfter,
+            createdBefore: request.CreatedBefore,
+            orderBy: orderBy,
+            limitBy: limitBy,
+            tags: request.Tags
         );
+
+        var articles = await _articleRepository.FilterAllAsync(criteria);
 
         return new ListArticlesResult(articles: articles);
     }

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using MVC_News.MVC.Exceptions;
 using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using MVC_News.MVC.Models;
 
 public class ControllerExceptionFilter : IExceptionFilter
 {
@@ -28,7 +29,7 @@ public class ControllerExceptionFilter : IExceptionFilter
             // Initialize ViewData with a valid IModelMetadataProvider and ModelState
             viewResult.ViewData = new ViewDataDictionary(_modelMetadataProvider, context.ModelState)
             {
-                Model = controllerException.Message
+                Model = new ControllerExceptionViewModel(excepetionMessage: exception.Message)
             };
 
             context.Result = viewResult;

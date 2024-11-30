@@ -10,7 +10,7 @@
         @for (var i = 0; i < Model.MainArticles.Count(); i++)
         {
             <section class="flex flex-row max-md:flex-col grow max-md:divide-y md:divide-x divide-gray-900 border border-gray-900 bg-white">
-                <a href="/articles/@Model.MainArticles[i].Id" class="w-full h-48 aspect-square basis-1/4">
+                <a href="/articles/@Model.MainArticles[i].Id" class="w-full h-72 aspect-[16/9]">
                     @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
                         className: "w-full h-full",
                         src: Model.MainArticles[i].HeaderImage

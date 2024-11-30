@@ -47,7 +47,26 @@ public class Article
         {
             new DomainError(
                 message: "User does not have the permission to view this article.",
-                path: new List<string>() { "userId" },
+                path: new List<string>() { "_" },
+                code: ArticleDomainErrorsCodes.UserNotAllowed
+            )
+        };
+
+        return errors;
+    }
+
+    
+    public OneOf<bool, List<DomainError>> CanBeDeletedBy(User user) {
+        if (user.IsAdmin)
+        {
+            return true;
+        }
+
+        var errors = new List<DomainError>
+        {
+            new DomainError(
+                message: "User does not have the permission to delete this article.",
+                path: new List<string>() { "_" },
                 code: ArticleDomainErrorsCodes.UserNotAllowed
             )
         };

@@ -5,7 +5,7 @@ namespace MVC_News.MVC.Services;
 
 public class DtoModelService
 {
-    static public ArticleDTO CreateArticleDTO(Article article, Author author)
+    static public ArticleDTO CreateArticleDTO(Article article, User? author)
     {
         return new ArticleDTO(
             id: article.Id,
@@ -13,17 +13,25 @@ public class DtoModelService
             content: article.Content,
             headerImage: article.HeaderImage,
             dateCreated: article.DateCreated,
-            author: CreateAuthorDTO(author),
+            author: author is null ? CreateUnkownAuthorDTO() : CreateAuthorDTO(author),
             tags: article.Tags,
             isPremium: article.IsPremium
         );
     }
 
-    static public AuthorDTO CreateAuthorDTO(Author author)
+    static public AuthorDTO CreateAuthorDTO(User user)
     {
         return new AuthorDTO(
-            id: author.Id,
-            displayName: author.DisplayName
+            id: user.Id,
+            displayName: user.DisplayName
+        );
+    }
+
+    static public AuthorDTO CreateUnkownAuthorDTO()
+    {
+        return new AuthorDTO(
+            id: Guid.Empty,
+            displayName: "Unkown Author"
         );
     }
 }

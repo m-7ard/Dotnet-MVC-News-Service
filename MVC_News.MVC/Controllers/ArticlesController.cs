@@ -9,10 +9,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Handlers.Articles.Create;
+using MVC_News.Application.Handlers.Articles.Delete;
 using MVC_News.Application.Handlers.Articles.List;
 using MVC_News.Application.Handlers.Articles.Read;
 using MVC_News.Application.Handlers.Articles.Update;
 using MVC_News.Application.Handlers.Authors.Read;
+using MVC_News.Application.Handlers.Users.Read;
 using MVC_News.Domain.DomainFactories;
 using MVC_News.Domain.Entities;
 using MVC_News.Domain.Errors;
@@ -85,13 +87,9 @@ public class ArticlesController : BaseController
         var articleDTOs = new List<ArticleDTO>();
         foreach (var article in value.Articles)
         {
-            var readAuthorQuery = new ReadAuthorQuery(id: article.AuthorId);
-            var readAuthorResult = await _mediator.Send(readAuthorQuery);
-            var author = readAuthorResult.IsT0 ? readAuthorResult.AsT0.Author : new Author(
-                id: Guid.Empty,
-                displayName: "Unkown Author"
-            );
-
+            var readUserQuery = new ReadUserQuery(id: article.AuthorId);
+            var readUserResult = await _mediator.Send(readUserQuery);
+            var author = readUserResult.IsT0 ? readUserResult.AsT0.User : null;
             articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
         }
 
@@ -318,13 +316,9 @@ public class ArticlesController : BaseController
         var articleDTOs = new List<ArticleDTO>();
         foreach (var article in value.Articles)
         {
-            var readAuthorQuery = new ReadAuthorQuery(id: article.AuthorId);
-            var readAuthorResult = await _mediator.Send(readAuthorQuery);
-            var author = readAuthorResult.IsT0 ? readAuthorResult.AsT0.Author : new Author(
-                id: Guid.Empty,
-                displayName: "Unkown Author"
-            );
-
+            var readUserQuery = new ReadUserQuery(id: article.AuthorId);
+            var readUserResult = await _mediator.Send(readUserQuery);
+            var author = readUserResult.IsT0 ? readUserResult.AsT0.User : null;
             articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
         }
 
@@ -364,13 +358,9 @@ public class ArticlesController : BaseController
         var articleDTOs = new List<ArticleDTO>();
         foreach (var article in value.Articles)
         {
-            var readAuthorQuery = new ReadAuthorQuery(id: article.AuthorId);
-            var readAuthorResult = await _mediator.Send(readAuthorQuery);
-            var author = readAuthorResult.IsT0 ? readAuthorResult.AsT0.Author : new Author(
-                id: Guid.Empty,
-                displayName: "Unkown Author"
-            );
-
+            var readUserQuery = new ReadUserQuery(id: article.AuthorId);
+            var readUserResult = await _mediator.Send(readUserQuery);
+            var author = readUserResult.IsT0 ? readUserResult.AsT0.User : null;
             articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
         }
 
@@ -423,13 +413,9 @@ public class ArticlesController : BaseController
         var articleDTOs = new List<ArticleDTO>();
         foreach (var article in value.Articles)
         {
-            var readAuthorQuery = new ReadAuthorQuery(id: article.AuthorId);
-            var readAuthorResult = await _mediator.Send(readAuthorQuery);
-            var author = readAuthorResult.IsT0 ? readAuthorResult.AsT0.Author : new Author(
-                id: Guid.Empty,
-                displayName: "Unkown Author"
-            );
-
+            var readUserQuery = new ReadUserQuery(id: article.AuthorId);
+            var readUserResult = await _mediator.Send(readUserQuery);
+            var author = readUserResult.IsT0 ? readUserResult.AsT0.User : null;
             articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
         }
 
@@ -454,7 +440,9 @@ public class ArticlesController : BaseController
     public async Task<IActionResult> ReadArticlePage(string id)
     {
         var parsedArticleId = TryReadArticleId(id);
-        var parsedUserId = TryReadUserIdFromClaims();
+        if (!Guid.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out var parsedUserId)) {
+            return Redirect($"/login?ReturnUrl=/articles/{id}");
+        }
 
         var articleQuery = new ReadArticleQuery(id: parsedArticleId, userId: parsedUserId);
         var result = await _mediator.Send(articleQuery);
@@ -481,24 +469,114 @@ public class ArticlesController : BaseController
 
         var article = articleValue.Article;
 
-        var authorQuery = new ReadAuthorQuery(id: article.AuthorId);
-        var authorResult = await _mediator.Send(authorQuery);
-        if (authorResult.TryPickT1(out var authorErrors, out var authorValue))
+        var userQuery = new ReadUserQuery(id: article.AuthorId);
+        var userResult = await _mediator.Send(userQuery);
+        if (userResult.TryPickT1(out var userErrors, out var userValue))
         {
-            if (authorErrors[0].Code == ApplicationErrorCodes.ModelDoesNotExist)
+            if (userErrors[0].Code == ApplicationErrorCodes.ModelDoesNotExist)
             {
-                throw new NotFoundException(authorErrors[0].Message);
+                throw new NotFoundException(userErrors[0].Message);
             }
             
             throw new InternalServerErrorException($"Something went wrong trying to read the article's author.");
         }
 
-        var author = authorValue.Author;
+        var author = userValue.User;
 
         return View(new ReadArticlePageModel(
             article: DtoModelService.CreateArticleDTO(article, author: author),
             markup: MarkupParser.ParseToHtml(article.Content)
         ));
+    }
+
+    // ***************
+    // DELETE ARTICLE
+    //
+    //
+
+    [Authorize(Roles = "Admin")]
+    [HttpGet("/articles/{id}/delete")]
+    public async Task<IActionResult> DeleteArticlePage(string id)
+    {
+        var parsedArticleId = TryReadArticleId(id);
+        var parsedUserId = TryReadUserIdFromClaims();
+
+        var articleQuery = new ReadArticleQuery(id: parsedArticleId, userId: parsedUserId);
+        var result = await _mediator.Send(articleQuery);
+        if (result.TryPickT1(out var articleErrors, out var articleValue))
+        {
+            var expectedError = articleErrors.First();
+            
+            if (expectedError.Code is ApplicationErrorCodes.ModelDoesNotExist)
+            {
+                throw new NotFoundException(expectedError.Message);
+            }
+
+            if (expectedError.Code is ApplicationErrorCodes.DomainError)
+            {
+                var metadata = (ApplicationDomainErrorMetadata)expectedError.Metadata;
+                if (metadata.OriginalError.Code is ArticleDomainErrorsCodes.UserNotAllowed)
+                {
+                    throw new UnauthorizedException($"User is not allowed to read article.");
+                }
+            }
+
+            throw new InternalServerErrorException($"Something went wrong trying to read an article.");
+        }
+
+        var article = articleValue.Article;
+
+        var userQuery = new ReadUserQuery(id: article.AuthorId);
+        var userResult = await _mediator.Send(userQuery);
+        if (userResult.TryPickT1(out var userErrors, out var userValue))
+        {
+            if (userErrors[0].Code == ApplicationErrorCodes.ModelDoesNotExist)
+            {
+                throw new NotFoundException(userErrors[0].Message);
+            }
+            
+            throw new InternalServerErrorException($"Something went wrong trying to read the article's author.");
+        }
+
+        var author = userValue.User;
+
+        return View(new DeleteArticlesPageModel(
+            article: DtoModelService.CreateArticleDTO(article, author: author)
+        ));
+    }
+
+    
+    [Authorize(Roles = "Admin")]
+    [HttpPost("/articles/{id}/delete")]
+    public async Task<IActionResult> DeleteArticleAction(string id)
+    {
+        var parsedArticleId = TryReadArticleId(id);
+        var parsedUserId = TryReadUserIdFromClaims();
+
+        var articleQuery = new DeleteArticleCommand(id: parsedArticleId, userId: parsedUserId);
+        var result = await _mediator.Send(articleQuery);
+        if (result.TryPickT1(out var errors, out var value))
+        {
+            var expectedError = errors.First();
+            
+            if (expectedError.Code is ApplicationErrorCodes.ModelDoesNotExist)
+            {
+                throw new NotFoundException(expectedError.Message);
+            }
+
+            if (expectedError.Code is ApplicationErrorCodes.DomainError)
+            {
+                var metadata = (ApplicationDomainErrorMetadata)expectedError.Metadata;
+                if (metadata.OriginalError.Code is ArticleDomainErrorsCodes.UserNotAllowed)
+                {
+                    throw new UnauthorizedException($"User is not allowed to delete article.");
+                }
+            }
+
+            throw new InternalServerErrorException($"Something went wrong trying to read an article.");
+        }
+
+        return Redirect("/articles/manage");
     }
 
     // ***************
@@ -515,7 +593,7 @@ public class ArticlesController : BaseController
         var parsedArticleId = TryReadArticleId(id);
         var parsedUserId = TryReadUserIdFromClaims();
 
-        var query = new ReadAuthorQuery(id: parsedUserId);
+        var query = new ReadUserQuery(id: parsedUserId);
         var result = await _mediator.Send(query);
 
         if (result.TryPickT1(out var errors, out var value))
@@ -542,7 +620,7 @@ public class ArticlesController : BaseController
             next: "Update",
             article: DtoModelService.CreateArticleDTO(
                 article: article,
-                author: value.Author
+                author: value.User
             ),
             markup: MarkupParser.ParseToHtml(article.Content)
         ));
@@ -556,7 +634,7 @@ public class ArticlesController : BaseController
 
         var parsedUserId = TryReadUserIdFromClaims();
 
-        var query = new ReadAuthorQuery(id: parsedUserId);
+        var query = new ReadUserQuery(id: parsedUserId);
         var result = await _mediator.Send(query);
 
         if (result.TryPickT1(out var errors, out var value))
@@ -583,7 +661,7 @@ public class ArticlesController : BaseController
             next: "Create",
             article: DtoModelService.CreateArticleDTO(
                 article: article,
-                author: value.Author
+                author: value.User
             ),
             markup: MarkupParser.ParseToHtml(article.Content)
         ));

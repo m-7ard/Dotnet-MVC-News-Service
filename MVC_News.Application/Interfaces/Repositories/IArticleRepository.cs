@@ -8,5 +8,6 @@ public interface IArticleRepository
     public Task<Article> CreateAsync(Article article);
     public Task UpdateAsync(Article article);
     public Task<Article?> GetByIdAsync(Guid id);
+    public Task DeleteAsync(Article article);
     public Task<List<Article>> FilterAllAsync(FilterAllArticlesCriteria criteria);
 }

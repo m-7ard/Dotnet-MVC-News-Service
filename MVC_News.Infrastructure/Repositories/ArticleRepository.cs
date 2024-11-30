@@ -1,5 +1,4 @@
 using System.Linq.Expressions;
-using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using MVC_News.Application.Contracts.Criteria;
 using MVC_News.Application.Interfaces.Repositories;
@@ -96,5 +95,13 @@ public class ArticleRepository : IArticleRepository
         }
 
         return articles.Select(ArticleMapper.FromDbEntityToDomain).ToList();
+    }
+
+    public async Task DeleteAsync(Article article)
+    {
+
+        var entity = await _dbContext.Article.SingleAsync(d => d.Id == article.Id);
+        _dbContext.Remove(entity);
+        await _dbContext.SaveChangesAsync();
     }
 }

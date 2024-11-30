@@ -60,13 +60,13 @@ public class ListArticlesHandlerUnitTest
             createdBefore: command.CreatedBefore,
             authorId: command.AuthorId,
             orderBy: new Tuple<string, bool>("DateCreated", false),
-            limitBy: command.LimitBy,
+            limitBy: 24,
             tags: command.Tags,
             title: command.Title
         );
 
         _mockArticleRepository
-            .Setup(repo => repo.FilterAllAsync(criteria))
+            .Setup(repo => repo.FilterAllAsync(It.Is<FilterAllArticlesCriteria>(c => c.Equals(criteria))))
             .ReturnsAsync(_articles_all);
 
         // ACT

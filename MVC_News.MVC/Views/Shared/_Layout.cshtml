@@ -94,7 +94,7 @@
             @RenderBody()
         </main>
     </div>
-    @if (Model.Message is not null)
+    @if (Model.SystemMessage is not null)
     {
         <section class="fixed inset-0 flex flex-row justify-center" id="system-message">
             <div class="bg-white border border-gray-900 divide-y divide-gray-900 shadow w-96 mt-4 h-fit">
@@ -107,7 +107,7 @@
                     </button>
                 </header>
                 <div class="py-2 px-4 font-sm">
-                    @Model.Message
+                    @Model.SystemMessage
                 </div>
             </div>
         </section>
