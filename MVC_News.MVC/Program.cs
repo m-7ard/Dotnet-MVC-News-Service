@@ -61,7 +61,10 @@ var DefaultConnection = Environment.GetEnvironmentVariable("DefaultConnection");
 /// DB / database / dbcontext
 /// 
 
-builder.Services.AddDbContext<NewsDbContext>(options => options.UseSqlServer(DefaultConnection, b => b.MigrationsAssembly("MVC_News.MVC")));
+builder.Services.AddDbContext<NewsDbContext>(options => options.UseSqlServer(
+    builder.Configuration.GetConnectionString("DefaultConnection"), 
+    b => b.MigrationsAssembly("MVC_News.MVC")
+));
 
 var services = builder.Services;
 

@@ -1,7 +1,5 @@
 using System.Net;
 using System.Security.Claims;
-using System.Text.Json;
-using System.Web;
 using FluentValidation;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -13,10 +11,8 @@ using MVC_News.Application.Handlers.Articles.Delete;
 using MVC_News.Application.Handlers.Articles.List;
 using MVC_News.Application.Handlers.Articles.Read;
 using MVC_News.Application.Handlers.Articles.Update;
-using MVC_News.Application.Handlers.Authors.Read;
 using MVC_News.Application.Handlers.Users.Read;
 using MVC_News.Domain.DomainFactories;
-using MVC_News.Domain.Entities;
 using MVC_News.Domain.Errors;
 using MVC_News.MVC.DTOs.Contracts.Articles.Create;
 using MVC_News.MVC.DTOs.Contracts.Articles.List;

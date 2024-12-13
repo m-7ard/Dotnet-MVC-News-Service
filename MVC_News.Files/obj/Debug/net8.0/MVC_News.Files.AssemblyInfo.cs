@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("MVC_News.Files")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+760a7968c77f0f4354e30e911ee3c2d7745a3d05")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+dfc5b0944dd330cba541cc2acd2371ec2ca6f08d")]
 [assembly: System.Reflection.AssemblyProductAttribute("MVC_News.Files")]
 [assembly: System.Reflection.AssemblyTitleAttribute("MVC_News.Files")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -1,15 +1,15 @@
 @using MVC_News.MVC.Models.Partials
 @model ArticleContentPartialViewModel
 
-<div class="mixin-article-any">
+<div class="flex flex-col gap-4">
     <header>
-        <h1>
+        <h1 class="font-bold text-3xl">
             @Model.Article.Title
         </h1>
         <div class="flex flex-row overflow-hidden justify-between">
-            <div class="text-xs truncate">
+            <a class="text-xs truncate hover:underline" href="/users/@Model.Article.Author.Id">
                 @Model.Article.Author.DisplayName
-            </div>
+            </a>
             <div class="text-xs text-gray-500 truncate">
                 @Model.Article.DateCreated
             </div>
@@ -21,7 +21,10 @@
             </div>
         }
     </header>
-    @Html.Raw(Model.Markup)
+    <div class="mixin-article-any">
+        @Html.Raw(Model.Markup)
+
+    </div>
 </div>
 <footer class="flex flex-row gap-1 flex-wrap p-1 bg-gray-200 border border-gray-900">
     @foreach (var tag in Model.Article.Tags)

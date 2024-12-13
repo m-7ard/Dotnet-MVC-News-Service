@@ -7,7 +7,9 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MVC_Classifieds.Api.Models.Users;
+using MVC_News.Application.Contracts.Criteria;
 using MVC_News.Application.Errors;
+using MVC_News.Application.Handlers.Articles.List;
 using MVC_News.Application.Handlers.Subscriptions;
 using MVC_News.Application.Handlers.Users.ChangePassword;
 using MVC_News.Application.Handlers.Users.Login;
@@ -18,10 +20,12 @@ using MVC_News.MVC.DTOs.Contracts.Users.ChangePassword;
 using MVC_News.MVC.DTOs.Contracts.Users.CheckoutSubscription;
 using MVC_News.MVC.DTOs.Contracts.Users.Login;
 using MVC_News.MVC.DTOs.Contracts.Users.Register;
+using MVC_News.MVC.DTOs.Models;
 using MVC_News.MVC.Errors;
 using MVC_News.MVC.Exceptions;
 using MVC_News.MVC.Models;
 using MVC_News.MVC.Models.Users;
+using MVC_News.MVC.Services;
 
 namespace MVC_News.MVC.Controllers;
 
@@ -357,4 +361,44 @@ public class UsersController : BaseController
 
         return View(pageModel);
     }
+
+    // ***************
+    //  USER PROFILE
+    //
+    //
+
+    [Authorize]
+    [HttpGet("/users/{id}")]
+    public async Task<IActionResult> UserProfilePage(string id)
+    {
+        if (!Guid.TryParse(id, out var parsedUserId)) {
+            throw new InternalServerErrorException($"Invalid user id.");
+        }
+
+        var userQueryValue = await MakeReadUserQuery(parsedUserId);
+        var articlesQuery = new ListArticlesQuery(
+            authorId: userQueryValue.User.Id,
+            createdAfter: null,
+            createdBefore: null,
+            orderBy: null,
+            limitBy: null,
+            tags: null,
+            title: null
+        );
+
+        var articlesResult = await _mediator.Send(articlesQuery);
+
+        if (articlesResult.TryPickT1(out var articlesErrors, out var articlesValue))
+        {
+            var firstError = articlesErrors.First();
+            throw new InternalServerErrorException(firstError.Message);
+        }
+
+        var pageModel = new UserProfilePageModel(
+            user: userQueryValue.User,
+            articles: articlesValue.Articles.Select(article => DtoModelService.CreateArticleDTO(article: article, author: userQueryValue.User)).ToList()
+        );
+
+        return View(pageModel);
+    }    
 }

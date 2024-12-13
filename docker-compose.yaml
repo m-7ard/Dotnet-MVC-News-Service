@@ -1,0 +1,28 @@
+services:
+    sqlserver:
+        image: mcr.microsoft.com/mssql/server:2022-latest
+        environment:
+            - ACCEPT_EULA=Y
+            - SA_PASSWORD=adminword
+            - MSSQL_PID=Developer
+        ports:
+            - "1433:1433"
+        volumes:
+            - sqlserver-data:/var/opt/mssql/data
+
+    webapi: 
+        build: 
+            context: .
+            dockerfile: Dockerfile
+        image: mvc_news
+        container_name: mvc_news
+        ports: 
+            - "7000:8080"
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=mvc_news;User Id=SA;Password=adminword!;TrustServerCertificate=true
+        depends_on:
+            - sqlserver
+
+volumes:
+    sqlserver-data:

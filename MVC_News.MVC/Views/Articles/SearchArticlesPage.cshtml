@@ -78,10 +78,8 @@
                                 </div>
                             }
                         </div>
-                        <a href="/articles/@article.Id">
-                            <div class="text-xl font-bold line-clamp-2 hover:underline">
-                                @article.Title
-                            </div>
+                        <a class="text-xl font-bold line-clamp-2 hover:underline" href="/articles/@article.Id">
+                            @article.Title
                         </a>
                         <div class="line-clamp-2 max-h-[2lh] text-sm text-gray-600">
                             re:publica 25 will take place from 26-28 May 2025 at STATION Berlin. The motto for next years
@@ -90,9 +88,9 @@
                             challenges that lie in the digitalization of society to the stages. Join us!
                         </div>
                         <div class="flex flex-row gap-2 justify-between items-center">
-                            <div class="text-xs">
+                            <a class="text-xs hover:underline" href="/users/@article.Author.Id">
                                 @article.Author.DisplayName
-                            </div>
+                            </a>
                             <div class="text-xs text-gray-500">
                                 @article.DateCreated.ToLocalTime()
                             </div>

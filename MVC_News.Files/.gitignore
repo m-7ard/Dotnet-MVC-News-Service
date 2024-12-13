@@ -1,0 +1,6 @@
+Media/*
+!Media/include-this.txt
+!Media/user.jpg
+!Media/mads.png
+!Media/Tests/
+!Media/Tests/**

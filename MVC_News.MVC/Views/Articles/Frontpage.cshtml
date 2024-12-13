@@ -22,9 +22,9 @@
                             @Model.MainArticles[i].Title
                         </a>
                         <div class="flex flex-row overflow-hidden justify-between">
-                            <div class="text-xs truncate">
+                            <a class="text-xs truncate hover:underline" href="/users/@Model.MainArticles[i].Author.Id">
                                 @Model.MainArticles[i].Author.DisplayName
-                            </div>
+                            </a>
                             <div class="text-xs text-gray-500 truncate">
                                 @Model.MainArticles[i].DateCreated
                             </div>
@@ -56,18 +56,20 @@
             @foreach (var article in Model.NewestArticles)
             {
                 <li class="flex flex-col gap-2 grow overflow-hidden">
-                    @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
-                        className: "w-full aspect-[16/9] grow border border-gray-900",
-                        src: article.HeaderImage
-                    ))
+                    <a class="aspect-[16/9] grow border border-gray-900" href="/articles/@article.Id">
+                        @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
+                            className: "w-full h-full",
+                            src: article.HeaderImage
+                        ))
+                    </a>
                     <div class="overflow-hidden">
-                        <div class="text-xl font-bold line-clamp-2">
+                        <a class="text-xl font-bold line-clamp-2 hover:underline" href="/articles/@article.Id">
                             @article.Title
-                        </div>
+                        </a>
                         <div class="flex flex-col overflow-hidden">
-                            <div class="text-xs truncate">
+                            <a class="text-xs truncate hover:underline" href="/users/@article.Author.Id">
                                 @article.Author.DisplayName
-                            </div>
+                            </a>
                             <div class="text-xs text-gray-500 truncate">
                                 @article.DateCreated
                             </div>

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using MVC_News.Infrastructure.DbEntities;
 
@@ -28,6 +29,13 @@ public class ArticleConfigurations : IEntityTypeConfiguration<ArticleDbEntity>
         builder.Property(e => e.Tags)
             .HasConversion(
                 v => string.Join(',', v),
-                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
+                v => v.Split(',', StringSplitOptions.RemoveEmptyEntries),
+                new ValueComparer<string[]>(
+                    (c1, c2) =>
+                        (c1 == null && c2 == null) ||
+                        (c1 != null && c2 != null && c1.SequenceEqual(c2)), // Compare arrays, handle null
+                    c => c == null ? 0 : c.Aggregate(0, (a, v) => HashCode.Combine(a, v.GetHashCode())), // Generate hash code, handle null
+                    c => c == null ? new string[0] : c.ToArray() // Copy array, return empty array if null
+                ));
     }
 }

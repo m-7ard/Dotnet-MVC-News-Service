@@ -8,8 +8,11 @@
 
 <div class="mixin-page-like mixin-page-base mixin-content-grid">
     <div class="flex flex-col gap-2 w-[1000px] max-w-full" data-track="base">
-        <header class="text-2xl">
-            Create Article
+        <header class="flex flex-row gap-2 items-center justify-between">
+            <div class="text-2xl">Create Article</div>
+            <button type="button" class="mixin-button-like mixin-button-base theme-button-generic-green" id="fill-fields-button">
+                Fill Fields
+            </button>
         </header>
 
         <form class="flex flex-col gap-2">
@@ -80,5 +83,45 @@
             </footer>
         </form>
     </div>
-
 </div>
+<script>
+    const fillFieldsButton = document.getElementById("fill-fields-button");
+    const headerImage = document.querySelector("input[name='headerImage']");
+    const title = document.querySelector("input[name='title']");
+    const content = document.querySelector("textarea[name='content']");
+
+    fillFieldsButton.addEventListener("mouseup", () => {
+        headerImage.value = "https://upload.wikimedia.org/wikipedia/commons/4/4b/Amazon_Manaus_forest.jpg";
+        title.value = "The Amazon Rainforest: A Natural Wonder";
+        content.innerText = `
+            [bold]The Amazon Rainforest: The Lungs of Our Planet[/bold]  
+
+            [paragraph]The Amazon rainforest, often called the "lungs of the Earth," is a sprawling tropical forest that spans nine countries in South America. It is home to an incredible diversity of flora, fauna, and indigenous cultures, making it one of the most vital ecosystems on our planet.[/paragraph]  
+
+            [subheader]Unmatched Biodiversity[/subheader]  
+
+            [paragraph]The Amazon is the most biodiverse region on Earth. It hosts [link url=https://en.wikipedia.org/wiki/Amazon_rainforest]over 390 billion trees[/link], belonging to thousands of species. Animals like jaguars, sloths, and pink river dolphins thrive in its unique environment. Researchers estimate that one in ten known species on the planet lives in the Amazon.[/paragraph]  
+
+            [image url=https://cdn.pixabay.com/photo/2019/06/14/00/44/ecuador-4272657_1280.jpg caption=The hoatzin, a unique bird species found in the Amazon]  
+
+            [subheader]Cultural Significance[/subheader]  
+
+            [paragraph]The Amazon rainforest is also home to around 400 indigenous groups, many of whom have lived in harmony with the forest for thousands of years. These communities depend on the forest for food, medicine, and shelter, preserving traditional knowledge and practices that are invaluable to conservation efforts.[/paragraph]  
+
+            [image url=https://www.shutterstock.com/image-photo/elderly-indigenous-woman-her-tribe-600w-2177708911.jpg caption=An indigenous woman in the Amazon, preserving cultural heritage]  
+
+            [subheader]Threats to the Amazon[/subheader]  
+
+            [paragraph]Despite its importance, the Amazon faces numerous threats, including deforestation, mining, and climate change. Each year, vast areas are cleared for agriculture and logging, endangering countless species and accelerating global warming.[/paragraph]  
+
+            [image url=https://www.shutterstock.com/image-photo/drone-panoramic-aerial-view-illegal-600nw-2257001057.jpg caption=Deforestation in the Brazilian Amazon]  
+
+            [paragraph]International efforts, such as the Amazon Fund and reforestation initiatives, aim to reverse the damage and protect this critical ecosystem for future generations.[/paragraph]  
+
+            [bold]Why the Amazon Matters[/bold]  
+
+            [paragraph]The Amazon rainforest is not just a regional treasure; it is a global lifeline. Its ability to regulate the planet's oxygen and carbon cycles makes it indispensable to life on Earth. Protecting the Amazon means protecting our future.[/paragraph]  
+        `;
+    });
+
+</script>

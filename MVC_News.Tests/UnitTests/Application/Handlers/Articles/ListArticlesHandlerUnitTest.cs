@@ -45,7 +45,7 @@ public class ListArticlesHandlerUnitTest
     public async Task ListArticles_NoArguments_Success()
     {
         // ARRANGE
-        var command = new ListArticlesQuery(
+        var query = new ListArticlesQuery(
             authorId: null,
             createdAfter: null,
             createdBefore: null,
@@ -56,13 +56,13 @@ public class ListArticlesHandlerUnitTest
         );
 
         var criteria = new FilterAllArticlesCriteria(
-            createdAfter: command.CreatedAfter, 
-            createdBefore: command.CreatedBefore,
-            authorId: command.AuthorId,
+            createdAfter: query.CreatedAfter, 
+            createdBefore: query.CreatedBefore,
+            authorId: query.AuthorId,
             orderBy: new Tuple<string, bool>("DateCreated", false),
             limitBy: 24,
-            tags: command.Tags,
-            title: command.Title
+            tags: query.Tags,
+            title: query.Title
         );
 
         _mockArticleRepository
@@ -70,7 +70,7 @@ public class ListArticlesHandlerUnitTest
             .ReturnsAsync(_articles_all);
 
         // ACT
-        var result = await _handler.Handle(command, CancellationToken.None);
+        var result = await _handler.Handle(query, CancellationToken.None);
 
         // ASSERT
         Assert.True(result.IsT0);
