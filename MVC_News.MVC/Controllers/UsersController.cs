@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using MVC_Classifieds.Api.Models.Users;
-using MVC_News.Application.Contracts.Criteria;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Handlers.Articles.List;
 using MVC_News.Application.Handlers.Subscriptions;
@@ -20,9 +19,9 @@ using MVC_News.MVC.DTOs.Contracts.Users.ChangePassword;
 using MVC_News.MVC.DTOs.Contracts.Users.CheckoutSubscription;
 using MVC_News.MVC.DTOs.Contracts.Users.Login;
 using MVC_News.MVC.DTOs.Contracts.Users.Register;
-using MVC_News.MVC.DTOs.Models;
 using MVC_News.MVC.Errors;
 using MVC_News.MVC.Exceptions;
+using MVC_News.MVC.Interfaces;
 using MVC_News.MVC.Models;
 using MVC_News.MVC.Models.Users;
 using MVC_News.MVC.Services;
@@ -35,13 +34,15 @@ public class UsersController : BaseController
     private readonly IValidator<RegisterUserRequestDTO> _registerUserValidator;
     private readonly IValidator<LoginUserRequestDTO> _loginUserValidator;
     private readonly IValidator<ChangePasswordRequestDTO> _changePasswordValidator;
+    private readonly IDtoModelService _dtoModelService;
 
-    public UsersController(ISender mediator, IValidator<RegisterUserRequestDTO> registerUserValidator, IValidator<LoginUserRequestDTO> loginUserValidator, IValidator<ChangePasswordRequestDTO> changePasswordValidator)
+    public UsersController(ISender mediator, IValidator<RegisterUserRequestDTO> registerUserValidator, IValidator<LoginUserRequestDTO> loginUserValidator, IValidator<ChangePasswordRequestDTO> changePasswordValidator, IDtoModelService dtoModelService)
     {
         _mediator = mediator;
         _registerUserValidator = registerUserValidator;
         _loginUserValidator = loginUserValidator;
         _changePasswordValidator = changePasswordValidator;
+        _dtoModelService = dtoModelService;
     }
 
     private async Task<ReadUserResult> MakeReadUserQuery(Guid userId)
@@ -376,6 +377,7 @@ public class UsersController : BaseController
         }
 
         var userQueryValue = await MakeReadUserQuery(parsedUserId);
+        
         var articlesQuery = new ListArticlesQuery(
             authorId: userQueryValue.User.Id,
             createdAfter: null,
@@ -387,16 +389,17 @@ public class UsersController : BaseController
         );
 
         var articlesResult = await _mediator.Send(articlesQuery);
-
         if (articlesResult.TryPickT1(out var articlesErrors, out var articlesValue))
         {
             var firstError = articlesErrors.First();
             throw new InternalServerErrorException(firstError.Message);
         }
 
+        var articleDTOs = await _dtoModelService.CreateManyArticleDTO(articlesValue.Articles);
+
         var pageModel = new UserProfilePageModel(
             user: userQueryValue.User,
-            articles: articlesValue.Articles.Select(article => DtoModelService.CreateArticleDTO(article: article, author: userQueryValue.User)).ToList()
+            articles: articleDTOs
         );
 
         return View(pageModel);

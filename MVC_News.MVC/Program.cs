@@ -12,6 +12,7 @@ using MVC_News.Infrastructure;
 using MVC_News.Infrastructure.Repositories;
 using MVC_News.Infrastructure.Services;
 using MVC_News.MVC.Filters;
+using MVC_News.MVC.Interfaces;
 using MVC_News.MVC.Middleware;
 using MVC_News.MVC.Services;
 using MVC_News.MVC.Validators;
@@ -108,6 +109,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Regis
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IDtoModelService, DtoModelService>();
 
 ///
 ///

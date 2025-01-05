@@ -23,6 +23,7 @@ using MVC_News.MVC.DTOs.Contracts.Articles.Update;
 using MVC_News.MVC.DTOs.Models;
 using MVC_News.MVC.Errors;
 using MVC_News.MVC.Exceptions;
+using MVC_News.MVC.Interfaces;
 using MVC_News.MVC.Models.Articles;
 using MVC_News.MVC.Services;
 using Sprache;
@@ -34,6 +35,7 @@ public class ArticlesController : BaseController
     private readonly ISender _mediator;
     private readonly IValidator<CreateArticleRequestDTO> _createArticleValidator;
     private readonly IValidator<UpdateArticleRequestDTO> _updateArticleValidator;
+    private readonly IDtoModelService _dtoModelService;
 
     private List<string> ProcessRequestTags(List<string> tags)
     {
@@ -50,11 +52,12 @@ public class ArticlesController : BaseController
         return parsedArticleId;
     }
 
-    public ArticlesController(ISender mediator, IValidator<CreateArticleRequestDTO> createArticleValidator, IValidator<UpdateArticleRequestDTO> updateArticleValidator)
+    public ArticlesController(ISender mediator, IValidator<CreateArticleRequestDTO> createArticleValidator, IValidator<UpdateArticleRequestDTO> updateArticleValidator, IDtoModelService dtoModelService)
     {
         _mediator = mediator;
         _createArticleValidator = createArticleValidator;
         _updateArticleValidator = updateArticleValidator;
+        _dtoModelService = dtoModelService;
     }
 
     // ***************
@@ -80,15 +83,7 @@ public class ArticlesController : BaseController
             throw new InternalServerErrorException($"Something went wrong trying to list the frontpage articles.");
         }
 
-        var articleDTOs = new List<ArticleDTO>();
-        foreach (var article in value.Articles)
-        {
-            var readUserQuery = new ReadUserQuery(id: article.AuthorId);
-            var readUserResult = await _mediator.Send(readUserQuery);
-            var author = readUserResult.IsT0 ? readUserResult.AsT0.User : null;
-            articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
-        }
-
+        var articleDTOs = await _dtoModelService.CreateManyArticleDTO(value.Articles);
         List<ArticleDTO> mainArticles = articleDTOs.Take(3).ToList();
 
         return View(new FrontpagePageModel(
@@ -309,14 +304,7 @@ public class ArticlesController : BaseController
             throw new InternalServerErrorException($"Something went wrong trying to list articles.");
         }
 
-        var articleDTOs = new List<ArticleDTO>();
-        foreach (var article in value.Articles)
-        {
-            var readUserQuery = new ReadUserQuery(id: article.AuthorId);
-            var readUserResult = await _mediator.Send(readUserQuery);
-            var author = readUserResult.IsT0 ? readUserResult.AsT0.User : null;
-            articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
-        }
+        var articleDTOs = await _dtoModelService.CreateManyArticleDTO(value.Articles);
 
         return View(new ManageArticlesPageModel(
             articles: articleDTOs
@@ -351,14 +339,7 @@ public class ArticlesController : BaseController
             throw new InternalServerErrorException($"Something went wrong trying to list articles.");
         }
 
-        var articleDTOs = new List<ArticleDTO>();
-        foreach (var article in value.Articles)
-        {
-            var readUserQuery = new ReadUserQuery(id: article.AuthorId);
-            var readUserResult = await _mediator.Send(readUserQuery);
-            var author = readUserResult.IsT0 ? readUserResult.AsT0.User : null;
-            articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
-        }
+        var articleDTOs = await _dtoModelService.CreateManyArticleDTO(value.Articles);
 
         return View(new ListArticlesPageModel(
             articles: articleDTOs,
@@ -406,14 +387,7 @@ public class ArticlesController : BaseController
             throw new InternalServerErrorException($"Something went wrong trying to list articles.");
         }
 
-        var articleDTOs = new List<ArticleDTO>();
-        foreach (var article in value.Articles)
-        {
-            var readUserQuery = new ReadUserQuery(id: article.AuthorId);
-            var readUserResult = await _mediator.Send(readUserQuery);
-            var author = readUserResult.IsT0 ? readUserResult.AsT0.User : null;
-            articleDTOs.Add(DtoModelService.CreateArticleDTO(article: article, author: author));
-        }
+        var articleDTOs = await _dtoModelService.CreateManyArticleDTO(value.Articles);
 
         return View(new SearchArticlesPageModel(
             articles: articleDTOs,
@@ -440,11 +414,11 @@ public class ArticlesController : BaseController
             return Redirect($"/login?ReturnUrl=/articles/{id}");
         }
 
-        var articleQuery = new ReadArticleQuery(id: parsedArticleId, userId: parsedUserId);
-        var result = await _mediator.Send(articleQuery);
-        if (result.TryPickT1(out var articleErrors, out var articleValue))
+        var query = new ReadArticleQuery(id: parsedArticleId, userId: parsedUserId);
+        var result = await _mediator.Send(query);
+        if (result.TryPickT1(out var errors, out var value))
         {
-            var expectedError = articleErrors.First();
+            var expectedError = errors.First();
             
             if (expectedError.Code is ApplicationErrorCodes.ModelDoesNotExist)
             {
@@ -463,25 +437,11 @@ public class ArticlesController : BaseController
             throw new InternalServerErrorException($"Something went wrong trying to read an article.");
         }
 
-        var article = articleValue.Article;
-
-        var userQuery = new ReadUserQuery(id: article.AuthorId);
-        var userResult = await _mediator.Send(userQuery);
-        if (userResult.TryPickT1(out var userErrors, out var userValue))
-        {
-            if (userErrors[0].Code == ApplicationErrorCodes.ModelDoesNotExist)
-            {
-                throw new NotFoundException(userErrors[0].Message);
-            }
-            
-            throw new InternalServerErrorException($"Something went wrong trying to read the article's author.");
-        }
-
-        var author = userValue.User;
+        var articleDTO = await _dtoModelService.CreateArticleDTO(value.Article);
 
         return View(new ReadArticlePageModel(
-            article: DtoModelService.CreateArticleDTO(article, author: author),
-            markup: MarkupParser.ParseToHtml(article.Content)
+            article: articleDTO,
+            markup: MarkupParser.ParseToHtml(articleDTO.Content)
         ));
     }
 
@@ -497,11 +457,11 @@ public class ArticlesController : BaseController
         var parsedArticleId = TryReadArticleId(id);
         var parsedUserId = TryReadUserIdFromClaims();
 
-        var articleQuery = new ReadArticleQuery(id: parsedArticleId, userId: parsedUserId);
-        var result = await _mediator.Send(articleQuery);
-        if (result.TryPickT1(out var articleErrors, out var articleValue))
+        var query = new ReadArticleQuery(id: parsedArticleId, userId: parsedUserId);
+        var result = await _mediator.Send(query);
+        if (result.TryPickT1(out var errors, out var value))
         {
-            var expectedError = articleErrors.First();
+            var expectedError = errors.First();
             
             if (expectedError.Code is ApplicationErrorCodes.ModelDoesNotExist)
             {
@@ -520,24 +480,10 @@ public class ArticlesController : BaseController
             throw new InternalServerErrorException($"Something went wrong trying to read an article.");
         }
 
-        var article = articleValue.Article;
-
-        var userQuery = new ReadUserQuery(id: article.AuthorId);
-        var userResult = await _mediator.Send(userQuery);
-        if (userResult.TryPickT1(out var userErrors, out var userValue))
-        {
-            if (userErrors[0].Code == ApplicationErrorCodes.ModelDoesNotExist)
-            {
-                throw new NotFoundException(userErrors[0].Message);
-            }
-            
-            throw new InternalServerErrorException($"Something went wrong trying to read the article's author.");
-        }
-
-        var author = userValue.User;
+        var articleDTO = await _dtoModelService.CreateArticleDTO(value.Article);
 
         return View(new DeleteArticlesPageModel(
-            article: DtoModelService.CreateArticleDTO(article, author: author)
+            article: articleDTO
         ));
     }
 
@@ -612,12 +558,11 @@ public class ArticlesController : BaseController
             isPremium: request.IsPremium
         );
 
+        var articleDto = await _dtoModelService.CreateArticleDTO(article);
+
         return View("PreviewArticlePage", new PreviewArticlePageModel(
             next: "Update",
-            article: DtoModelService.CreateArticleDTO(
-                article: article,
-                author: value.User
-            ),
+            article: articleDto,
             markup: MarkupParser.ParseToHtml(article.Content)
         ));
     }
@@ -653,12 +598,11 @@ public class ArticlesController : BaseController
             isPremium: request.IsPremium
         );
 
+        var articleDto = await _dtoModelService.CreateArticleDTO(article);
+
         return View("PreviewArticlePage", new PreviewArticlePageModel(
             next: "Create",
-            article: DtoModelService.CreateArticleDTO(
-                article: article,
-                author: value.User
-            ),
+            article: articleDto,
             markup: MarkupParser.ParseToHtml(article.Content)
         ));
     }
