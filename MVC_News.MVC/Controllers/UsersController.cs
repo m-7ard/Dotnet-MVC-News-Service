@@ -130,7 +130,7 @@ public class UsersController : BaseController
             return View(new LoginPageModel(
                 email: request.Email,
                 password: request.Password,
-                errors: PlainMvcErrorFactory.TranslateServiceErrors(errors),
+                errors: PlainMvcErrorFactory.MapApplicationErrors(errors),
                 returnUrl: returnUrl
             ));
         }
@@ -201,7 +201,7 @@ public class UsersController : BaseController
                     errors, 
                     codeDictionary: new Dictionary<string, List<string>>()
                     {
-                        { ApplicationErrorCodes.ModelAlreadyExists, ["email"] }
+                        { ApplicationErrorCodes.ModelAlreadyExists, ["Email"] }
                     }    
                 )
             ));
@@ -353,7 +353,7 @@ public class UsersController : BaseController
             }
 
             return View(new UserAccountPageModel(
-                errors: PlainMvcErrorFactory.TranslateServiceErrors(errors),
+                errors: PlainMvcErrorFactory.MapApplicationErrors(errors),
                 user: queryResult.User,
                 subscription: queryResult.User.GetActiveSubscription()
             ));

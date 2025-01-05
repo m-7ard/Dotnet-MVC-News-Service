@@ -159,7 +159,7 @@ public class ArticlesController : BaseController
                 content: request.Content,
                 headerImage: request.HeaderImage,
                 tags: request.Tags,
-                errors: PlainMvcErrorFactory.TranslateServiceErrors(errors),
+                errors: PlainMvcErrorFactory.MapApplicationErrors(errors),
                 isPremium: request.IsPremium
             ));
         }
@@ -254,7 +254,7 @@ public class ArticlesController : BaseController
                 content: request.Content,
                 headerImage: request.HeaderImage,
                 tags: tags,
-                errors: PlainMvcErrorFactory.TranslateServiceErrors(errors),
+                errors: PlainMvcErrorFactory.MapApplicationErrors(errors),
                 isPremium: request.IsPremium
             ));
         }
