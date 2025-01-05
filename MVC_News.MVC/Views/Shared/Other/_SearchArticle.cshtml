@@ -1,0 +1,50 @@
+@using MVC_News.MVC.DTOs.Models;
+@using MVC_News.MVC.Models.Partials
+@model ArticleDTO;
+
+<section class="flex sm:flex-row max-sm:flex-col mixin-Scard-like mixin-Scard-base theme-Scard-generic-white border token-default-shadow token-default-border-color">
+    <a href="/articles/@Model.Id" class="h-48 aspect-[1/1] relative" data-role="section">
+        @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
+            className: "w-full h-full rounded-md overflow-hidden",
+            src: Model.HeaderImage
+        ))
+    </a>
+    <div class="sm:token-y-divider max-sm:token-x-divider"></div>
+    <div class="flex flex-col gap-2 overflow-hidden justify-between" data-role="section">
+        <div>
+            <a class="token-card--header--primary-text line-clamp-2 hover:underline" href="/articles/@Model.Id">
+                @Model.Title
+            </a>
+            <div class="flex flex-col overflow-hidden justify-between">
+                <div class="flex flex-row items-center justify-between">
+                    <a class="token-card--header--secondary-text truncate hover:underline" href="/users/@Model.Author.Id">
+                        @Model.Author.DisplayName
+                    </a>
+                    <div class="token-card--header--secondary-text truncate">
+                        @Model.DateCreated
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="token-x-divider"></hr>
+        <div class="text-sm overflow-hidden">
+            <div class="line-clamp-2 max-h-[2lh]">
+                re:publica 25 will take place from 26-28 May 2025 at STATION Berlin. The motto for next years
+                festival for the digital society is “Generation XYZ”. The programme will once again bring the
+                most important topics relating to the internet, its communities and the opportunities and
+                challenges that lie in the digitalization of society to the stages. Join us!
+            </div>
+        </div>
+        <footer class="flex flex-row gap-4">
+            @if (Model.IsPremium)
+            {
+                <div class="mixin-Sbutton-like mixin-Sbutton-like--static mixin-Sbutton-sm theme-Sbutton-generic-yellow theme-Sbutton-generic-yellow--static">
+                    Premium Article
+                </div>
+            }
+            <a class="mixin-Sbutton-like mixin-Sbutton-sm theme-Sbutton-generic-white justify-center ml-auto"  href="/articles/@Model.Id">
+                Keep Reading
+            </a>
+        </footer>
+    </div>
+</section>

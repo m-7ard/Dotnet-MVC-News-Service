@@ -8,8 +8,39 @@
     var articleContent = new ArticleContentPartialViewModel(article: Model.Article, markup: Model.Markup);
 }
 
-<div class="mixin-page-like mixin-page-base mixin-content-grid">
-    <form class="flex flex-row gap-2" data-track="base">
+<form class="mixin-page-like mixin-page-base mixin-content-grid">
+    <header class="flex flex-row grow gap-4 items-center" data-track="base" data-role="page-section">
+        <div class="token-default-title mr-auto">
+            Preview Articles
+        </div>
+        @if (Model.Next == "Create")
+        {
+            <button type="submit" formmethod="GET" formaction="/articles/create" class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-white ml-auto">
+                Keep Editing
+            </button>
+        }
+        else if (Model.Next == "Update")
+        {
+            <button type="submit" formmethod="GET" formaction="/articles/@Model.Article.Id/update" class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-white ml-auto">
+                Keep Editing
+            </button>
+        }
+
+        @if (Model.Next == "Create")
+        {
+            <button type="submit" formmethod="POST" formaction="/articles/create" class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-green">
+                Create
+            </button>
+        }
+        else if (Model.Next == "Update")
+        {
+            <button type="submit" formmethod="POST" formaction="/articles/@Model.Article.Id/update" class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-green">
+                Update
+            </button>
+        }
+    </header>
+    <hr class="token-divider-x" data-track="base" />
+    <div class="flex flex-row gap-4" data-track="base" data-role="page-section">
         <input hidden name="headerImage" value="@Model.Article.HeaderImage">
         <input hidden name="title" value="@Model.Article.Title">
         <textarea name="content" class="whitespace-pre-wrap" hidden>@Model.Article.Content</textarea>
@@ -29,42 +60,14 @@
         {
             <input hidden name="tags" value="@tag">        
         }
-
-        <footer class="flex flex-row grow gap-2 justify-end">
-            @if (Model.Next == "Create")
-            {
-                <button type="submit" formmethod="GET" formaction="/articles/create" class="mixin-button-like mixin-button-base theme-button-generic-white ml-auto">
-                    Keep Editing
-                </button>
-            }
-            else if (Model.Next == "Update")
-            {
-                <button type="submit" formmethod="GET" formaction="/articles/@Model.Article.Id/update" class="mixin-button-like mixin-button-base theme-button-generic-white ml-auto">
-                    Keep Editing
-                </button>
-            }
-
-            @if (Model.Next == "Create")
-            {
-                <button type="submit" formmethod="POST" formaction="/articles/create" class="mixin-button-like mixin-button-base theme-button-generic-green">
-                    Create
-                </button>
-            }
-            else if (Model.Next == "Update")
-            {
-                <button type="submit" formmethod="POST" formaction="/articles/@Model.Article.Id/update" class="mixin-button-like mixin-button-base theme-button-generic-green">
-                    Update
-                </button>
-            }
-        </footer>
-    </form>
-    <header class="flex flex-col gap-2" data-track="lg">
+    </div>
+    <header class="flex flex-col gap-4" data-track="lg" data-role="page-section">
         @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
             className: "aspect-[16/9] border border-gray-900",
             src: Model.Article.HeaderImage
         ))
     </header>
-    <main class="flex flex-col gap-2" data-track="base">
+    <main class="flex flex-col gap-4" data-track="base" data-role="page-section">
         <partial name="Other/_ArticleContent" model=@articleContent />
     </main>
-</div>
+</form>

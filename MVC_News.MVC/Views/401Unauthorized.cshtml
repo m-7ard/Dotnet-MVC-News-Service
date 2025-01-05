@@ -10,15 +10,17 @@
         </div>
         @if (Model.ExcepetionMessage is not null)
         {
-            <div class="w-96 bg-white border border-gray-900 divide-y divide-gray-900">
-                <div class="text-xs px-2 py-1">
-                    <div>
+            <div class="w-96 mixin-Scard-like mixin-Scard-base theme-Scard-generic-white border token-default-border-color token-default-shadow divide-y token-default-divide-color">
+                <section data-role="section">
+                    <div class="token-card--header--primary-text">
                         Error Message
                     </div>
-                </div>
-                <div class="text-sm px-2 py-1">
-                    @Model.ExcepetionMessage
-                </div>
+                </section>
+                <section data-role="section">
+                    <div class="token-card--header--secondary-text">
+                        @Model.ExcepetionMessage
+                    </div>
+                </section>
             </div>
         }
     </div>

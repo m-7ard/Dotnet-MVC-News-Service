@@ -29,84 +29,88 @@
     }
 }
 
-<div class="mixin-page-like mixin-page-base mixin-content-grid">
-    <div class="flex flex-col gap-4" data-track="base">
-        <header class="text-2xl">
+<form class="mixin-page-like mixin-page-base mixin-content-grid" action="/users/checkout-subscription" method="post">
+    <header data-role="page-section" data-track="base">
+        <div class="token-default-title">
             Checkout Subscription
-        </header>
-        <div class="flex flex-col gap-2 p-4 border border-gray-900 bg-white">
-            <header class="text-bold">
-                @timeLabel
-            </header>
-            <div class="font-bold">
-                <span class="text-xl">
-                    @priceLabel
-                </span> 
-            </div>
         </div>
-        <form class="flex flex-col gap-2" action="/users/checkout-subscription" method="post">
-            <input hidden name="duration" value="@Model.Duration" />
-            @await Html.PartialAsync("Reusables/_FormErrors", Model.Errors.TryGetValue("_", out var formErrors) ? formErrors : null)
-            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                label: "Dummy First Name",
-                errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "FirstName"),
-                partialRoute: "Reusables/_CharField",
-                partialProps: new CharFieldPartialViewModel(
-                    value: "",
-                    name: "firstName",
-                    inputAttrs: new Dictionary<string, string>()
-                    {
-                        { "type", "text" }
-                    }
-                )
-            ))
-            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                label: "Dummy Last Name",
-                errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "LastName"),
-                partialRoute: "Reusables/_CharField",
-                partialProps: new CharFieldPartialViewModel(
-                    value: "",
-                    name: "lastName",
-                    inputAttrs: new Dictionary<string, string>()
-                    {
-                        { "type", "text" }
-                    }
-                )
-            ))
-            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                label: "Dummy Street",
-                errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "Street"),
-                partialRoute: "Reusables/_CharField",
-                partialProps: new CharFieldPartialViewModel(
-                    value: "",
-                    name: "street",
-                    inputAttrs: new Dictionary<string, string>()
-                    {
-                        { "type", "text" }
-                    }
-                )
-            ))
-            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                label: "Dummy Zip",
-                errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "Zip"),
-                partialRoute: "Reusables/_CharField",
-                partialProps: new CharFieldPartialViewModel(
-                    value: "",
-                    name: "zip",
-                    inputAttrs: new Dictionary<string, string>()
-                    {
-                        { "type", "text" }
-                    }
-                )
-            ))
-            <footer class="flex flex-row gap-2 justify-end mt-2">
-                <button class="mixin-button-like mixin-button-base theme-button-generic-white" type="reset">
-                    Reset
-                </button>
-                <button class="mixin-button-like mixin-button-base theme-button-generic-green" type="submit">
-                    Checkout
-                </button>
-            </footer>
-        </form>
+    </header>
+    <hr data-track="base" class="token-x-divider" />
+    <div data-track="base" data-role="page-section">
+        <section class="mixin-Scard-like mixin-Scard-base theme-Scard-generic-white token-default-shadow border token-default-border-color">
+            <section data-role="section">
+                <div class="token-card--header--primary-text">
+                    @timeLabel
+                </div>
+                    <div class="token-card--header--secondary-text">
+                    @priceLabel
+                </div>
+            </section>
+        </section>
     </div>
-</div>
+    <hr data-track="base" class="token-x-divider" />
+    <section class="flex flex-col gap-4" data-role="page-section" data-track="base">
+        <input hidden name="duration" value="@Model.Duration" />
+        @await Html.PartialAsync("Reusables/_FormErrors", Model.Errors.TryGetValue("_", out var formErrors) ? formErrors : null)
+        @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+            label: "Dummy First Name",
+            errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "FirstName"),
+            partialRoute: "Reusables/_CharField",
+            partialProps: new CharFieldPartialViewModel(
+                value: "",
+                name: "firstName",
+                inputAttrs: new Dictionary<string, string>()
+                {
+                    { "type", "text" }
+                }
+            )
+        ))
+        @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+            label: "Dummy Last Name",
+            errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "LastName"),
+            partialRoute: "Reusables/_CharField",
+            partialProps: new CharFieldPartialViewModel(
+                value: "",
+                name: "lastName",
+                inputAttrs: new Dictionary<string, string>()
+                {
+                    { "type", "text" }
+                }
+            )
+        ))
+        @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+            label: "Dummy Street",
+            errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "Street"),
+            partialRoute: "Reusables/_CharField",
+            partialProps: new CharFieldPartialViewModel(
+                value: "",
+                name: "street",
+                inputAttrs: new Dictionary<string, string>()
+                {
+                    { "type", "text" }
+                }
+            )
+        ))
+        @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+            label: "Dummy Zip",
+            errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "Zip"),
+            partialRoute: "Reusables/_CharField",
+            partialProps: new CharFieldPartialViewModel(
+                value: "",
+                name: "zip",
+                inputAttrs: new Dictionary<string, string>()
+                {
+                    { "type", "text" }
+                }
+            )
+        ))
+    </section>
+    <footer class="flex flex-row gap-4 justify-end" data-role="page-section" data-track="base">
+        <button class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-white" type="reset">
+            Reset
+        </button>
+        <button class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-green" type="submit">
+            Checkout
+        </button>
+    </footer>
+</form>

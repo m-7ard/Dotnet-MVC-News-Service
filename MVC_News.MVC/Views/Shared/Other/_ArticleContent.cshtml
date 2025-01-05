@@ -2,35 +2,41 @@
 @model ArticleContentPartialViewModel
 
 <div class="flex flex-col gap-4">
-    <header>
-        <h1 class="font-bold text-3xl">
-            @Model.Article.Title
-        </h1>
-        <div class="flex flex-row overflow-hidden justify-between">
-            <a class="text-xs truncate hover:underline" href="/users/@Model.Article.Author.Id">
-                @Model.Article.Author.DisplayName
-            </a>
-            <div class="text-xs text-gray-500 truncate">
-                @Model.Article.DateCreated
+    <header class="flex flex-col gap-4">
+        <div>
+            <h1 class="token-default-title">
+                @Model.Article.Title
+            </h1>
+            <div class="flex flex-row justify-between items-center">
+                <div>
+                    <a class="text-xs truncate hover:underline" href="/users/@Model.Article.Author.Id">
+                        @Model.Article.Author.DisplayName
+                    </a>
+                    <div class="text-xs text-gray-500 truncate">
+                        @Model.Article.DateCreated
+                    </div>
+                </div>
+                @if (Model.Article.IsPremium)
+                {
+                    <div class="mixin-Sbutton-like mixin-Sbutton-like--static mixin-Sbutton-sm theme-Sbutton-generic-yellow theme-Sbutton-generic-yellow--static w-fit ml-auto">
+                        Premium Article
+                    </div>
+                }
             </div>
         </div>
-        @if (Model.Article.IsPremium)
-        {
-            <div class="mixin-button-like mixin-button-sm theme-button-generic-yellow w-fit">
-                Premium Article
-            </div>
-        }
     </header>
+    <hr class="token-x-divider" />
     <div class="mixin-article-any">
         @Html.Raw(Model.Markup)
-
     </div>
 </div>
-<footer class="flex flex-row gap-1 flex-wrap p-1 bg-gray-200 border border-gray-900">
-    @foreach (var tag in Model.Article.Tags)
-    {
-        <a class="mixin-button-like mixin-button-base theme-button-generic-white">
-            @tag
-        </a>
-    }
+<footer class="mixin-Scard-like mixin-Scard-base theme-Scard-generic-white border token-default-border-color">
+    <section data-role="section" class="flex flex-row gap-2">
+        @foreach (var tag in Model.Article.Tags)
+        {
+            <a class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-white">
+                @tag
+            </a>
+        }
+    </section>
 </footer>

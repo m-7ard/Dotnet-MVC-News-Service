@@ -1,19 +1,27 @@
 @layer components {
-    .mixin-button-like {
-        @apply flex items-center box-border transition-colors cursor-pointer select-none;
+    .mixin-Sbutton-like {
+        @apply flex items-center box-border select-none;
+
+        &--static {
+            @apply cursor-auto;
+        }
+
+        &:not(.mixin-Sbutton-like--static) {
+            @apply transition-colors cursor-pointer;
+        }
     }
 
-    .mixin-button-sm {
-        @apply gap-0.5 px-2 py-1 text-sm leading-none;
+    .mixin-Sbutton-sm {
+        @apply gap-2 px-4 py-1.5 text-sm leading-none rounded-lg;
     }
 
-    .mixin-button-base {
-        @apply gap-2 px-4 py-1 text-base;
+    .mixin-Sbutton-base {
+        @apply gap-2 px-4 py-1 text-base rounded-lg;
     }
 
     .mixin-textarea-any {
         > textarea {
-            @apply block w-full transition-colors leading-none resize-none p-2 whitespace-pre-wrap;
+            @apply block w-full transition-colors leading-none resize-none p-2;
         }
 
         [data-role="footer"] {
@@ -26,39 +34,41 @@
     }
 
     .mixin-char-input-like {
-        @apply after:content-['.'] relative;
+        @apply after:content-['.'] relative rounded-md overflow-hidden;
 
         > input {
-            @apply absolute inset-0 transition-colors;
+            @apply absolute inset-0 transition-colors rounded-md overflow-hidden;
         }
     }
 
     .mixin-char-input-sm {
-        @apply mixin-button-sm;
+        @apply mixin-Sbutton-sm;
 
         > input {
-            @apply mixin-button-sm absolute inset-0 transition-colors;
+            @apply mixin-Sbutton-sm absolute inset-0 transition-colors;
         }
     }
 
     .mixin-char-input-base {
-        @apply mixin-button-base;
+        @apply mixin-Sbutton-base;
         // OVERRIDE
         @apply px-2;
 
         > input {
-            @apply mixin-button-base absolute inset-0 transition-colors;
+            @apply mixin-Sbutton-base absolute inset-0 transition-colors;
             // OVERRIDE
             @apply px-2;
         }
     }
 
     .mixin-page-like {
-        @apply flex flex-col grow overflow-auto;
+        @apply flex flex-col grow;
     }
 
     .mixin-page-base {
-        @apply px-4 py-4 gap-y-4;
+        > [data-role="page-section"] {
+            @apply p-4;
+        }
     }
 
     .mixin-page-content-like {
@@ -69,26 +79,19 @@
         @apply gap-4;
     }
 
-    .mixin-panel-like {
-        @apply flex flex-col grow max-h-full;
-    }
-
-    .mixin-panel-base {
-        @apply px-4 py-4 gap-y-4 max-w-72 sm:max-w-prose;
-    }
-
     .mixin-checkbox-like {
-        @apply cursor-pointer relative  w-fit;
+        @apply cursor-pointer relative rounded-full;
 
         [data-role="inner-part"] {
             @apply after:content-['.'] 
                 after:flex 
                 after:opacity-0
                 after:aspect-square
-                after:h-4
-                after:w-4
+                after:h-2
+                after:w-2
                 after:pointer-events-none
-                transition-colors;
+                transition-colors 
+                rounded-full;
         }
 
         > input {
@@ -107,13 +110,24 @@
         }
     }
 
-    .mixin-Pcard-like {
-        @apply divide-y border;
+    .mixin-checkbox-base {
+        @apply p-1 text-base leading-none;
+        [data-role="inner-part"] {
+            @apply after:h-3 after:w-3;
+        }
+
+        > input {
+            @apply p-1 text-base leading-none absolute inset-0 transition-colors;
+        }
     }
 
-    .mixin-Pcard-base {
+    .mixin-Scard-like {
+        @apply rounded-lg overflow-hidden;
+    }
+
+    .mixin-Scard-base {
         [data-role="section"] {
-            @apply py-2 px-4;
+            @apply py-3 px-4;
         }
     }
 
@@ -121,7 +135,7 @@
         > [data-track] {
             @apply w-full mx-auto;
         }
-
+    
         > [data-track="full"] {
             @apply max-w-full;
         }
@@ -140,22 +154,22 @@
     }
 
     .mixin-article-any {
-        @apply flex flex-col gap-4;
+        @apply flex flex-col gap-4 token-card--default-text;
 
         header {
             @apply flex flex-col gap-1;
         }
 
         h1 {
-            @apply font-bold text-3xl;
+            @apply token-default-title;
         }
 
         strong {
-            @apply font-bold;
+            @apply token-base-title;
         }
 
         h2 {
-            @apply font-bold text-2xl;
+            @apply token-default-title;
         }
 
         a {
@@ -167,11 +181,23 @@
         }
 
         img {
-            @apply aspect-[16/9] object-contain bg-gray-200 border border-gray-900;
+            @apply aspect-[16/9] object-contain rounded-md overflow-hidden;
         }
 
         figcaption {
             @apply text-xs text-gray-600;
+        }
+    }
+
+    .mixin-panel-like {
+        @apply grow max-h-full;
+    }
+
+    .mixin-panel-base {
+        @apply max-w-72 sm:max-w-prose rounded-lg;
+
+        > [data-role="panel-section"] {
+            @apply p-4;
         }
     }
 }

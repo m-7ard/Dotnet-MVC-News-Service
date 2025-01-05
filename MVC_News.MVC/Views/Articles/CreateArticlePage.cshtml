@@ -7,82 +7,81 @@
 }
 
 <div class="mixin-page-like mixin-page-base mixin-content-grid">
-    <div class="flex flex-col gap-2 w-[1000px] max-w-full" data-track="base">
-        <header class="flex flex-row gap-2 items-center justify-between">
-            <div class="text-2xl">Create Article</div>
-            <button type="button" class="mixin-button-like mixin-button-base theme-button-generic-green" id="fill-fields-button">
-                Fill Fields
+    <header class="flex flex-row gap-4 items-center justify-between" data-track="base" data-role="page-section">
+        <div class="token-default-title">Create Article</div>
+        <button type="button" class="mixin-Sbutton-like mixin-Sbutton-sm theme-Sbutton-generic-green token-default-shadow" id="fill-fields-button">
+            Fill Fields
+        </button>
+    </header>
+    <hr class="token-x-divider" data-track="base"/>
+    <form class="flex flex-col gap-4" data-track="base" data-role="page-section">
+        @await Html.PartialAsync("Reusables/_FormErrors", Model.Errors.TryGetValue("_", out var formErrors) ? formErrors : null)
+        
+        @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+            label: "Header Image URL",
+            errors: Model.Errors.TryGetValue("HeaderImage", out var headerImageErrors) ? headerImageErrors : null,
+            partialRoute: "Reusables/_CharField",
+            partialProps: new CharFieldPartialViewModel(
+                value: Model.HeaderImage,
+                name: "headerImage",
+                inputAttrs: new Dictionary<string, string>()
+            )
+        ))
+        
+        @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+            label: "Title",
+            errors: Model.Errors.TryGetValue("Title", out var titleErrors) ? titleErrors : null,
+            partialRoute: "Reusables/_CharField",
+            partialProps: new CharFieldPartialViewModel(
+                value: Model.Title,
+                name: "title",
+                inputAttrs: new Dictionary<string, string>()
+            )
+        ))
+
+        @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+            label: "Content",
+            errors: Model.Errors.TryGetValue("Content", out var contentErrors) ? contentErrors : null,
+            partialRoute: "Reusables/_Textarea",
+            partialProps: new TextareaPartialViewModel(
+                value: Model.Content,
+                name: "content",
+                textareaAttrs: new Dictionary<string, string>()
+                {
+                    { "rows", "20" }                    
+                }
+            )
+        ))
+        @await Html.PartialAsync("Other/_MarkupLegend")
+        @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+            label: "Tags",
+            errors: null,
+            partialRoute: "Reusables/_TagField",
+            partialProps: new TagFieldPartialViewModel(
+                name: "tags",
+                value: Model.Tags
+            )
+        ))
+        @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+            label: "Is a Premium Article?",
+            errors: null,
+            partialRoute: "Reusables/_CheckboxField",
+            partialProps: new CheckboxFieldPartialViewModel(
+                name: "isPremium",
+                value: Model.IsPremium
+            ),
+            isRow: true
+        ))
+        <hr class="token-x-divider" data-track="base"/>
+        <footer class="flex flex-row gap-4 justify-end" data-track="base" data-role="page-section">
+            <button type="submit" formmethod="POST" formaction="/articles/create/preview" class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-white token-default-shadow">
+                Preview
             </button>
-        </header>
-
-        <form class="flex flex-col gap-2">
-            @await Html.PartialAsync("Reusables/_FormErrors", Model.Errors.TryGetValue("_", out var formErrors) ? formErrors : null)
-            
-            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                label: "Header Image URL",
-                errors: Model.Errors.TryGetValue("HeaderImage", out var headerImageErrors) ? headerImageErrors : null,
-                partialRoute: "Reusables/_CharField",
-                partialProps: new CharFieldPartialViewModel(
-                    value: Model.HeaderImage,
-                    name: "headerImage",
-                    inputAttrs: new Dictionary<string, string>()
-                )
-            ))
-            
-            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                label: "Title",
-                errors: Model.Errors.TryGetValue("Title", out var titleErrors) ? titleErrors : null,
-                partialRoute: "Reusables/_CharField",
-                partialProps: new CharFieldPartialViewModel(
-                    value: Model.Title,
-                    name: "title",
-                    inputAttrs: new Dictionary<string, string>()
-                )
-            ))
-
-            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                label: "Content",
-                errors: Model.Errors.TryGetValue("Content", out var contentErrors) ? contentErrors : null,
-                partialRoute: "Reusables/_Textarea",
-                partialProps: new TextareaPartialViewModel(
-                    value: Model.Content,
-                    name: "content",
-                    textareaAttrs: new Dictionary<string, string>()
-                    {
-                        { "rows", "20" }                    
-                    }
-                )
-            ))
-            @await Html.PartialAsync("Other/_MarkupLegend")
-            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                label: "Content",
-                errors: null,
-                partialRoute: "Reusables/_TagField",
-                partialProps: new TagFieldPartialViewModel(
-                    name: "tags",
-                    value: Model.Tags
-                )
-            ))
-            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                label: "Is a Premium Article?",
-                errors: null,
-                partialRoute: "Reusables/_CheckboxField",
-                partialProps: new CheckboxFieldPartialViewModel(
-                    name: "isPremium",
-                    value: Model.IsPremium
-                ),
-                isRow: true
-            ))
-            <footer class="flex flex-row gap-[inherit]">
-                <button type="submit" formmethod="POST" formaction="/articles/create/preview" class="mixin-button-like mixin-button-base theme-button-generic-white ml-auto">
-                    Preview
-                </button>
-                <button type="submit" formmethod="POST" formaction="/articles/create" class="mixin-button-like mixin-button-base theme-button-generic-green">
-                    Create
-                </button>
-            </footer>
-        </form>
-    </div>
+            <button type="submit" formmethod="POST" formaction="/articles/create" class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-green token-default-shadow">
+                Create
+            </button>
+        </footer>
+    </form>
 </div>
 <script>
     const fillFieldsButton = document.getElementById("fill-fields-button");

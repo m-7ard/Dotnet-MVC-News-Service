@@ -11,9 +11,7 @@ using MVC_News.Application.Handlers.Articles.Delete;
 using MVC_News.Application.Handlers.Articles.List;
 using MVC_News.Application.Handlers.Articles.Read;
 using MVC_News.Application.Handlers.Articles.Update;
-using MVC_News.Application.Handlers.Users.Read;
 using MVC_News.Domain.DomainFactories;
-using MVC_News.Domain.Errors;
 using MVC_News.MVC.DTOs.Contracts.Articles.Create;
 using MVC_News.MVC.DTOs.Contracts.Articles.List;
 using MVC_News.MVC.DTOs.Contracts.Articles.Manage;
@@ -193,9 +191,11 @@ public class ArticlesController : BaseController
 
         if (result.TryPickT1(out var errors, out var value))
         {
-            if (errors.First().Code is ApplicationErrorCodes.ModelDoesNotExist)
+            var firstError = errors.First();
+
+            if (firstError.Code is ApplicationValidatorErrorCodes.ARTICLE_EXISTS_ERROR)
             {
-                throw new NotFoundException(errors.First().Message);
+                throw new NotFoundException(firstError.Message);
             }
         }
 
@@ -420,21 +420,17 @@ public class ArticlesController : BaseController
         {
             var expectedError = errors.First();
             
-            if (expectedError.Code is ApplicationErrorCodes.ModelDoesNotExist)
+            if (expectedError.Code is ApplicationValidatorErrorCodes.ARTICLE_EXISTS_ERROR)
             {
                 throw new NotFoundException(expectedError.Message);
             }
 
-            if (expectedError.Code is ApplicationErrorCodes.DomainError)
+            if (expectedError.Code is ApplicationErrorCodes.NotAllowed)
             {
-                var metadata = (ApplicationDomainErrorMetadata)expectedError.Metadata;
-                if (metadata.OriginalError.Code is ArticleDomainErrorsCodes.UserNotAllowed)
-                {
-                    return Redirect("/users/choose-subscription");
-                }
+                return Redirect("/users/choose-subscription");
             }
 
-            throw new InternalServerErrorException($"Something went wrong trying to read an article.");
+            throw new InternalServerErrorException(expectedError.Message);
         }
 
         var articleDTO = await _dtoModelService.CreateArticleDTO(value.Article);
@@ -463,21 +459,17 @@ public class ArticlesController : BaseController
         {
             var expectedError = errors.First();
             
-            if (expectedError.Code is ApplicationErrorCodes.ModelDoesNotExist)
+            if (expectedError.Code is ApplicationValidatorErrorCodes.ARTICLE_EXISTS_ERROR)
             {
                 throw new NotFoundException(expectedError.Message);
             }
 
-            if (expectedError.Code is ApplicationErrorCodes.DomainError)
+            if (expectedError.Code is ApplicationErrorCodes.NotAllowed)
             {
-                var metadata = (ApplicationDomainErrorMetadata)expectedError.Metadata;
-                if (metadata.OriginalError.Code is ArticleDomainErrorsCodes.UserNotAllowed)
-                {
-                    throw new UnauthorizedException($"User is not allowed to read article.");
-                }
+                throw new UnauthorizedException(expectedError.Message);
             }
 
-            throw new InternalServerErrorException($"Something went wrong trying to read an article.");
+            throw new InternalServerErrorException(expectedError.Message);
         }
 
         var articleDTO = await _dtoModelService.CreateArticleDTO(value.Article);
@@ -501,21 +493,17 @@ public class ArticlesController : BaseController
         {
             var expectedError = errors.First();
             
-            if (expectedError.Code is ApplicationErrorCodes.ModelDoesNotExist)
+            if (expectedError.Code is ApplicationValidatorErrorCodes.ARTICLE_EXISTS_ERROR)
             {
                 throw new NotFoundException(expectedError.Message);
             }
 
-            if (expectedError.Code is ApplicationErrorCodes.DomainError)
+            if (expectedError.Code is ApplicationErrorCodes.NotAllowed)
             {
-                var metadata = (ApplicationDomainErrorMetadata)expectedError.Metadata;
-                if (metadata.OriginalError.Code is ArticleDomainErrorsCodes.UserNotAllowed)
-                {
-                    throw new UnauthorizedException($"User is not allowed to delete article.");
-                }
+                throw new UnauthorizedException(expectedError.Message);
             }
 
-            throw new InternalServerErrorException($"Something went wrong trying to read an article.");
+            throw new InternalServerErrorException(expectedError.Message);
         }
 
         return Redirect("/articles/manage");

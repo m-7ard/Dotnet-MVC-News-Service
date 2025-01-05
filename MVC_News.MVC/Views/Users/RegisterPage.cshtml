@@ -6,67 +6,64 @@
     ViewData["Title"] = "Pee";
 }
 
-<div class="mixin-page-like mixin-page-base mixin-content-grid">
-    <div class="flex flex-col gap-4" data-track="base">
-        <div class="bg-gray-200 border-gray-900 border px-2 py-1 text-sm flex flex-row gap-2 overflow-hidden justify-between ml-auto">
-            <div class="truncate">
-                Already have an account?
-            </div>
-            <a class="text-blue-800 hover:underline" href="/login">Go to Login</a>
-        </div>
-        <header class="text-xl font-bold">
+<form class="mixin-page-like mixin-page-base mixin-content-grid" action="/register" method="post">
+    <header class="flex flex-row gap-4 items-center justify-between" data-role="page-section" data-track="base">
+        <header class="token-default-title">
             Register
         </header>
-        <form class="flex flex-col gap-2" action="/register" method="post">
-            @await Html.PartialAsync("Reusables/_FormErrors", Model.Errors.TryGetValue("_", out var formErrors) ? formErrors : null)
-            
-            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                label: "Email",
-                errors: Model.Errors.TryGetValue("Email", out var emailErrors) ? emailErrors : null,
-                partialRoute: "Reusables/_CharField",
-                partialProps: new CharFieldPartialViewModel(
-                    value: Model.Email,
-                    name: "email",
-                    inputAttrs: new Dictionary<string, string>()
-                    {
-                        { "type", "email" }
-                    }
-                )
-            ))
-            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                label: "Password",
-                errors: Model.Errors.TryGetValue("Password", out var passwordErrors) ? passwordErrors : null,
-                partialRoute: "Reusables/_CharField",
-                partialProps: new CharFieldPartialViewModel(
-                    value: Model.Password,
-                    name: "password",
-                    inputAttrs: new Dictionary<string, string>()
-                    {
-                        { "type", "password" }
-                    }
-                )
-            ))
-            @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                label: "Display Name",
-                errors: Model.Errors.TryGetValue("DisplayName", out var displayNameErrors) ? displayNameErrors : null,
-                partialRoute: "Reusables/_CharField",
-                partialProps: new CharFieldPartialViewModel(
-                    value: Model.DisplayName,
-                    name: "displayName",
-                    inputAttrs: new Dictionary<string, string>()
-                    {
-                        { "type", "text" }
-                    }
-                )
-            ))
-            <footer class="flex flex-row gap-2 justify-end mt-2">
-                <button class="mixin-button-like mixin-button-base theme-button-generic-white" type="reset">
-                    Reset
-                </button>
-                <button class="mixin-button-like mixin-button-base theme-button-generic-green" type="submit">
-                    Submit
-                </button>
-            </footer>
-        </form>
-    </div>
-</div>
+        <a class="mixin-Sbutton-like mixin-Sbutton-sm theme-Sbutton-generic-white token-default-shadow" href="/login">Login</a>
+    </header>
+    <hr class="token-x-divider" data-track="base" />
+    <section class="flex flex-col gap-4" data-role="page-section" data-track="base">
+        @await Html.PartialAsync("Reusables/_FormErrors", Model.Errors.TryGetValue("_", out var formErrors) ? formErrors : null)
+        
+        @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+            label: "Email",
+            errors: Model.Errors.TryGetValue("Email", out var emailErrors) ? emailErrors : null,
+            partialRoute: "Reusables/_CharField",
+            partialProps: new CharFieldPartialViewModel(
+                value: Model.Email,
+                name: "email",
+                inputAttrs: new Dictionary<string, string>()
+                {
+                    { "type", "email" }
+                }
+            )
+        ))
+        @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+            label: "Password",
+            errors: Model.Errors.TryGetValue("Password", out var passwordErrors) ? passwordErrors : null,
+            partialRoute: "Reusables/_CharField",
+            partialProps: new CharFieldPartialViewModel(
+                value: Model.Password,
+                name: "password",
+                inputAttrs: new Dictionary<string, string>()
+                {
+                    { "type", "password" }
+                }
+            )
+        ))
+        @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+            label: "Display Name",
+            errors: Model.Errors.TryGetValue("DisplayName", out var displayNameErrors) ? displayNameErrors : null,
+            partialRoute: "Reusables/_CharField",
+            partialProps: new CharFieldPartialViewModel(
+                value: Model.DisplayName,
+                name: "displayName",
+                inputAttrs: new Dictionary<string, string>()
+                {
+                    { "type", "text" }
+                }
+            )
+        ))
+    </section>
+    <hr class="token-x-divider" data-track="base" />
+    <footer class="flex flex-row gap-4 justify-end" data-role="page-section" data-track="base">
+        <button class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-white token-default-shadow" type="reset">
+            Reset
+        </button>
+        <button class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-green token-default-shadow" type="submit">
+            Submit
+        </button>
+    </footer>
+</form>

@@ -6,12 +6,17 @@
 }
 else
 {
-    <div class="flex flex-col px-4 py-2 border border-gray-900 bg-red-300">
-        @for (var i = 0; i < Model.Count; i++)
-        {
-            <div class="text-sm">
-                &#8226 @Model[i]
-            </div>
-        }
+    <div class="mixin-Scard-like mixin-Scard-base theme-Scard-generic-white border token-default-border-color token-default-shadow divide-y token-default-divide-y">
+        <section data-role="section">
+            <div class="token-card--header--primary-text">Form Errors</div>
+        </section>
+        <section data-role="section">
+            @for (var i = 0; i < Model.Count; i++)
+            {
+                <div class="token-default-list__value">
+                    &#8226 @Model[i]
+                </div>
+            }
+        </section>
     </div>
 }

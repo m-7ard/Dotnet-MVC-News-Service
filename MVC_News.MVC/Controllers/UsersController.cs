@@ -24,7 +24,6 @@ using MVC_News.MVC.Exceptions;
 using MVC_News.MVC.Interfaces;
 using MVC_News.MVC.Models;
 using MVC_News.MVC.Models.Users;
-using MVC_News.MVC.Services;
 
 namespace MVC_News.MVC.Controllers;
 
@@ -53,7 +52,7 @@ public class UsersController : BaseController
         if (queryResult.TryPickT1(out var queryErrors, out var queryValue))
         {
             var firstError = queryErrors.First();
-            if (firstError.Code is ApplicationErrorCodes.ModelDoesNotExist)
+            if (firstError.Code is ApplicationValidatorErrorCodes.USER_WITH_ID_EXISTS_ERROR)
             {
                 throw new NotFoundException(firstError.Message);
             }
@@ -300,7 +299,7 @@ public class UsersController : BaseController
         if (result.TryPickT1(out var errors, out var value))
         {
             var firstError = errors.First();
-            if (firstError.Code is ApplicationErrorCodes.ModelDoesNotExist)
+            if (firstError.Code is ApplicationValidatorErrorCodes.USER_WITH_ID_EXISTS_ERROR)
             {
                 throw new NotFoundException(firstError.Message);
             }
@@ -347,7 +346,7 @@ public class UsersController : BaseController
         if (result.TryPickT1(out var errors, out var value))
         {
             var firstError = errors.First();
-            if (firstError.Code is ApplicationErrorCodes.ModelDoesNotExist)
+            if (firstError.Code is ApplicationValidatorErrorCodes.USER_WITH_ID_EXISTS_ERROR)
             {
                 throw new NotFoundException(firstError.Message);
             }

@@ -98,8 +98,8 @@
     </div>
     @if (Model.SystemMessage is not null)
     {
-        <div class="fixed inset-0 flex-row flex justify-center p-12 pointer-events-none" id="system-message">
-            <section class="mixin-panel-like mixin-panel-base theme-panel-generic-white divide-y token-default-divide-color token-default-shadow border token-default-border-color h-fit  pointer-events-auto">
+        <aside class="fixed inset-0 flex-row justify-between p-12">
+            <section class="mixin-panel-like mixin-panel-base divide-y token-default-divide-color token-default-shadow border token-default-border-color" id="system-message">
                 <header class="flex flex-row gap-4 justify-between items-center" data-role="panel-section">
                     <div class="token-default-title">
                         System Message
@@ -114,7 +114,7 @@
                     </div>
                 </section>
             </section>
-        </div>
+        </aside>
     }
     <script>
         const systemMessage = document.getElementById("system-message");

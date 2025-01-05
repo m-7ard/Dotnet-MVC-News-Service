@@ -1,15 +1,21 @@
 @layer components {
-  .mixin-button-like {
-    @apply flex items-center box-border transition-colors cursor-pointer select-none;
+  .mixin-Sbutton-like {
+    @apply flex items-center box-border select-none;
   }
-  .mixin-button-sm {
-    @apply gap-0.5 px-2 py-1 text-sm leading-none;
+  .mixin-Sbutton-like--static {
+    @apply cursor-auto;
   }
-  .mixin-button-base {
-    @apply gap-2 px-4 py-1 text-base;
+  .mixin-Sbutton-like:not(.mixin-Sbutton-like--static) {
+    @apply transition-colors cursor-pointer;
+  }
+  .mixin-Sbutton-sm {
+    @apply gap-2 px-4 py-1.5 text-sm leading-none rounded-lg;
+  }
+  .mixin-Sbutton-base {
+    @apply gap-2 px-4 py-1 text-base rounded-lg;
   }
   .mixin-textarea-any > textarea {
-    @apply block w-full transition-colors leading-none resize-none p-2 whitespace-pre-wrap;
+    @apply block w-full transition-colors leading-none resize-none p-2;
   }
   .mixin-textarea-any [data-role=footer] {
     @apply w-full border-t;
@@ -18,30 +24,30 @@
     @apply w-fit ml-auto px-2 text-xs border-l;
   }
   .mixin-char-input-like {
-    @apply after:content-["."] relative;
+    @apply after:content-["."] relative rounded-md overflow-hidden;
   }
   .mixin-char-input-like > input {
-    @apply absolute inset-0 transition-colors;
+    @apply absolute inset-0 transition-colors rounded-md overflow-hidden;
   }
   .mixin-char-input-sm {
-    @apply mixin-button-sm;
+    @apply mixin-Sbutton-sm;
   }
   .mixin-char-input-sm > input {
-    @apply mixin-button-sm absolute inset-0 transition-colors;
+    @apply mixin-Sbutton-sm absolute inset-0 transition-colors;
   }
   .mixin-char-input-base {
-    @apply mixin-button-base;
+    @apply mixin-Sbutton-base;
     @apply px-2;
   }
   .mixin-char-input-base > input {
-    @apply mixin-button-base absolute inset-0 transition-colors;
+    @apply mixin-Sbutton-base absolute inset-0 transition-colors;
     @apply px-2;
   }
   .mixin-page-like {
-    @apply flex flex-col grow overflow-auto;
+    @apply flex flex-col grow;
   }
-  .mixin-page-base {
-    @apply px-4 py-4 gap-y-4;
+  .mixin-page-base > [data-role=page-section] {
+    @apply p-4;
   }
   .mixin-page-content-like {
     @apply flex flex-col;
@@ -49,29 +55,24 @@
   .mixin-page-content-base {
     @apply gap-4;
   }
-  .mixin-panel-like {
-    @apply flex flex-col grow max-h-full;
-  }
-  .mixin-panel-base {
-    @apply px-4 py-4 gap-y-4 max-w-72 sm:max-w-prose;
-  }
   .mixin-checkbox-like {
-    @apply cursor-pointer relative w-fit;
+    @apply cursor-pointer relative rounded-full;
   }
   .mixin-checkbox-like [data-role=inner-part] {
-    @apply after:content-["."]
-                after:flex
+    @apply after:content-["."] 
+                after:flex 
                 after:opacity-0
                 after:aspect-square
-                after:h-4
-                after:w-4
+                after:h-2
+                after:w-2
                 after:pointer-events-none
-                transition-colors;
+                transition-colors 
+                rounded-full;
   }
   .mixin-checkbox-like > input {
-    @apply absolute
-            inset-0
-            opacity-0
+    @apply absolute 
+            inset-0 
+            opacity-0 
             cursor-pointer;
   }
   .mixin-checkbox-sm {
@@ -80,11 +81,20 @@
   .mixin-checkbox-sm > input {
     @apply p-1 text-sm leading-none absolute inset-0 transition-colors;
   }
-  .mixin-Pcard-like {
-    @apply divide-y border;
+  .mixin-checkbox-base {
+    @apply p-1 text-base leading-none;
   }
-  .mixin-Pcard-base [data-role=section] {
-    @apply py-2 px-4;
+  .mixin-checkbox-base [data-role=inner-part] {
+    @apply after:h-3 after:w-3;
+  }
+  .mixin-checkbox-base > input {
+    @apply p-1 text-base leading-none absolute inset-0 transition-colors;
+  }
+  .mixin-Scard-like {
+    @apply rounded-lg overflow-hidden;
+  }
+  .mixin-Scard-base [data-role=section] {
+    @apply py-3 px-4;
   }
   .mixin-content-grid > [data-track] {
     @apply w-full mx-auto;
@@ -102,19 +112,19 @@
     @apply max-w-[450px];
   }
   .mixin-article-any {
-    @apply flex flex-col gap-4;
+    @apply flex flex-col gap-4 token-card--default-text;
   }
   .mixin-article-any header {
     @apply flex flex-col gap-1;
   }
   .mixin-article-any h1 {
-    @apply font-bold text-3xl;
+    @apply token-default-title;
   }
   .mixin-article-any strong {
-    @apply font-bold;
+    @apply token-base-title;
   }
   .mixin-article-any h2 {
-    @apply font-bold text-2xl;
+    @apply token-default-title;
   }
   .mixin-article-any a {
     @apply font-bold underline;
@@ -123,75 +133,45 @@
     @apply flex flex-col gap-1;
   }
   .mixin-article-any img {
-    @apply aspect-[16/9] object-contain bg-gray-200 border border-gray-900;
+    @apply aspect-[16/9] object-contain rounded-md overflow-hidden;
   }
   .mixin-article-any figcaption {
     @apply text-xs text-gray-600;
   }
+  .mixin-panel-like {
+    @apply grow max-h-full;
+  }
+  .mixin-panel-base {
+    @apply max-w-72 sm:max-w-prose rounded-lg;
+  }
+  .mixin-panel-base > [data-role=panel-section] {
+    @apply p-4;
+  }
 }
 @layer components {
   .theme-input-generic-white {
-    @apply border border-gray-900 flex flex-grow;
+    @apply border flex flex-grow border-gray-300;
   }
   .theme-input-generic-white > input {
-    @apply text-gray-900 bg-white focus:bg-gray-200;
-  }
-  .theme-button-generic-white {
-    @apply border border-gray-900 text-gray-900;
-  }
-  .theme-button-generic-white:not(.theme-button-generic-white[data-active=true]) {
-    @apply bg-white hover:bg-gray-200;
-  }
-  .theme-button-generic-white[data-active=true] {
-    @apply bg-gray-200;
-  }
-  .theme-button-generic-yellow {
-    @apply border border-gray-900 text-gray-900;
-  }
-  .theme-button-generic-yellow:not(.theme-button-generic-yellow[data-active=true]) {
-    @apply bg-yellow-300 hover:bg-yellow-400;
-  }
-  .theme-button-generic-yellow[data-active=true] {
-    @apply bg-yellow-400;
-  }
-  .theme-button-generic-green {
-    @apply border border-gray-900 text-gray-900;
-  }
-  .theme-button-generic-green:not(.theme-button-generic-green[data-active=true]) {
-    @apply bg-green-300 hover:bg-green-400;
-  }
-  .theme-button-generic-green[data-active=true] {
-    @apply bg-green-400;
-  }
-  .theme-button-generic-blue {
-    @apply border border-gray-900 text-gray-900;
-  }
-  .theme-button-generic-blue:not(.theme-button-generic-blue[data-active=true]) {
-    @apply bg-blue-300 hover:bg-blue-400;
-  }
-  .theme-button-generic-blue[data-active=true] {
-    @apply bg-blue-400;
-  }
-  .theme-button-generic-red {
-    @apply border border-gray-900 text-gray-900;
-  }
-  .theme-button-generic-red:not(.theme-button-generic-red[data-active=true]) {
-    @apply bg-red-300 hover:bg-red-400;
-  }
-  .theme-button-generic-red[data-active=true] {
-    @apply bg-red-400;
+    @apply text-gray-900 bg-white focus:bg-gray-300;
   }
   .theme-checkbox-generic-white {
-    @apply border border-gray-900 bg-white hover:bg-gray-200;
+    @apply border border-gray-300 shadow;
+  }
+  .theme-checkbox-generic-white:not(.theme-checkbox-generic-white--active, .theme-checkbox-generic-white:has(:checked)) {
+    @apply bg-white hover:bg-gray-200;
+  }
+  .theme-checkbox-generic-white--active, .theme-checkbox-generic-white:has(:checked) {
+    @apply bg-gray-200;
   }
   .theme-checkbox-generic-white--active [data-role=inner-part], .theme-checkbox-generic-white:has(:checked) [data-role=inner-part] {
-    @apply bg-gray-900;
+    @apply bg-gray-700;
   }
   .theme-textarea-generic-white {
-    @apply border border-gray-900 text-gray-900 bg-white;
+    @apply border border-gray-300 text-gray-900 bg-white rounded-md overflow-hidden;
   }
   .theme-textarea-generic-white > textarea {
-    @apply bg-white focus:bg-gray-200;
+    @apply bg-white focus:bg-gray-300;
   }
   .theme-textarea-generic-white [data-role=footer] {
     @apply bg-transparent border-gray-900;
@@ -199,11 +179,118 @@
   .theme-textarea-generic-white [data-role=counter] {
     @apply border-gray-900;
   }
-  .theme-Pcard-generic-white {
-    @apply bg-white divide-gray-900 border-gray-900;
-  }
   .theme-panel-generic-white {
-    @apply bg-gray-50 border border-gray-900;
+    @apply bg-white;
+  }
+  .theme-Scard-generic-white {
+    @apply bg-white;
+  }
+  .theme-Sbutton-generic-white {
+    @apply border border-gray-300 text-gray-800;
+  }
+  .theme-Sbutton-generic-white:not(.theme-Sbutton-generic-white.active) {
+    @apply bg-white;
+  }
+  .theme-Sbutton-generic-white.active, .theme-Sbutton-generic-white:not(.theme-Sbutton-generic-white--static):hover {
+    @apply bg-gray-200;
+  }
+  .theme-Sbutton-generic-yellow {
+    @apply text-gray-800;
+  }
+  .theme-Sbutton-generic-yellow:not(.theme-Sbutton-generic-yellow.active) {
+    @apply bg-yellow-300;
+  }
+  .theme-Sbutton-generic-yellow.active, .theme-Sbutton-generic-yellow:not(.theme-Sbutton-generic-yellow--static):hover {
+    @apply bg-yellow-400;
+  }
+  .theme-Sbutton-generic-green {
+    @apply text-white;
+  }
+  .theme-Sbutton-generic-green:not(.theme-Sbutton-generic-green.active) {
+    @apply bg-emerald-500;
+  }
+  .theme-Sbutton-generic-green.active, .theme-Sbutton-generic-green:not(.theme-Sbutton-generic-green--static):hover {
+    @apply bg-emerald-600;
+  }
+  .theme-Sbutton-generic-red {
+    @apply text-white;
+  }
+  .theme-Sbutton-generic-red:not(.theme-Sbutton-generic-red.active) {
+    @apply bg-red-500;
+  }
+  .theme-Sbutton-generic-red.active, .theme-Sbutton-generic-red:not(.theme-Sbutton-generic-red--static):hover {
+    @apply bg-red-600;
+  }
+  .theme-Sbutton-generic-orange {
+    @apply text-gray-800;
+  }
+  .theme-Sbutton-generic-orange:not(.theme-Sbutton-generic-orange.active) {
+    @apply bg-orange-300;
+  }
+  .theme-Sbutton-generic-orange.active, .theme-Sbutton-generic-orange:not(.theme-Sbutton-generic-orange--static):hover {
+    @apply bg-orange-400;
+  }
+  .theme-Sbutton-generic-blue {
+    @apply text-white;
+  }
+  .theme-Sbutton-generic-blue:not(.theme-Sbutton-generic-blue.active) {
+    @apply bg-blue-500;
+  }
+  .theme-Sbutton-generic-blue.active, .theme-Sbutton-generic-blue:not(.theme-Sbutton-generic-blue--static):hover {
+    @apply bg-blue-600;
+  }
+  .theme-avatar-any {
+    @apply bg-gray-300 shadow shadow-gray-400/20 rounded-md;
+  }
+}
+@layer components {
+  .token-card--header--primary-text {
+    @apply text-base font-semibold text-gray-800;
+  }
+  .token-card--header--secondary-text {
+    @apply text-sm text-gray-800;
+  }
+  .token-card--header--tertiary-text {
+    @apply text-sm text-gray-900;
+  }
+  .token-card--label {
+    @apply text-sm text-gray-900 font-semibold;
+  }
+  .token-card--default-text {
+    @apply text-base text-gray-900;
+  }
+  .token-default-list {
+    @apply text-base flex flex-row justify-between items-center gap-3;
+  }
+  .token-default-list__label {
+    @apply text-sm font-semibold;
+  }
+  .token-default-list__value {
+    @apply text-gray-700 text-sm;
+  }
+  .token-default-shadow {
+    box-shadow: 0 2px 8px 0px rgba(0, 0, 0, 0.1);
+  }
+  .token-default-border-color {
+    @apply border-gray-300;
+  }
+  .token-default-divide-color {
+    @apply divide-gray-300;
+  }
+  .token-default-avatar {
+    @apply aspect-square h-full overflow-hidden shrink-0 rounded-lg bg-gray-300;
+  }
+  .token-default-title {
+    @apply text-lg font-bold text-gray-800;
+  }
+  .token-base-title {
+    @apply text-base font-bold text-gray-800;
+  }
+  .token-x-divider {
+    @apply h-0 border-t border-gray-300 w-full;
+  }
+  .token-y-divider {
+    @apply w-1 border-r border-gray-300 h-full;
   }
 }
 @tailwind base;
@@ -221,6 +308,4 @@ body,
 
 button:focus {
   outline: none;
-}
-
-/*# sourceMappingURL=index.css.map */
+}/*# sourceMappingURL=index.css.map */

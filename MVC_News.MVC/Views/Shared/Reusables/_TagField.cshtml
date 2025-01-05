@@ -3,24 +3,23 @@
 @model TagFieldPartialViewModel
 
 @{
-    var tagFieldItemClass = "mixin-button-like mixin-button-base theme-button-generic-white";
+    var tagFieldItemClass = "mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-white";
     var id = $"TAG_FIELD_{Guid.NewGuid()}";
 }
 
-<div class="flex flex-col gap-1" role="tag-field" id="@id">
-    <div class="flex flex-row gap-1">
-        <div class="mixin-button-like mixin-button-base theme-button-generic-white" role="TAG_FIELD_SUBMIT">
+<div class="mixin-Scard-like mixin-Scard-base theme-Scard-generic-white border token-default-border-color divide-y token-default-divide-color" role="tag-field" id="@id">
+    <div class="flex flex-row gap-2" data-role="section">
+        <div class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-white" role="TAG_FIELD_SUBMIT">
             Add Tag
         </div>
         <div class="mixin-char-input-like mixin-char-input-base theme-input-generic-white">
             <input type="text" role="TAG_FIELD_INPUT"></input>
         </div>
     </div>
-    <ul class="flex flex-row flex-wrap gap-1 p-1 bg-gray-200 border border-gray-900" role="TAG_FIELD_LIST">
+    <section class="flex flex-row gap-2 flex-wrap" role="TAG_FIELD_LIST" data-role="section">
         <!-- Empty hidden input so the value is sent as a list -->
         <input hidden name="@Model.Name" />
-
-    </ul>
+    </section>
     <li class="@tagFieldItemClass hidden" role="TAG_FIELD_ITEM" data-template="TAG_FIELD_ITEM">
         #value
         <input disabled hidden name="@Model.Name" value="#value" />

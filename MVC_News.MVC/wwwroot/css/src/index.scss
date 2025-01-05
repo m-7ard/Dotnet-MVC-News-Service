@@ -1,5 +1,6 @@
 @use "./mixins.scss";
 @use "./themes.scss";
+@use "./tokens.scss";
 
 @tailwind base;
 @tailwind components;

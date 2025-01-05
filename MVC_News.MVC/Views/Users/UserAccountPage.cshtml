@@ -10,146 +10,184 @@
 }
 
 <div class="mixin-page-like mixin-page-base mixin-content-grid">
-    <div class="flex flex-col gap-4" data-track="base">
-        <header class="text-2xl">
+    <header data-track="base" data-role="page-section">
+        <div class="token-default-title">
             User Account
-        </header>
-        <main class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div class="flex flex-col gap-2 border border-gray-900 p-4 bg-white">
-                <header class="font-bold">
-                    User Information
+        </div>
+    </header>
+    <hr class="token-x-divider" data-track="base"/>
+    <main class="grid grid-cols-1 sm:grid-cols-2 gap-4" data-track="base" data-role="page-section">
+        <aside class="flex flex-col gap-4">
+            <div class="mixin-Scard-like mixin-Scard-base theme-Scard-generic-white border token-default-shadow token-default-border-color divide-y token-default-divide-color h-fit">
+                <header data-role="section">
+                    <div class="token-card--header--primary-text">
+                        User Information
+                    </div>
                 </header>
-                <div>
-                    <div class="text-sm font-bold">
-                        Email
+                <section data-role="section">
+                    <div class="token-default-list">
+                        <div class="token-default-list__label">
+                            Email
+                        </div>
+                        <div class="token-default-list__value">
+                            @Model.User.Email
+                        </div>
                     </div>
-                    <div class="text-sm">
-                        @Model.User.Email
+                    <div class="token-default-list">
+                        <div class="token-default-list__label">
+                            Display Name
+                        </div>
+                        <div class="token-default-list__value">
+                            @Model.User.DisplayName
+                        </div>
                     </div>
-                </div>
-                <div>
-                    <div class="text-sm font-bold">
-                        Display Name
-                    </div>
-                    <div class="text-sm">
-                        @Model.User.DisplayName
-                    </div>
-                </div>
+                </section>
             </div>
-            <div class="flex flex-col gap-2 border border-gray-900 p-4 bg-white">
-                <header class="font-bold">
-                    Subscription
+            <form class="mixin-Scard-like mixin-Scard-base theme-Scard-generic-white border token-default-shadow token-default-border-color divide-y token-default-divide-color h-fit" method="POST" action="/">
+                <header data-role="section">
+                    <div class="token-card--header--primary-text">
+                        Change Email
+                    </div>
                 </header>
-                @if (Model.Subscription == null)
-                {
-                    <div class="text-sm">
-                        Currently Not Subscribed
+                <section data-role="section" class="flex flex-col gap-4">
+                    @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                        label: "New Email",
+                        errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "NewEmail"),
+                        partialRoute: "Reusables/_CharField",
+                        partialProps: new CharFieldPartialViewModel(
+                            value: "",
+                            name: "newEmail",
+                            inputAttrs: new Dictionary<string, string>()
+                            {
+                                { "type", "email" }
+                            }
+                        )
+                    ))
+                    @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                        label: "Confirm New Email",
+                        errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "ConfirmNewEmail"),
+                        partialRoute: "Reusables/_CharField",
+                        partialProps: new CharFieldPartialViewModel(
+                            value: "",
+                            name: "confirmNewEmail",
+                            inputAttrs: new Dictionary<string, string>()
+                            {
+                                { "type", "email" }
+                            }
+                        )
+                    ))
+                    @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                        label: "Password",
+                        errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "Password"),
+                        partialRoute: "Reusables/_CharField",
+                        partialProps: new CharFieldPartialViewModel(
+                            value: "",
+                            name: "Password",
+                            inputAttrs: new Dictionary<string, string>()
+                            {
+                                { "type", "password" }
+                            }
+                        )
+                    ))
+                </section>
+                <footer data-role="section" class="flex flex-row justify-between gap-4">
+                    <button class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-white" type="reset">
+                        Reset
+                    </button>
+                    <button class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-green justify-center mt-auto">
+                        Change Password
+                    </button>
+                </footer>
+            </form>
+        </aside>
+        <aside class="flex flex-col gap-4">
+            <div class="mixin-Scard-like mixin-Scard-base theme-Scard-generic-white border token-default-shadow token-default-border-color divide-y token-default-divide-color h-fit">
+                <header data-role="section">
+                    <div class="token-card--header--primary-text">
+                        Subscription
                     </div>
-                    <a class="mixin-button-like mixin-button-base theme-button-generic-yellow justify-center mt-auto" href="/users/choose-subscription">
-                        Choose Subscription
-                    </a>
-                }
-                else
-                {
-                    <div class="text-sm">
-                        Currently Subscribed
-                    </div>
-                    <div class="text-sm">
-                        <span class="font-bold">
-                            Start Date:
-                        </span>
-                        <span>
-                            @Model.Subscription.Dates.StartDate
-                        </span>
-                    </div>
-                    <div class="text-sm">
-                        <span class="font-bold">
-                            Expiry Date:
-                        </span>
-                        <span>
-                            @Model.Subscription.Dates.ExpirationDate
-                        </span>
-                    </div>
-                }
+                    @if (Model.Subscription == null)
+                    {
+                        <div class="token-card--header--secondary-text">
+                            Currently Not Subscribed
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="token-card--header--secondary-text">
+                            Currently Subscribed
+                        </div>
+                    }
+                </header>
+                <section data-role="section">
+                    @if (Model.Subscription == null)
+                    {
+                        <a class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-yellow justify-center mt-auto" href="/users/choose-subscription">
+                            Choose Subscription
+                        </a>
+                    }
+                    else
+                    {
+                        <div class="token-default-list">
+                            <span class="token-default-list__label">
+                                Start Date
+                            </span>
+                            <span class="token-default-list__value">
+                                @Model.Subscription.Dates.StartDate
+                            </span>
+                        </div>
+                        <div class="token-default-list">
+                            <span class="token-default-list__label">
+                                Expiry Date
+                            </span>
+                            <span class="token-default-list__value">
+                                @Model.Subscription.Dates.ExpirationDate
+                            </span>
+                        </div>
+                    }
+                </section>
             </div>
-            <form class="flex flex-col gap-2 border border-gray-900 p-4 bg-white" method="POST" action="/users/account/change-password">
-                <header class="font-bold">
-                    Change Password
+            <form class="mixin-Scard-like mixin-Scard-base theme-Scard-generic-white border token-default-shadow token-default-border-color divide-y token-default-divide-color h-fit" method="POST" action="/users/account/change-password">
+                <header data-role="section">
+                    <div class="token-card--header--primary-text">
+                        Change Password
+                    </div>
                 </header>
-                @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                    label: "Current Password",
-                    errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "CurrentPassword"),
-                    partialRoute: "Reusables/_CharField",
-                    partialProps: new CharFieldPartialViewModel(
-                        value: "",
-                        name: "currentPassword",
-                        inputAttrs: new Dictionary<string, string>()
-                    )
-                ))
-                @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                    label: "New Password",
-                    errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "NewPassword"),
-                    partialRoute: "Reusables/_CharField",
-                    partialProps: new CharFieldPartialViewModel(
-                        value: "",
-                        name: "newPassword",
-                        inputAttrs: new Dictionary<string, string>()
-                        {
-                            { "type", "password" }
-                        }
-                    )
-                ))
-                <button class="mixin-button-like mixin-button-base theme-button-generic-green justify-center mt-auto">
-                    Change Password
-                </button>
+                <section data-role="section" class="flex flex-col gap-4">
+                    @await Html.PartialAsync("Reusables/_FormErrors", Model.Errors.TryGetValue("_", out var formErrors) ? formErrors : null)
+                    @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                        label: "Current Password",
+                        errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "CurrentPassword"),
+                        partialRoute: "Reusables/_CharField",
+                        partialProps: new CharFieldPartialViewModel(
+                            value: "",
+                            name: "currentPassword",
+                            inputAttrs: new Dictionary<string, string>()
+                        )
+                    ))
+                    @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
+                        label: "New Password",
+                        errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "NewPassword"),
+                        partialRoute: "Reusables/_CharField",
+                        partialProps: new CharFieldPartialViewModel(
+                            value: "",
+                            name: "newPassword",
+                            inputAttrs: new Dictionary<string, string>()
+                            {
+                                { "type", "password" }
+                            }
+                        )
+                    ))
+                </section>
+                <footer data-role="section" class="flex flex-row justify-between gap-4">
+                    <button class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-white" type="reset">
+                        Reset
+                    </button>
+                    <button class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-green">
+                        Change Password
+                    </button>
+                </footer>
             </form>
-            <form class="flex flex-col gap-2 border border-gray-900 p-4 bg-white" method="POST" action="//">
-                <header class="font-bold">
-                    Change Email
-                </header>
-                @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                    label: "New Email",
-                    errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "NewEmail"),
-                    partialRoute: "Reusables/_CharField",
-                    partialProps: new CharFieldPartialViewModel(
-                        value: "",
-                        name: "newEmail",
-                        inputAttrs: new Dictionary<string, string>()
-                        {
-                            { "type", "email" }
-                        }
-                    )
-                ))
-                @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                    label: "Confirm New Email",
-                    errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "ConfirmNewEmail"),
-                    partialRoute: "Reusables/_CharField",
-                    partialProps: new CharFieldPartialViewModel(
-                        value: "",
-                        name: "confirmNewEmail",
-                        inputAttrs: new Dictionary<string, string>()
-                        {
-                            { "type", "email" }
-                        }
-                    )
-                ))
-                @await Html.PartialAsync("Reusables/_FormField", new FormFieldVPartialiewModel(
-                    label: "Password",
-                    errors: UtilityHelpers.GetErrorsOrNull(Model.Errors, "Password"),
-                    partialRoute: "Reusables/_CharField",
-                    partialProps: new CharFieldPartialViewModel(
-                        value: "",
-                        name: "Password",
-                        inputAttrs: new Dictionary<string, string>()
-                        {
-                            { "type", "password" }
-                        }
-                    )
-                ))
-                <button class="mixin-button-like mixin-button-base theme-button-generic-green justify-center mt-auto">
-                    Change Password
-                </button>
-            </form>
-        </main>
-    </div>
+        </aside>
+    </main>
 </div>

@@ -6,52 +6,54 @@
 }
 
 <div class="mixin-page-like mixin-page-base mixin-content-grid">
-    <div class="flex flex-col gap-2" data-track="base">
-        <header class="flex flex-row gap-[inherit] items-center justify-between">
-            <div class="text-2xl">
-                Articles
-            </div>
-            <a href="/articles/create" class="mixin-button-like mixin-button-base theme-button-generic-green">
-                Create Article
-            </a>
-        </header>
-        <div class="grid max-[445px]:grid-cols-1 grid-cols-2 gap-x-2 gap-y-4 overflow-hidden">
-            @foreach (var article in Model.Articles)
-            {
-                <div class="flex flex-col gap-2 overflow-hidden">
+    <header class="flex flex-row gap-4 items-center justify-between" data-track="base" data-role="page-section">
+        <div class="token-default-title">
+            Articles
+        </div>
+        <a href="/articles/create" class="mixin-Sbutton-like mixin-Sbutton-sm theme-Sbutton-generic-white token-default-shadow">
+            Create Article
+        </a>
+    </header>
+    <hr class="token-x-divider" data-track="base"/>
+    <div class="grid max-[445px]:grid-cols-1 grid-cols-2 gap-x-2 gap-y-4 overflow-hidden" data-track="base" data-role="page-section">
+        @foreach (var article in Model.Articles)
+        {
+            <div class="mixin-Scard-like mixin-Scard-base theme-Scard-generic-white token-default-shadow token-default-divide-color divide-y">
+                <section data-role="section">
                     <a href="/articles/@article.Id">
                         @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
-                            className: "aspect-[16/9] border border-gray-900",
+                            className: "aspect-[16/9] rounded-md overflow-hidden",
                             src: article.HeaderImage
                         ))
-                        <div>
-                            <a href="/articles/@article.Id">
-                                <div class="text-xl font-bold line-clamp-2 hover:underline">
-                                    @article.Title
-                                </div>
-                            </a>
-                            <div class="flex flex-row gap-2 justify-between items-center">
-                                <div class="text-xs">
-                                    @article.Author.DisplayName
-                                </div>
-                                <div class="text-xs text-gray-500">
-                                    @article.DateCreated.ToLocalTime()
-                                </div>
-                            </div>
+                    </a>
+                </section>
+                <section data-role="section">
+                    <a href="/articles/@article.Id">
+                        <div class="token-card--header--primary-text line-clamp-2 hover:underline">
+                            @article.Title
                         </div>
-                        <a href="/articles/@article.Id/update"
-                            class="mixin-button-like mixin-button-base theme-button-generic-green justify-center">
-                            Update
-                        </a>
-                        <a href="/articles/@article.Id/delete"
-                            class="mixin-button-like mixin-button-base theme-button-generic-red justify-center">
-                            Delete
-                        </a>
-                </div>
-            }
-        </div>
-
-
+                    </a>
+                    <div class="flex flex-row gap-2 justify-between items-center">
+                        <div class="token-card--header--secondary-text">
+                            @article.Author.DisplayName
+                        </div>
+                        <div class="token-card--header--secondary-text">
+                            @article.DateCreated.ToLocalTime()
+                        </div>
+                    </div>
+                </section>
+                <footer class="flex flex-col gap-2" data-role="section">
+                    
+                    <a href="/articles/@article.Id/update"
+                        class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-green justify-center">
+                        Update
+                    </a>
+                    <a href="/articles/@article.Id/delete"
+                        class="mixin-Sbutton-like mixin-Sbutton-base theme-Sbutton-generic-red justify-center">
+                        Delete
+                    </a>
+                </footer>
+            </div>
+        }
     </div>
-
 </div>

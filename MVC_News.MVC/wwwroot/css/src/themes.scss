@@ -1,91 +1,35 @@
 @layer components {
     .theme-input-generic-white {
-        @apply border border-gray-900 flex flex-grow;
+        @apply border flex flex-grow border-gray-300;
 
         > input {
-            @apply text-gray-900 bg-white focus:bg-gray-200;
-        }
-    }
-
-    .theme-button-generic-white {
-        $root: &;
-        @apply border border-gray-900 text-gray-900;
-
-        &:not(&[data-active="true"]) {
-            @apply bg-white hover:bg-gray-200;
-        }
-
-        &[data-active="true"] {
-            @apply bg-gray-200;
-        }
-    }
-
-    .theme-button-generic-yellow {
-        $root: &;
-        @apply border border-gray-900 text-gray-900;
-
-        &:not(&[data-active="true"]) {
-            @apply bg-yellow-300 hover:bg-yellow-400;
-        }
-
-        &[data-active="true"] {
-            @apply bg-yellow-400;
-        }
-    }
-
-    .theme-button-generic-green {
-        $root: &;
-        @apply border border-gray-900 text-gray-900 ;
-
-        &:not(&[data-active="true"]) {
-            @apply bg-green-300 hover:bg-green-400;
-        }
-
-        &[data-active="true"] {
-            @apply bg-green-400;
-        }
-    }
-
-    .theme-button-generic-blue {
-        $root: &;
-        @apply border border-gray-900 text-gray-900 ;
-
-        &:not(&[data-active="true"]) {
-            @apply bg-blue-300 hover:bg-blue-400;
-        }
-
-        &[data-active="true"] {
-            @apply bg-blue-400;
-        }
-    }
-    
-    .theme-button-generic-red {
-        $root: &;
-        @apply border border-gray-900 text-gray-900 ;
-
-        &:not(&[data-active="true"]) {
-            @apply bg-red-300 hover:bg-red-400;
-        }
-
-        &[data-active="true"] {
-            @apply bg-red-400;
+            @apply text-gray-900 bg-white focus:bg-gray-300;
         }
     }
 
     .theme-checkbox-generic-white {
         $root: &;
-        @apply border border-gray-900 bg-white hover:bg-gray-200;
-        
-        &--active [data-role="inner-part"], &:has(:checked) [data-role="inner-part"] {
-            @apply bg-gray-900;
+        @apply border border-gray-300 shadow;
+
+        &:not(&--active, &:has(:checked)) {
+            @apply bg-white hover:bg-gray-200;
+        }
+
+        &--active, &:has(:checked) {
+            @apply bg-gray-200;
+        }
+
+        &--active [data-role="inner-part"],
+        &:has(:checked) [data-role="inner-part"] {
+            @apply bg-gray-700;
         }
     }
 
     .theme-textarea-generic-white {
-        @apply border border-gray-900 text-gray-900 bg-white;
+        @apply border border-gray-300 text-gray-900 bg-white rounded-md overflow-hidden;
 
         > textarea {
-            @apply bg-white focus:bg-gray-200;
+            @apply bg-white focus:bg-gray-300;
         }
 
         [data-role="footer"] {
@@ -97,11 +41,94 @@
         }
     }
 
-    .theme-Pcard-generic-white {
-        @apply bg-white divide-gray-900 border-gray-900;
+    .theme-panel-generic-white {
+        @apply bg-white;
     }
 
-    .theme-panel-generic-white {
-        @apply bg-gray-50 border border-gray-900;
+    .theme-Scard-generic-white {
+        @apply bg-white;
+    }
+
+    .theme-Sbutton-generic-white {
+        $root: &;
+        @apply border border-gray-300 text-gray-800;
+
+        &:not(&.active) {
+            @apply bg-white;
+        }
+
+        &.active, &:not(&--static):hover {
+            @apply bg-gray-200;
+        }
+    }
+
+    .theme-Sbutton-generic-yellow {
+        $root: &;
+        @apply text-gray-800;
+
+        &:not(&.active) {
+            @apply bg-yellow-300;
+        }
+
+        &.active, &:not(&--static):hover {
+            @apply bg-yellow-400;
+        }
+    }
+
+    .theme-Sbutton-generic-green {
+        $root: &;
+        @apply text-white;
+
+        &:not(&.active) {
+            @apply bg-emerald-500;
+        }
+
+        &.active, &:not(&--static):hover {
+            @apply bg-emerald-600;
+        }
+    }
+
+    .theme-Sbutton-generic-red {
+        $root: &;
+        @apply text-white;
+
+        &:not(&.active) {
+            @apply bg-red-500;
+        }
+
+        &.active, &:not(&--static):hover {
+            @apply bg-red-600;
+        }
+    }
+
+    .theme-Sbutton-generic-orange {
+        $root: &;
+        @apply text-gray-800;
+
+        &:not(&.active) {
+            @apply bg-orange-300;
+        }
+
+        &.active, &:not(&--static):hover {
+            @apply bg-orange-400;
+        }
+    }
+
+    .theme-Sbutton-generic-blue {
+        $root: &;
+        @apply text-white;
+
+        &:not(&.active) {
+            @apply bg-blue-500;
+        }
+
+        &.active, &:not(&--static):hover {
+            @apply bg-blue-600;
+        }
+    }
+
+
+    .theme-avatar-any {
+        @apply bg-gray-300 shadow shadow-gray-400/20 rounded-md;
     }
 }

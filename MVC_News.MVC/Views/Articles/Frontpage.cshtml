@@ -6,30 +6,32 @@
 }
 
 <div class="mixin-page-like mixin-page-base mixin-content-grid grow">
-    <header class="flex flex-col gap-4 p-4" data-track="full">
-        @for (var i = 0; i < Model.MainArticles.Count(); i++)
+    <header class="flex flex-col gap-4" data-role="page-section" data-track="lg">
+        @foreach (var article in Model.MainArticles)
         {
-            <section class="flex flex-row max-md:flex-col grow max-md:divide-y md:divide-x divide-gray-900 border border-gray-900 bg-white">
-                <a href="/articles/@Model.MainArticles[i].Id" class="w-full h-72 aspect-[16/9]">
+            <section class="flex sm:flex-row max-sm:flex-col mixin-Scard-like mixin-Scard-base theme-Scard-generic-white border token-default-shadow token-default-border-color">
+                <a href="/articles/@article.Id" class="h-48 aspect-[16/9] relative" data-role="section">
                     @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
-                        className: "w-full h-full",
-                        src: Model.MainArticles[i].HeaderImage
+                        className: "w-full h-full rounded-md overflow-hidden",
+                        src: article.HeaderImage
                     ))
                 </a>
-                <div class="flex flex-col gap-4 overflow-hidden p-4">
+                <div class="sm:token-y-divider max-sm:token-x-divider"></div>
+                <div class="flex flex-col gap-4 overflow-hidden justify-between" data-role="section">
                     <div>
-                        <a class="text-2xl font-bold line-clamp-2 hover:underline" href="/articles/@Model.MainArticles[i].Id">
-                            @Model.MainArticles[i].Title
+                        <a class="token-card--header--primary-text line-clamp-2 hover:underline" href="/articles/@article.Id">
+                            @article.Title
                         </a>
                         <div class="flex flex-row overflow-hidden justify-between">
-                            <a class="text-xs truncate hover:underline" href="/users/@Model.MainArticles[i].Author.Id">
-                                @Model.MainArticles[i].Author.DisplayName
+                            <a class="token-card--header--secondary-text truncate hover:underline" href="/users/@article.Author.Id">
+                                @article.Author.DisplayName
                             </a>
-                            <div class="text-xs text-gray-500 truncate">
-                                @Model.MainArticles[i].DateCreated
+                            <div class="token-card--header--secondary-text truncate">
+                                @article.DateCreated
                             </div>
                         </div>
                     </div>
+                    <hr class="token-x-divider"></hr>
                     <div class="text-sm overflow-hidden">
                         <div class="line-clamp-2 max-h-[2lh]">
                             re:publica 25 will take place from 26-28 May 2025 at STATION Berlin. The motto for next years
@@ -38,46 +40,69 @@
                             challenges that lie in the digitalization of society to the stages. Join us!
                         </div>
                     </div>
-                    <a class="mixin-button-like mixin-button-base theme-button-generic-white justify-center mt-auto"  href="/articles/@Model.MainArticles[i].Id">
-                        Keep Reading
-                    </a>
+                    <footer class="flex flex-row gap-1 flex-wrap justify-between">
+                        <a class="mixin-Sbutton-like mixin-Sbutton-sm theme-Sbutton-generic-white justify-center shirnk-0"  href="/articles/@article.Id">
+                            Keep Reading
+                        </a>
+                        @if (article.IsPremium)
+                        {
+                            <div class="mixin-Sbutton-like mixin-Sbutton-like--static mixin-Sbutton-sm theme-Sbutton-generic-yellow theme-Sbutton-generic-yellow--static shirnk-0">
+                                Premium Article
+                            </div>
+                        }
+                    </footer>
                 </div>
             </section>
         }
     </header>
-    <div class="h-0 border-t border-gray-900 w-full"></div>
-    <main class="flex flex-col gap-4" data-track="base">
+    <hr class="token-x-divider"></hr>
+    <main class="flex flex-col gap-4" data-role="page-section" data-track="base">
         <header class="flex flex-row justify-center">
-            <div class="text-xl font-bold">
+            <div class="token-default-title">
                 New Arrivals
             </div>
         </header>
         <ol class="grid min-[445px]:grid-cols-2 grid-cols-1 gap-4">
             @foreach (var article in Model.NewestArticles)
             {
-                <li class="flex flex-col gap-2 grow overflow-hidden">
-                    <a class="aspect-[16/9] grow border border-gray-900" href="/articles/@article.Id">
-                        @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
-                            className: "w-full h-full",
-                            src: article.HeaderImage
-                        ))
-                    </a>
-                    <div class="overflow-hidden">
-                        <a class="text-xl font-bold line-clamp-2 hover:underline" href="/articles/@article.Id">
-                            @article.Title
+                <li class="mixin-Scard-like mixin-Scard-base theme-Scard-generic-white border token-default-shadow token-default-border-color divide-y token-default-divide-color">
+                    <section data-role="section">
+                        <a class="aspect-[16/9] grow flex" href="/articles/@article.Id">
+                            @await Html.PartialAsync("Reusables/_CoverImage", new CoverImagePartialViewModel(
+                                className: "w-full h-full rounded-md overflow-hidden",
+                                src: article.HeaderImage
+                            ))
                         </a>
-                        <div class="flex flex-col overflow-hidden">
-                            <a class="text-xs truncate hover:underline" href="/users/@article.Author.Id">
-                                @article.Author.DisplayName
+                    </section>
+                    <section class="flex flex-col gap-2 overflow-hidden" data-role="section">
+                        <div>
+                            <a class="token-card--header--primary-text line-clamp-2 hover:underline" href="/articles/@article.Id">
+                                @article.Title
                             </a>
-                            <div class="text-xs text-gray-500 truncate">
-                                @article.DateCreated
+                            <div class="flex flex-row gap-2 items-center justify-between overflow-hidden">
+                                <a class="token-card--header--secondary-text truncate hover:underline" href="/users/@article.Author.Id">
+                                    @article.Author.DisplayName
+                                </a>
+                                <div class="token-card--header--secondary-text truncate">
+                                    @article.DateCreated
+                                </div>
                             </div>
                         </div>
-                    </div>
+                        <hr class="token-x-divider"></hr>
+                        <footer class="flex flex-row gap-1 flex-wrap justify-between">
+                            <a class="mixin-Sbutton-like mixin-Sbutton-sm theme-Sbutton-generic-white justify-center shirnk-0"  href="/articles/@article.Id">
+                                Keep Reading
+                            </a>
+                            @if (article.IsPremium)
+                            {
+                                <div class="mixin-Sbutton-like mixin-Sbutton-like--static mixin-Sbutton-sm theme-Sbutton-generic-yellow theme-Sbutton-generic-yellow--static shirnk-0">
+                                    Premium Article
+                                </div>
+                            }
+                        </footer>
+                    </section>
                 </li>
             }
         </ol>
     </main>
-
 </div>
