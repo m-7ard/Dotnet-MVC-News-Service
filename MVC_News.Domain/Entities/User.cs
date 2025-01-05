@@ -1,4 +1,5 @@
 using MVC_News.Domain.Errors;
+using MVC_News.Domain.ValueObjects;
 using OneOf;
 
 namespace MVC_News.Domain.Entities;
@@ -22,26 +23,29 @@ public class User
     public bool IsAdmin { get; set; }
     public List<Subscription> Subscriptions { get; set; }
 
-    public OneOf<bool, List<DomainError>> Subscribe(DateTime expirationDate)
+    public OneOf<bool, string> CanSubscribe(DateTime expirationDate)
     {
         if (HasActiveSubscription())
         {
-            return new List<DomainError>
-            {
-                new DomainError(
-                    message: "User is already subscribed",
-                    path: new List<string>() { "_" },
-                    code: UserDomainErrorCodes.UserAlreadySubscribed
-                )
-            };
+            return "User is already subscribed";
         }
+
+
+        var startDate = DateTime.Now;
+        var canCreateSubscriptionDatesResult = SubscriptionDates.CanCreate(startDate: startDate, expirationDate: expirationDate);
+        if (canCreateSubscriptionDatesResult.TryPickT1(out var error, out var _))
+        {
+            return error;
+        }
+
+        var subscriptionDates = new SubscriptionDates(startDate: startDate, expirationDate: expirationDate);
 
         var subscription = new Subscription(
             id: Guid.NewGuid(), 
             userId: Id, 
-            startDate: DateTime.Now, 
-            expirationDate: expirationDate
+            subscriptionDates: subscriptionDates
         );
+        
         Subscriptions.Add(subscription);
         
         return true;
@@ -49,11 +53,11 @@ public class User
 
     public bool HasActiveSubscription()
     {
-        return Subscriptions.Any(sub => sub.ExpirationDate > DateTime.Now);
+        return Subscriptions.Any(sub => sub.IsActive());
     }
 
     public Subscription? GetActiveSubscription()
     {
-        return Subscriptions.Find(sub => sub.ExpirationDate > DateTime.Now);
+        return Subscriptions.Find(sub => sub.IsActive());
     }
 }

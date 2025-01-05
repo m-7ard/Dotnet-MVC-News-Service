@@ -2,8 +2,10 @@ using MediatR;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Application.Interfaces.Services;
+using MVC_News.Application.Validators;
 using MVC_News.Domain.DomainFactories;
 using OneOf;
+using static MVC_News.Application.Validators.AreMatchingPasswordsValidator;
 
 namespace MVC_News.Application.Handlers.Users.ChangePassword;
 
@@ -11,38 +13,31 @@ public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, OneO
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly UserWithIdExistsValidatorAsync _userExistsValidatorAsync;
+    private readonly AreMatchingPasswordsValidator _areMatchingPasswordsValidator;
+
 
     public ChangePasswordHandler(IUserRepository userRepository, IPasswordHasher passwordHasher)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
+                
+        _userExistsValidatorAsync = new UserWithIdExistsValidatorAsync(userRepository);
+        _areMatchingPasswordsValidator = new AreMatchingPasswordsValidator(passwordHasher);
     }
 
     public async Task<OneOf<ChangePasswordResult, List<ApplicationError>>> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetUserById(request.Id);
-        if (user is null)
+        var userExistsResult = await _userExistsValidatorAsync.Validate(request.Id);
+        if (userExistsResult.TryPickT1(out var errors, out var user))
         {
-            return new List<ApplicationError>()
-            {
-                new ApplicationError(
-                    message: $"User of Id \"{request.Id}\" does not exist.",
-                    path: ["_"],
-                    code: ApplicationErrorCodes.ModelDoesNotExist
-                )
-            };
+            return errors;
         }
 
-        if (_passwordHasher.Verify(user.PasswordHash, request.CurrentPassword) is false)
+        var areMatchingPasswordsResult = _areMatchingPasswordsValidator.Validate(new Input(hashedPassword: user.PasswordHash, request.CurrentPassword));
+        if (areMatchingPasswordsResult.TryPickT1(out errors, out var _))
         {
-            return new List<ApplicationError>()
-            {
-                new ApplicationError(
-                    message: $"Password is incorrect.",
-                    path: ["CurrentPassword"],
-                    code: ApplicationErrorCodes.ValidationFailure
-                )
-            };
+            return errors;
         }
 
         var updatedUser = UserFactory.BuildExisting(

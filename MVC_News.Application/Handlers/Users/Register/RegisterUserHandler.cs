@@ -2,6 +2,7 @@ using MediatR;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Application.Interfaces.Services;
+using MVC_News.Application.Validators;
 using MVC_News.Domain.DomainFactories;
 using OneOf;
 
@@ -11,26 +12,27 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, OneOf<Re
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
+    private readonly UserWithEmailExistsValidatorAsync _userExistsValidatorAsync;
+
 
     public RegisterUserHandler(IUserRepository userRepository, IPasswordHasher passwordHasher)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
+        _userExistsValidatorAsync = new UserWithEmailExistsValidatorAsync(userRepository);
+
     }
 
     public async Task<OneOf<RegisterUserResult, List<ApplicationError>>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var existingUser = await _userRepository.GetUserByEmailAsync(request.Email);
-        if (existingUser is not null)
+        var userExistsResult = await _userExistsValidatorAsync.Validate(request.Email);
+        if (userExistsResult.TryPickT0(out var existingUser, out var _))
         {
-            return new List<ApplicationError>()
-            {
-                new ApplicationError(
-                    message: $"User with email \"{request.Email}\" already exists.",
-                    path: ["Email"],
-                    code: ApplicationErrorCodes.ModelAlreadyExists
-                )
-            };
+            return ApplicationErrorFactory.CreateSingleListError(
+                message: $"User with email \"{existingUser.Email}\" already exists.",
+                code: ApplicationErrorCodes.ModelAlreadyExists,
+                path: []
+            );
         }
 
         var newUser = await _userRepository.CreateAsync(

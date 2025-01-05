@@ -1,17 +1,22 @@
+using MVC_News.Domain.ValueObjects;
+
 namespace MVC_News.Domain.Entities;
 
 public class Subscription
 {
-    public Subscription(Guid id, Guid userId, DateTime startDate, DateTime expirationDate)
+    public Subscription(Guid id, Guid userId, SubscriptionDates subscriptionDates)
     {
         Id = id;
         UserId = userId;
-        StartDate = startDate;
-        ExpirationDate = expirationDate;
+        Dates = subscriptionDates;
     }
 
     public Guid Id { get; private set; }
     public Guid UserId { get; set; }
-    public DateTime StartDate { get; set; }
-    public DateTime ExpirationDate { get; set; }
+    public SubscriptionDates Dates { get; set; }
+
+    public bool IsActive()
+    {
+        return Dates.ExpirationDate > DateTime.Now;
+    }
 }

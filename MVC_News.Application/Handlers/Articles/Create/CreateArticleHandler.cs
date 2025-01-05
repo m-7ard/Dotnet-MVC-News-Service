@@ -1,6 +1,7 @@
 using MediatR;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Interfaces.Repositories;
+using MVC_News.Application.Validators;
 using MVC_News.Domain.DomainFactories;
 using OneOf;
 
@@ -10,26 +11,21 @@ public class CreateArticleHandler : IRequestHandler<CreateArticleCommand, OneOf<
 {
     private readonly IUserRepository _userRepository;
     private readonly IArticleRepository _articleRepository;
+    private readonly UserWithIdExistsValidatorAsync _userExistsValidatorAsync;
 
     public CreateArticleHandler(IUserRepository userRepository, IArticleRepository articleRepository)
     {
         _userRepository = userRepository;
         _articleRepository = articleRepository;
+        _userExistsValidatorAsync = new UserWithIdExistsValidatorAsync(userRepository);
     }
 
     public async Task<OneOf<CreateArticleResult, List<ApplicationError>>> Handle(CreateArticleCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetUserById(request.AuthorId);
-        if (user is null)
+        var userExistsResult = await _userExistsValidatorAsync.Validate(request.AuthorId);
+        if (userExistsResult.TryPickT1(out var errors, out var user))
         {
-            return new List<ApplicationError>()
-            {
-                new ApplicationError(
-                    message: $"User of id \"{request.Id}\" does not exist.",
-                    path: ["_"],
-                    code: ApplicationErrorCodes.ModelDoesNotExist
-                )
-            };
+            return errors;
         }
 
         if (!user.IsAdmin)

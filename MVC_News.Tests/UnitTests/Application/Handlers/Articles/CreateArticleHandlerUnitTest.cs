@@ -110,6 +110,6 @@ public class CreateArticleHandlerUnitTest
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationErrorCodes.ModelDoesNotExist, result.AsT1[0].Code);
+        Assert.Equal(ApplicationValidatorErrorCodes.USER_WITH_ID_EXISTS_ERROR, result.AsT1[0].Code);
     }
 }

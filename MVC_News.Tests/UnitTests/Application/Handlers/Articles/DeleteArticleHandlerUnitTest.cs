@@ -31,7 +31,7 @@ public class DeleteArticleHandlerUnitTest
         _mockUserRepository = new Mock<IUserRepository>();
         _handler = new DeleteArticleHandler(
             articleRepository: _mockArticleRepository.Object,
-            userRespository: _mockUserRepository.Object
+            userRepository: _mockUserRepository.Object
         );
     }
 
@@ -81,8 +81,6 @@ public class DeleteArticleHandlerUnitTest
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationErrorCodes.DomainError, result.AsT1[0].Code);
-        var metaData = (ApplicationDomainErrorMetadata)result.AsT1[0].Metadata;
-        Assert.Equal(ArticleDomainErrorsCodes.UserNotAllowed, metaData.OriginalError.Code);
+        Assert.Equal(ApplicationErrorCodes.NotAllowed, result.AsT1[0].Code);
     }
 }

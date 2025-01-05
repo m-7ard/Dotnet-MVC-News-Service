@@ -88,6 +88,6 @@ public class ChangePasswordHandlerUnitTest
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationErrorCodes.ValidationFailure, result.AsT1[0].Code);
+        Assert.Equal(ApplicationValidatorErrorCodes.ARE_MATCHING_PASSWORDS_ERROR, result.AsT1[0].Code);
     }
 }

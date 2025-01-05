@@ -197,7 +197,13 @@ public class UsersController : BaseController
                 email: request.Email,
                 password: request.Password,
                 displayName: request.DisplayName,
-                errors: PlainMvcErrorFactory.TranslateServiceErrors(errors)
+                errors: PlainMvcErrorFactory.MapApplicationErrors(
+                    errors, 
+                    codeDictionary: new Dictionary<string, List<string>>()
+                    {
+                        { ApplicationErrorCodes.ModelAlreadyExists, ["email"] }
+                    }    
+                )
             ));
         }
 
@@ -271,7 +277,7 @@ public class UsersController : BaseController
 
             return View(new CheckoutSubscriptionPageModel(
                 duration: request.Duration,
-                errors: PlainMvcErrorFactory.TranslateServiceErrors(errors)
+                errors: PlainMvcErrorFactory.MapApplicationErrors(errors)
             ));
         }
 

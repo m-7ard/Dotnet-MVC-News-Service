@@ -1,4 +1,5 @@
 using MVC_News.Domain.Entities;
+using MVC_News.Domain.ValueObjects;
 using MVC_News.Infrastructure.DbEntities;
 
 namespace MVC_News.Infrastructure.Mappers;
@@ -10,18 +11,19 @@ public static class SubscriptionMapper
         return new SubscriptionDbEntity(
             id: source.Id,
             userId: source.UserId,
-            startDate: source.StartDate,
-            expirationDate: source.ExpirationDate
+            startDate: source.Dates.StartDate,
+            expirationDate: source.Dates.ExpirationDate
         );
     }
 
     public static Subscription FromDbEntityToDomain(SubscriptionDbEntity source)
     {
+        var subscriptionDates = new SubscriptionDates(startDate: source.StartDate, expirationDate: source.ExpirationDate);
+
         return new Subscription(
             id: source.Id,
             userId: source.UserId,
-            startDate: source.StartDate,
-            expirationDate: source.ExpirationDate
+            subscriptionDates: subscriptionDates
         );
     }
 }

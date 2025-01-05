@@ -45,7 +45,7 @@ public class ReadArticleHandlerUnitTest
         _mockUserRepository = new Mock<IUserRepository>();
         _handler = new ReadArticleHandler(
             articleRepository: _mockArticleRepository.Object,
-            userRespository: _mockUserRepository.Object
+            userRepository: _mockUserRepository.Object
         );
     }
 
@@ -119,9 +119,7 @@ public class ReadArticleHandlerUnitTest
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationErrorCodes.DomainError, result.AsT1[0].Code);
-        var metaData = (ApplicationDomainErrorMetadata)result.AsT1[0].Metadata;
-        Assert.Equal(ArticleDomainErrorsCodes.UserNotAllowed, metaData.OriginalError.Code);
+        Assert.Equal(ApplicationErrorCodes.NotAllowed, result.AsT1[0].Code);
     }
 
     [Fact]
@@ -164,6 +162,6 @@ public class ReadArticleHandlerUnitTest
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationErrorCodes.ModelDoesNotExist, result.AsT1[0].Code);
+        Assert.Equal(ApplicationValidatorErrorCodes.USER_WITH_ID_EXISTS_ERROR, result.AsT1[0].Code);
     }
 }

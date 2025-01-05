@@ -1,6 +1,7 @@
 using MediatR;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Interfaces.Repositories;
+using MVC_News.Application.Validators;
 using MVC_News.Domain.DomainFactories;
 using OneOf;
 
@@ -10,48 +11,40 @@ public class UpdateArticleHandler : IRequestHandler<UpdateArticleCommand, OneOf<
 {
     private readonly IArticleRepository _articleRepository;
     private readonly IUserRepository _userRepository;
+    
+    private readonly UserWithIdExistsValidatorAsync _userExistsValidatorAsync;
+    private readonly ArticleExistsValidatorAsync _articleExistsValidatorAsync;
 
     public UpdateArticleHandler(IArticleRepository articleRepository, IUserRepository userRepository)
     {
         _articleRepository = articleRepository;
         _userRepository = userRepository;
+        
+        _userExistsValidatorAsync = new UserWithIdExistsValidatorAsync(userRepository);
+        _articleExistsValidatorAsync = new ArticleExistsValidatorAsync(articleRepository);
     }
 
     public async Task<OneOf<UpdateArticleResult, List<ApplicationError>>> Handle(UpdateArticleCommand request, CancellationToken cancellationToken)
     {
-        var article = await _articleRepository.GetByIdAsync(request.Id);
-        if (article is null)
+        var articleExistsResult = await _articleExistsValidatorAsync.Validate(request.Id);
+        if (articleExistsResult.TryPickT1(out var errors, out var article))
         {
-            return new List<ApplicationError>()
-            {
-                new ApplicationError(
-                    message: $"Article of id \"{request.Id}\" does not exist.",
-                    path: ["_"],
-                    code: ApplicationErrorCodes.ModelDoesNotExist
-                )
-            };
+            return errors;
         }
 
-        var user = await _userRepository.GetUserById(request.AuthorId);
-        if (user is null)
+        var userExistsResult = await _userExistsValidatorAsync.Validate(request.AuthorId);
+        if (userExistsResult.TryPickT1(out errors, out var user))
         {
-            return new List<ApplicationError>()
-            {
-                new ApplicationError(
-                    message: $"User of id \"{request.Id}\" does not exist.",
-                    path: ["_"],
-                    code: ApplicationErrorCodes.ModelDoesNotExist
-                )
-            };
+            return errors;
         }
 
-        if (!user.IsAdmin)
+        if (!article.CanBeUpdatedBy(user))
         {
             return new List<ApplicationError>()
             {
                 new ApplicationError(
-                    message: $"User is not authorised to update articles.",
-                    path: ["_"],
+                    message: $"User is not authorised to update this article.",
+                    path: [],
                     code: ApplicationErrorCodes.NotAllowed
                 )
             };

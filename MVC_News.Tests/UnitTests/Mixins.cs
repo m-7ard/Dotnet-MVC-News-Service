@@ -1,5 +1,6 @@
 using MVC_News.Domain.DomainFactories;
 using MVC_News.Domain.Entities;
+using MVC_News.Domain.ValueObjects;
 
 namespace MVC_News.Tests.UnitTests;
 
@@ -38,11 +39,15 @@ public class Mixins
     {
         var startDate = DateTime.Now;
         var expirationDate = startDate.AddMonths(1);
+        var subscriptionDates = new SubscriptionDates(
+            startDate: startDate,
+            expirationDate: expirationDate
+        );
+
         var article = SubscriptionFactory.BuildExisting(
             id: Guid.NewGuid(),
             userId: userId,
-            startDate: startDate,
-            expirationDate: expirationDate
+            subscriptionDates: subscriptionDates
         );
 
         return article;
@@ -54,11 +59,15 @@ public class Mixins
         startDate = startDate.AddMonths(-2);
         var expirationDate = DateTime.Now;
         expirationDate = expirationDate.AddMonths(-1);
+        var subscriptionDates = new SubscriptionDates(
+            startDate: startDate,
+            expirationDate: expirationDate
+        );
+
         var article = SubscriptionFactory.BuildExisting(
             id: Guid.NewGuid(),
             userId: userId,
-            startDate: startDate,
-            expirationDate: expirationDate
+            subscriptionDates: subscriptionDates
         );
 
         return article;

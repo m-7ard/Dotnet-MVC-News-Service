@@ -1,58 +1,45 @@
 using MediatR;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Interfaces.Repositories;
-using MVC_News.Domain.Entities;
+using MVC_News.Application.Validators;
 using OneOf;
 
 namespace MVC_News.Application.Handlers.Subscriptions;
 
 public class CreateSubscriptionHandler : IRequestHandler<CreateSubscriptionCommand, OneOf<CreateSubscriptionResult, List<ApplicationError>>>
 {
+    private readonly UserWithIdExistsValidatorAsync _userExistsValidatorAsync;
     private readonly IUserRepository _userRepository;
 
     public CreateSubscriptionHandler(IUserRepository userRepository)
     {
         _userRepository = userRepository;
+        _userExistsValidatorAsync = new UserWithIdExistsValidatorAsync(userRepository);
     }
 
     public async Task<OneOf<CreateSubscriptionResult, List<ApplicationError>>> Handle(CreateSubscriptionCommand request, CancellationToken cancellationToken)
     {
-        var user = await _userRepository.GetUserById(request.UserId);
-        if (user is null)
+        var userExistsResult = await _userExistsValidatorAsync.Validate(request.UserId);
+        if (userExistsResult.TryPickT1(out var errors, out var user))
         {
-            return ApplicationErrorFactory.CreateSingleListError(
-                message: $"User of id \"{request.UserId}\" does not exist.",
-                path: ["_"],
-                code: ApplicationErrorCodes.ModelDoesNotExist
-            );
-        }
-    
-        var expirationDate = DateTime.Now;
-        if (request.SubscriptionDuration == 1)
-        {
-            expirationDate = expirationDate.AddMonths(1);
-        }
-        else if (request.SubscriptionDuration == 2)
-        {
-            expirationDate = expirationDate.AddMonths(6);
-        }
-        else if (request.SubscriptionDuration == 3)
-        {
-            expirationDate = expirationDate.AddYears(1);
-        }
-        else
-        {
-            return ApplicationErrorFactory.CreateSingleListError(
-                message: $"expirationDate is invalid.",
-                path: ["expirationDate"],
-                code: ApplicationErrorCodes.StateMismatch
-            );
+            return errors;
         }
 
-        var subscriptionResult = user.Subscribe(expirationDate);
-        if (subscriptionResult.IsT1)
+        var isValidSubscriptionDurationValidator = new IsValidSubscriptionDurationValidator();
+        var isValidSubscriptionDurationResult = isValidSubscriptionDurationValidator.Validate(request.SubscriptionDuration);
+        if (isValidSubscriptionDurationResult.TryPickT1(out errors, out var expirationDate))
         {
-            return ApplicationErrorFactory.DomainErrorsToApplicationErrors(subscriptionResult.AsT1);
+            return errors;
+        }
+
+        var subscriptionResult = user.CanSubscribe(expirationDate);
+        if (subscriptionResult.TryPickT1(out var error, out var _))
+        {
+            return ApplicationErrorFactory.CreateSingleListError(
+                message: error,
+                code: ApplicationErrorCodes.StateMismatch,
+                path: []
+            );
         }
         
         await _userRepository.UpdateAsync(user);

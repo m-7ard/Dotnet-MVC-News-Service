@@ -1,6 +1,5 @@
 using MVC_News.Domain.Errors;
 using OneOf;
-using OneOf.Types;
 
 namespace MVC_News.Domain.Entities;
 
@@ -27,7 +26,19 @@ public class Article
     public List<string> Tags { get; set; }
     public bool IsPremium { get; set; }
 
-    public OneOf<bool, List<DomainError>> CanBeAccessedBy(User user) {
+    public bool CanBeUpdatedBy(User user) {
+        if (user.Id == AuthorId) {
+            return true;
+        }
+
+        if (user.IsAdmin) {
+            return true;
+        }
+
+        return false;
+    } 
+
+    public bool CanBeAccessedBy(User user) {
         if (!IsPremium)
         {
             return true;
@@ -43,34 +54,16 @@ public class Article
             return true;
         }
 
-        var errors = new List<DomainError>
-        {
-            new DomainError(
-                message: "User does not have the permission to view this article.",
-                path: new List<string>() { "_" },
-                code: ArticleDomainErrorsCodes.UserNotAllowed
-            )
-        };
-
-        return errors;
+        return false;
     }
 
     
-    public OneOf<bool, List<DomainError>> CanBeDeletedBy(User user) {
+    public bool CanBeDeletedBy(User user) {
         if (user.IsAdmin)
         {
             return true;
         }
 
-        var errors = new List<DomainError>
-        {
-            new DomainError(
-                message: "User does not have the permission to delete this article.",
-                path: new List<string>() { "_" },
-                code: ArticleDomainErrorsCodes.UserNotAllowed
-            )
-        };
-
-        return errors;
+        return false;
     }
 }

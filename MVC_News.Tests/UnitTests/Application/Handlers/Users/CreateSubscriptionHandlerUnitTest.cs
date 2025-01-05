@@ -53,7 +53,7 @@ public class CreateSubscriptionHandlerUnitTest
         // ASSERT
         Assert.True(result.IsT0);
         Assert.NotNull(result.AsT0.User.GetActiveSubscription());
-        Assert.True(result.AsT0.User.GetActiveSubscription()!.ExpirationDate > _now.AddMonths(increaseByMonths));
+        Assert.True(result.AsT0.User.GetActiveSubscription()!.Dates.ExpirationDate > _now.AddMonths(increaseByMonths));
     }
 
     [Fact]
@@ -71,9 +71,7 @@ public class CreateSubscriptionHandlerUnitTest
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationErrorCodes.DomainError, result.AsT1[0].Code);
-        var metaData = (ApplicationDomainErrorMetadata)result.AsT1[0].Metadata;
-        Assert.Equal(UserDomainErrorCodes.UserAlreadySubscribed, metaData.OriginalError.Code);
+        Assert.Equal(ApplicationErrorCodes.StateMismatch, result.AsT1[0].Code);
     }
 
     [Fact]
@@ -91,7 +89,7 @@ public class CreateSubscriptionHandlerUnitTest
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationErrorCodes.StateMismatch, result.AsT1[0].Code);
+        Assert.Equal(ApplicationValidatorErrorCodes.IS_VALID_SUBSCRIPTION_DURATION_ERROR, result.AsT1[0].Code);
     }
 
     [Fact]
@@ -105,6 +103,6 @@ public class CreateSubscriptionHandlerUnitTest
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationErrorCodes.ModelDoesNotExist, result.AsT1[0].Code);
+        Assert.Equal(ApplicationValidatorErrorCodes.USER_WITH_ID_EXISTS_ERROR, result.AsT1[0].Code);
     }
 }

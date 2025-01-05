@@ -534,19 +534,6 @@ public class ArticlesController : BaseController
 
         var parsedArticleId = TryReadArticleId(id);
         var parsedUserId = TryReadUserIdFromClaims();
-
-        var query = new ReadUserQuery(id: parsedUserId);
-        var result = await _mediator.Send(query);
-
-        if (result.TryPickT1(out var errors, out var value))
-        {
-            if (errors[0].Code == ApplicationErrorCodes.ModelDoesNotExist)
-            {
-                throw new NotFoundException(errors[0].Message);
-            }
-            
-            throw new InternalServerErrorException($"Something went wrong trying to read the article's author.");
-        }
         
         var article = ArticleFactory.BuildNew(
             id: parsedArticleId,
@@ -574,19 +561,6 @@ public class ArticlesController : BaseController
         var tags = ProcessRequestTags(request.Tags.ToList());
 
         var parsedUserId = TryReadUserIdFromClaims();
-
-        var query = new ReadUserQuery(id: parsedUserId);
-        var result = await _mediator.Send(query);
-
-        if (result.TryPickT1(out var errors, out var value))
-        {
-            if (errors[0].Code == ApplicationErrorCodes.ModelDoesNotExist)
-            {
-                throw new NotFoundException(errors[0].Message);
-            }
-            
-            throw new InternalServerErrorException($"Something went wrong trying to read the article's author.");
-        }
 
         var article = ArticleFactory.BuildNew(
             id: Guid.Empty,
