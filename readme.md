@@ -237,7 +237,7 @@ public class DtoModelService : IDtoModelService
 
 ### Typescript Widgets
 Example of tags widget implementation for the frontend:
-```
+```typescript
 declare global {
     var TagField: any;
 }
