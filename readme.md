@@ -49,7 +49,7 @@ The application follows Clean Architecture principles with distinct layers:
 ### Login & Create Article
 ![Login & Create Article](demoVideos/login_and_create_article.gif)
 
-### Change Password
+### Register & Subscribe
 ![Register & Subscribe](demoVideos/register_and_subscribe.gif)
 
 ### Change Password
