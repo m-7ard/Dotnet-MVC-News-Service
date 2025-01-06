@@ -397,7 +397,7 @@ Query parameters:
 - Implemented `IValidatorAsync` interface
 - Created specialized validators like `UserWithIdExistsValidatorAsync`
 - Validators return `OneOf<T, List<ApplicationError>>` for type-safe error handling
-- Each Validator has a corresponding unique error code that the presentation layer to handle application layer errors
+- Each Validator has a corresponding unique error code that the presentation layer uses to handle application layer errors
 - Reduced code duplication and standardized validation logic
 
 ### Challenge 2: Complex Business Rules
@@ -417,19 +417,23 @@ Query parameters:
 - Reduced database load for common operations
 
 ## Setup Guide
-1. Clone the repository
-2. Configure database in `.env` file
-3. Run migrations:
-```bash
-dotnet ef database update
 ```
-4. Install frontend dependencies:
-```bash
-cd MVC_News.MVC/wwwroot
-npm install
+Go to the "MVC_News.MVC" folder and make a .env file based off of ".env_pattern" with your own database access data
 ```
-5. Start the application:
-```bash
-cd MVC_News.MVC
-dotnet watch run
+
+## Getting Started
+1. Clone the repository:
+```
+git clone https://github.com/m-7ard/Dotnet-MVC-News-Service.git
+```
+```
+>> dotnet restore
+>> cd MVC_News.MVC
+>> dotnet watch run
+```
+```
+(in another console)
+>> cd MVC_News.MVC/wwwroot
+>> npm i
+>> npm run dev
 ```
