@@ -25,7 +25,6 @@ MVC News is a full-featured news platform built with .NET Core MVC, demonstratin
 - Premium content management with subscription system
 - Article search features
 - Tag-based article categorization
-- User profile management
 - Admin dashboard for article management
 - Custom markup parsing for article formatting
 
