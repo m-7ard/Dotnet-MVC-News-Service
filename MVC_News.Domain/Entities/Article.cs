@@ -1,6 +1,3 @@
-using MVC_News.Domain.Errors;
-using OneOf;
-
 namespace MVC_News.Domain.Entities;
 
 public class Article
