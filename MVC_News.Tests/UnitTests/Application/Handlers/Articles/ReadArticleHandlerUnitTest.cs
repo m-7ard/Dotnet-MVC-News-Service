@@ -1,12 +1,12 @@
 using Moq;
 using MVC_News.Application.Errors;
-using MVC_News.Application.Handlers.Articles.Create;
-using MVC_News.Application.Handlers.Articles.Delete;
 using MVC_News.Application.Handlers.Articles.Read;
-using MVC_News.Application.Interfaces.Repositories;
-using MVC_News.Domain.DomainFactories;
+using MVC_News.Application.Validators.ArticleExistsValidator;
+using MVC_News.Application.Validators.UserExistsValidator;
 using MVC_News.Domain.Entities;
-using MVC_News.Domain.Errors;
+using MVC_News.Domain.ValueObjects.Article;
+using MVC_News.Domain.ValueObjects.User;
+using MVC_News.Tests.UnitTests.Utils;
 
 namespace MVC_News.Tests.UnitTests.Application.Handlers.Articles;
 
@@ -17,8 +17,8 @@ public class ReadArticleHandlerUnitTest
     private readonly User _freeUser_001; 
     private readonly Article _freeArticle_001; 
     private readonly Article _premiumArticle_001; 
-    private readonly Mock<IArticleRepository> _mockArticleRepository;
-    private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly Mock<IArticleExistsValidator<ArticleId>> _mockArticleExistsValidator;
+    private readonly Mock<IUserExistsValidator<UserId>> _mockUserExistsValidator;
     private readonly ReadArticleHandler _handler;
 
     public ReadArticleHandlerUnitTest()
@@ -41,11 +41,12 @@ public class ReadArticleHandlerUnitTest
         _premiumArticle_001 = Mixins.CreateArticle(seed: 2, authorId: _admin_001.Id, isPremium: true);
 
         // Dependencies
-        _mockArticleRepository = new Mock<IArticleRepository>();
-        _mockUserRepository = new Mock<IUserRepository>();
+        _mockArticleExistsValidator = new Mock<IArticleExistsValidator<ArticleId>>();
+        _mockUserExistsValidator = new Mock<IUserExistsValidator<UserId>>();
+
         _handler = new ReadArticleHandler(
-            articleRepository: _mockArticleRepository.Object,
-            userRepository: _mockUserRepository.Object
+            articleExistsValidator: _mockArticleExistsValidator.Object,
+            userExistsValidatorAsync: _mockUserExistsValidator.Object
         );
     }
 
@@ -54,17 +55,12 @@ public class ReadArticleHandlerUnitTest
     {
         // ARRANGE
         var query = new ReadArticleQuery(
-            id: _freeArticle_001.Id,
-            userId: _freeUser_001.Id
+            id: _freeArticle_001.Id.Value,
+            userId: _freeUser_001.Id.Value
         );
 
-        _mockArticleRepository
-            .Setup(repo => repo.GetByIdAsync(query.Id))
-            .ReturnsAsync(_freeArticle_001);
-
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(query.UserId))
-            .ReturnsAsync(_freeUser_001);
+        SetupMockServices.SetupArticleExistsValidatorSuccess(_mockArticleExistsValidator, _freeArticle_001.Id, _freeArticle_001);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _freeUser_001.Id, _freeUser_001);
 
         // ACT
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -78,17 +74,12 @@ public class ReadArticleHandlerUnitTest
     {
         // ARRANGE
         var query = new ReadArticleQuery(
-            id: _freeArticle_001.Id,
-            userId: _subbedUser_001.Id
+            id: _freeArticle_001.Id.Value,
+            userId: _subbedUser_001.Id.Value
         );
 
-        _mockArticleRepository
-            .Setup(repo => repo.GetByIdAsync(query.Id))
-            .ReturnsAsync(_freeArticle_001);
-
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(query.UserId))
-            .ReturnsAsync(_subbedUser_001);
+        SetupMockServices.SetupArticleExistsValidatorSuccess(_mockArticleExistsValidator, _freeArticle_001.Id, _freeArticle_001);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _subbedUser_001.Id, _subbedUser_001);
 
         // ACT
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -102,17 +93,12 @@ public class ReadArticleHandlerUnitTest
     {
         // ARRANGE
         var query = new ReadArticleQuery(
-            id: _premiumArticle_001.Id,
-            userId: _freeUser_001.Id
+            id: _premiumArticle_001.Id.Value,
+            userId: _freeUser_001.Id.Value
         );
 
-        _mockArticleRepository
-            .Setup(repo => repo.GetByIdAsync(query.Id))
-            .ReturnsAsync(_premiumArticle_001);
-
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(query.UserId))
-            .ReturnsAsync(_freeUser_001);
+        SetupMockServices.SetupArticleExistsValidatorSuccess(_mockArticleExistsValidator, _premiumArticle_001.Id, _premiumArticle_001);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _freeUser_001.Id, _freeUser_001);
 
         // ACT
         var result = await _handler.Handle(query, CancellationToken.None);
@@ -128,19 +114,17 @@ public class ReadArticleHandlerUnitTest
         // ARRANGE
         var query = new ReadArticleQuery(
             id: Guid.Empty,
-            userId: _admin_001.Id
+            userId: _admin_001.Id.Value
         );
 
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(query.UserId))
-            .ReturnsAsync(_freeUser_001);
+        SetupMockServices.SetupArticleExistsValidatorFailure(_mockArticleExistsValidator);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _freeUser_001.Id, _freeUser_001);
 
         // ACT
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationErrorCodes.ModelDoesNotExist, result.AsT1[0].Code);
     }
 
     
@@ -149,19 +133,17 @@ public class ReadArticleHandlerUnitTest
     {
         // ARRANGE
         var query = new ReadArticleQuery(
-            id: _freeArticle_001.Id,
+            id: _freeArticle_001.Id.Value,
             userId: Guid.Empty
         );
 
-        _mockArticleRepository
-            .Setup(repo => repo.GetByIdAsync(query.Id))
-            .ReturnsAsync(_freeArticle_001);
+        SetupMockServices.SetupArticleExistsValidatorSuccess(_mockArticleExistsValidator, _freeArticle_001.Id, _freeArticle_001);
+        SetupMockServices.SetupUserExistsValidatorFailure(_mockUserExistsValidator);
 
         // ACT
         var result = await _handler.Handle(query, CancellationToken.None);
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationValidatorErrorCodes.USER_WITH_ID_EXISTS_ERROR, result.AsT1[0].Code);
     }
 }

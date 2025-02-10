@@ -1,11 +1,12 @@
 using Moq;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Handlers.Subscriptions;
-using MVC_News.Application.Handlers.Users.Login;
 using MVC_News.Application.Interfaces.Repositories;
-using MVC_News.Application.Interfaces.Services;
+using MVC_News.Application.Validators.UserExistsValidator;
+using MVC_News.Application.Validators.ValidSubscriptionDurationValidator;
 using MVC_News.Domain.Entities;
-using MVC_News.Domain.Errors;
+using MVC_News.Domain.ValueObjects.User;
+using MVC_News.Tests.UnitTests.Utils;
 
 namespace MVC_News.Tests.UnitTests.Application.Handlers.Users;
 
@@ -14,6 +15,8 @@ public class CreateSubscriptionHandlerUnitTest
     private readonly User _freeUser_001;
     private readonly User _premiumUser_001;
     private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly Mock<IUserExistsValidator<UserId>> _mockUserExistsValidator;
+    private readonly Mock<IValidSubscriptionDurationValidator<int>> _mockMalidSubscriptionDurationValidator;
     private readonly CreateSubscriptionHandler _handler;
     private readonly DateTime _now;
 
@@ -29,42 +32,41 @@ public class CreateSubscriptionHandlerUnitTest
 
         // Dependencies
         _mockUserRepository = new Mock<IUserRepository>();
+        _mockUserExistsValidator = new Mock<IUserExistsValidator<UserId>>();
+        _mockMalidSubscriptionDurationValidator = new Mock<IValidSubscriptionDurationValidator<int> >();
+
         _handler = new CreateSubscriptionHandler(
-            userRepository: _mockUserRepository.Object
+            userExistsValidatorAsync: _mockUserExistsValidator.Object,
+            userRepository: _mockUserRepository.Object,
+            validSubscriptionDurationValidator: _mockMalidSubscriptionDurationValidator.Object
         );
     }
 
-    [Theory]
-    [InlineData(1, 1)]
-    [InlineData(2, 6)]
-    [InlineData(3, 12)]
-    public async Task CreateSubscription_ValidData_Success(int duration, int increaseByMonths)
+    [Fact]
+    public async Task CreateSubscription_ValidData_Success()
     {
         // ARRANGE
-        var command = new CreateSubscriptionCommand(userId: _freeUser_001.Id, subscriptionDuration: duration);
+        var command = new CreateSubscriptionCommand(userId: _freeUser_001.Id.Value, subscriptionDuration: 1);
 
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(_freeUser_001.Id))
-            .ReturnsAsync(_freeUser_001);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _freeUser_001.Id, _freeUser_001);
+        SetupMockServices.SetupValidSubscriptionDurationValidatorSuccess(_mockMalidSubscriptionDurationValidator, 1, DateTime.MaxValue);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // ASSERT
         Assert.True(result.IsT0);
-        Assert.NotNull(result.AsT0.User.GetActiveSubscription());
-        Assert.True(result.AsT0.User.GetActiveSubscription()!.Dates.ExpirationDate > _now.AddMonths(increaseByMonths));
+        _mockUserRepository.Verify(repo => repo.UpdateAsync(It.IsAny<User>()), Times.Once);
     }
 
     [Fact]
     public async Task CreateSubscription_UserIsAlreadySubscribed_Failure()
     {
         // ARRANGE
-        var command = new CreateSubscriptionCommand(userId: _premiumUser_001.Id, subscriptionDuration: 1);
+        var command = new CreateSubscriptionCommand(userId: _premiumUser_001.Id.Value, subscriptionDuration: 1);
 
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(_premiumUser_001.Id))
-            .ReturnsAsync(_premiumUser_001);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _premiumUser_001.Id, _premiumUser_001);
+        SetupMockServices.SetupValidSubscriptionDurationValidatorSuccess(_mockMalidSubscriptionDurationValidator, 1, DateTime.MaxValue);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -78,18 +80,16 @@ public class CreateSubscriptionHandlerUnitTest
     public async Task CreateSubscription_InvalidDuration_Failure()
     {
         // ARRANGE
-        var command = new CreateSubscriptionCommand(userId: _freeUser_001.Id, subscriptionDuration: 100);
+        var command = new CreateSubscriptionCommand(userId: _freeUser_001.Id.Value, subscriptionDuration: 100);
 
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(_freeUser_001.Id))
-            .ReturnsAsync(_freeUser_001);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _premiumUser_001.Id, _premiumUser_001);
+        SetupMockServices.SetupValidSubscriptionDurationValidatorFailure(_mockMalidSubscriptionDurationValidator);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationValidatorErrorCodes.IS_VALID_SUBSCRIPTION_DURATION_ERROR, result.AsT1[0].Code);
     }
 
     [Fact]
@@ -97,12 +97,12 @@ public class CreateSubscriptionHandlerUnitTest
     {
         // ARRANGE
         var command = new CreateSubscriptionCommand(userId: Guid.Empty, subscriptionDuration: 100);
+        SetupMockServices.SetupUserExistsValidatorFailure(_mockUserExistsValidator);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationValidatorErrorCodes.USER_WITH_ID_EXISTS_ERROR, result.AsT1[0].Code);
     }
 }

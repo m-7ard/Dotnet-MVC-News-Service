@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using MVC_News.Application.Contracts.Criteria;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Domain.Entities;
+using MVC_News.Domain.ValueObjects.Article;
 using MVC_News.Infrastructure.DbEntities;
 using MVC_News.Infrastructure.Mappers;
 
@@ -17,25 +18,24 @@ public class ArticleRepository : IArticleRepository
         _dbContext = dbContext;
     }
 
-    public async Task<Article> CreateAsync(Article article)
+    public async Task CreateAsync(Article article)
     {
         var dbEntity = ArticleMapper.FromDomainToDbEntity(article);
         _dbContext.Add(dbEntity);
         await _dbContext.SaveChangesAsync();
-        return ArticleMapper.FromDbEntityToDomain(dbEntity);
     }
 
     public async Task UpdateAsync(Article article)
-    {
-        var oldDbEntity = await _dbContext.Article.SingleAsync(d => d.Id == article.Id);
+    {        
         var newDbEntity = ArticleMapper.FromDomainToDbEntity(article);
+        var oldDbEntity = await _dbContext.Article.SingleAsync(d => d.Id == newDbEntity.Id);
         _dbContext.Entry(oldDbEntity).CurrentValues.SetValues(newDbEntity);
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<Article?> GetByIdAsync(Guid id)
+    public async Task<Article?> GetByIdAsync(ArticleId id)
     {
-        var entity = await _dbContext.Article.Include(d => d.Author).SingleOrDefaultAsync(d => d.Id == id);
+        var entity = await _dbContext.Article.SingleOrDefaultAsync(d => d.Id == id.Value);
         return entity is null ? null : ArticleMapper.FromDbEntityToDomain(entity);
     }
 
@@ -99,8 +99,8 @@ public class ArticleRepository : IArticleRepository
 
     public async Task DeleteAsync(Article article)
     {
-
-        var entity = await _dbContext.Article.SingleAsync(d => d.Id == article.Id);
+        var dbEntity = ArticleMapper.FromDomainToDbEntity(article);
+        var entity = await _dbContext.Article.SingleAsync(d => d.Id == dbEntity.Id);
         _dbContext.Remove(entity);
         await _dbContext.SaveChangesAsync();
     }

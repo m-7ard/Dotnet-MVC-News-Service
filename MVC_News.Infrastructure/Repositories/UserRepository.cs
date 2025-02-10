@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Domain.Entities;
+using MVC_News.Domain.ValueObjects.User;
 using MVC_News.Infrastructure.Mappers;
 
 namespace MVC_News.Infrastructure.Repositories;
@@ -14,28 +15,27 @@ public class UserRepository : IUserRepository
         _dbContext = dbContext;
     }
 
-    public async Task<User?> GetUserByEmailAsync(string email)
+    public async Task<User?> GetUserByEmailAsync(UserEmail email)
     {
         var entity = await _dbContext.User
             .Include(d => d.Subscriptions)
-            .SingleOrDefaultAsync(d => d.Email == email);
+            .SingleOrDefaultAsync(d => d.Email == email.Value);
         return entity is null ? null : UserMapper.FromDbEntityToDomain(entity);
     }
 
-    public async Task<User> CreateAsync(User user)
+    public async Task CreateAsync(User user)
     {
         var dbEntity = UserMapper.FromDomainToDbEntity(user);
         _dbContext.Add(dbEntity);
-        /* Maybe: Persist the subscriptions over here also */
         await _dbContext.SaveChangesAsync();
-        return UserMapper.FromDbEntityToDomain(dbEntity);
     }
     public async Task UpdateAsync(User user)
     {
-        var oldDbEntity = await _dbContext.User.Include(d => d.Subscriptions).SingleAsync(d => d.Id == user.Id);
         var newDbEntity = UserMapper.FromDomainToDbEntity(user);
+        var oldDbEntity = await _dbContext.User.Include(d => d.Subscriptions).SingleAsync(d => d.Id == newDbEntity.Id);
         _dbContext.Entry(oldDbEntity).CurrentValues.SetValues(newDbEntity);
 
+        // TODO: use domain events
         var oldSubs = oldDbEntity.Subscriptions.ToDictionary(item => item.Id);
         var updatedSubs = newDbEntity.Subscriptions.ToDictionary(item => item.Id);
 
@@ -62,11 +62,11 @@ public class UserRepository : IUserRepository
         await _dbContext.SaveChangesAsync();
     }
 
-    public async Task<User?> GetUserById(Guid id)
+    public async Task<User?> GetUserById(UserId id)
     {
         var entity = await _dbContext.User
             .Include(d => d.Subscriptions)
-            .SingleOrDefaultAsync(d => d.Id == id);
+            .SingleOrDefaultAsync(d => d.Id == id.Value);
         return entity is null ? null : UserMapper.FromDbEntityToDomain(entity);
     }
 }

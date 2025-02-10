@@ -1,13 +1,13 @@
-using MVC_News.Domain.Entities;
+using MVC_News.Domain.ValueObjects.User;
 
 namespace MVC_News.Application.Handlers.Users.Register;
 
 public class RegisterUserResult
 {
-    public RegisterUserResult(User user)
-    {
-        User = user;
-    }
+    public UserId UserId { get; }
 
-    public User User { get; }
+    public RegisterUserResult(UserId userId)
+    {
+        UserId = userId;
+    }
 }

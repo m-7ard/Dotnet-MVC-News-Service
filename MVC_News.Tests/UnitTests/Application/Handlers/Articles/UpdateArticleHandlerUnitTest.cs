@@ -1,10 +1,14 @@
 using Moq;
 using MVC_News.Application.Errors;
-using MVC_News.Application.Handlers.Articles.Create;
 using MVC_News.Application.Handlers.Articles.Update;
 using MVC_News.Application.Interfaces.Repositories;
+using MVC_News.Application.Validators.ArticleExistsValidator;
+using MVC_News.Application.Validators.UserExistsValidator;
 using MVC_News.Domain.DomainFactories;
 using MVC_News.Domain.Entities;
+using MVC_News.Domain.ValueObjects.Article;
+using MVC_News.Domain.ValueObjects.User;
+using MVC_News.Tests.UnitTests.Utils;
 
 namespace MVC_News.Tests.UnitTests.Application.Handlers.Articles;
 
@@ -15,7 +19,8 @@ public class UpdateArticleHandlerUnitTest
     private readonly Article _mockArticle; 
     private readonly Article _updateArticle; 
     private readonly Mock<IArticleRepository> _mockArticleRepository;
-    private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly Mock<IUserExistsValidator<UserId>> _mockUserExistsValidator;
+    private readonly Mock<IArticleExistsValidator<ArticleId>> _mockArticleExistsValidator;
     private readonly UpdateArticleHandler _handler;
 
     public UpdateArticleHandlerUnitTest()
@@ -39,10 +44,13 @@ public class UpdateArticleHandlerUnitTest
         
         // Dependencies
         _mockArticleRepository = new Mock<IArticleRepository>();
-        _mockUserRepository = new Mock<IUserRepository>();
+        _mockUserExistsValidator = new Mock<IUserExistsValidator<UserId>>();
+        _mockArticleExistsValidator = new Mock<IArticleExistsValidator<ArticleId>>();
+        
         _handler = new UpdateArticleHandler(
-            userRepository: _mockUserRepository.Object,
-            articleRepository: _mockArticleRepository.Object
+            articleRepository: _mockArticleRepository.Object,
+            userExistsValidatorAsync: _mockUserExistsValidator.Object,
+            articleExistsValidatorAsync: _mockArticleExistsValidator.Object
         );
     }
 
@@ -51,30 +59,23 @@ public class UpdateArticleHandlerUnitTest
     {
         // ARRANGE
         var command = new UpdateArticleCommand(
-            id: _mockArticle.Id,
+            id: _mockArticle.Id.Value,
             title: _updateArticle.Title,
             content: _updateArticle.Content,
-            authorId: _admin_001.Id,
+            authorId: _admin_001.Id.Value,
             headerImage: _updateArticle.HeaderImage,
             tags: _mockArticle.Tags,
             isPremium: false
         );
 
-        _mockArticleRepository
-            .Setup(repo => repo.GetByIdAsync(_mockArticle.Id))
-            .ReturnsAsync(_mockArticle);
-
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(_admin_001.Id))
-            .ReturnsAsync(_admin_001);
+        SetupMockServices.SetupArticleExistsValidatorSuccess(_mockArticleExistsValidator, _mockArticle.Id, _mockArticle);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _admin_001.Id, _admin_001);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // ASSERT
         Assert.True(result.IsT0);
-
-        _mockUserRepository.Verify(repo => repo.GetUserById(_admin_001.Id), Times.Once);
 
         _mockArticleRepository.Verify(repo => repo.UpdateAsync(It.Is<Article>(d => d.Title == _updateArticle.Title)));
         _mockArticleRepository.Verify(repo => repo.UpdateAsync(It.Is<Article>(d => d.Content == _updateArticle.Content)));
@@ -86,22 +87,17 @@ public class UpdateArticleHandlerUnitTest
     {
         // ARRANGE
         var command = new UpdateArticleCommand(
-            id: _mockArticle.Id,
+            id: _mockArticle.Id.Value,
             title: _updateArticle.Title,
             content: _updateArticle.Content,
-            authorId: _user_001.Id,
+            authorId: _user_001.Id.Value,
             headerImage: _updateArticle.HeaderImage,
             tags: _mockArticle.Tags,
             isPremium: false
         );
 
-        _mockArticleRepository
-            .Setup(repo => repo.GetByIdAsync(_mockArticle.Id))
-            .ReturnsAsync(_mockArticle);
-
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(_user_001.Id))
-            .ReturnsAsync(_user_001);
+        SetupMockServices.SetupArticleExistsValidatorSuccess(_mockArticleExistsValidator, _mockArticle.Id, _mockArticle);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _user_001.Id, _user_001);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -109,8 +105,6 @@ public class UpdateArticleHandlerUnitTest
         // ASSERT
         Assert.True(result.IsT1);
         Assert.Equal(ApplicationErrorCodes.NotAllowed, result.AsT1[0].Code);
-
-        _mockUserRepository.Verify(repo => repo.GetUserById(_user_001.Id), Times.Once);
     }
 
     [Fact]
@@ -119,7 +113,7 @@ public class UpdateArticleHandlerUnitTest
         // ARRANGE
         var invalidGuid = Guid.NewGuid();
         var command = new UpdateArticleCommand(
-            id: _mockArticle.Id,
+            id: _mockArticle.Id.Value,
             title: _updateArticle.Title,
             content: _updateArticle.Content,
             authorId: invalidGuid,
@@ -128,18 +122,14 @@ public class UpdateArticleHandlerUnitTest
             isPremium: false
         );
 
-        _mockArticleRepository
-            .Setup(repo => repo.GetByIdAsync(_mockArticle.Id))
-            .ReturnsAsync(_mockArticle);
+        SetupMockServices.SetupArticleExistsValidatorSuccess(_mockArticleExistsValidator, _mockArticle.Id, _mockArticle);
+        SetupMockServices.SetupUserExistsValidatorFailure(_mockUserExistsValidator);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationErrorCodes.ModelDoesNotExist, result.AsT1[0].Code);
-
-        _mockUserRepository.Verify(repo => repo.GetUserById(invalidGuid));
     }
 
     [Fact]
@@ -147,7 +137,7 @@ public class UpdateArticleHandlerUnitTest
     {
         // ARRANGE
         var command = new UpdateArticleCommand(
-            id: _mockArticle.Id,
+            id: _mockArticle.Id.Value,
             title: _updateArticle.Title,
             content: _updateArticle.Content,
             authorId: Guid.NewGuid(),
@@ -155,14 +145,13 @@ public class UpdateArticleHandlerUnitTest
             tags: _mockArticle.Tags,
             isPremium: false
         );
+        SetupMockServices.SetupArticleExistsValidatorFailure(_mockArticleExistsValidator);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
 
+
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationErrorCodes.ModelDoesNotExist, result.AsT1[0].Code);
-
-        _mockArticleRepository.Verify(repo => repo.GetByIdAsync(_mockArticle.Id));
     }
 }

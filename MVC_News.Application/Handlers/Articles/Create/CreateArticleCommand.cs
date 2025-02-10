@@ -6,9 +6,8 @@ namespace MVC_News.Application.Handlers.Articles.Create;
 
 public class CreateArticleCommand : IRequest<OneOf<CreateArticleResult, List<ApplicationError>>>
 {
-    public CreateArticleCommand(Guid id, string title, string content, Guid authorId, string headerImage, List<string> tags, bool isPremium)
+    public CreateArticleCommand(string title, string content, Guid authorId, string headerImage, List<string> tags, bool isPremium)
     {
-        Id = id;
         Title = title;
         Content = content;
         AuthorId = authorId;
@@ -17,7 +16,6 @@ public class CreateArticleCommand : IRequest<OneOf<CreateArticleResult, List<App
         IsPremium = isPremium;
     }
 
-    public Guid Id { get; }
     public string Title { get; }
     public string Content { get; }
     public string HeaderImage { get; }

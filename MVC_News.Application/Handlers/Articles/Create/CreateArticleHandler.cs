@@ -1,28 +1,34 @@
 using MediatR;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Interfaces.Repositories;
-using MVC_News.Application.Validators;
+using MVC_News.Application.Validators.UserExistsValidator;
 using MVC_News.Domain.DomainFactories;
+using MVC_News.Domain.ValueObjects.Article;
+using MVC_News.Domain.ValueObjects.User;
 using OneOf;
 
 namespace MVC_News.Application.Handlers.Articles.Create;
 
 public class CreateArticleHandler : IRequestHandler<CreateArticleCommand, OneOf<CreateArticleResult, List<ApplicationError>>>
 {
-    private readonly IUserRepository _userRepository;
     private readonly IArticleRepository _articleRepository;
-    private readonly UserWithIdExistsValidatorAsync _userExistsValidatorAsync;
+    private readonly IUserExistsValidator<UserId> _userExistsValidatorAsync;
 
-    public CreateArticleHandler(IUserRepository userRepository, IArticleRepository articleRepository)
+    public CreateArticleHandler(IArticleRepository articleRepository, IUserExistsValidator<UserId> userExistsValidatorAsync)
     {
-        _userRepository = userRepository;
         _articleRepository = articleRepository;
-        _userExistsValidatorAsync = new UserWithIdExistsValidatorAsync(userRepository);
+        _userExistsValidatorAsync = userExistsValidatorAsync;
     }
 
     public async Task<OneOf<CreateArticleResult, List<ApplicationError>>> Handle(CreateArticleCommand request, CancellationToken cancellationToken)
     {
-        var userExistsResult = await _userExistsValidatorAsync.Validate(request.AuthorId);
+        var userIdResult = UserId.TryCreate(request.AuthorId);
+        if (userIdResult.TryPickT1(out var error, out var userId))
+        {
+            return ApplicationErrorFactory.CreateSingleListError(message: error, path: [], code: ApplicationErrorCodes.NotAllowed);
+        }
+
+        var userExistsResult = await _userExistsValidatorAsync.Validate(userId);
         if (userExistsResult.TryPickT1(out var errors, out var user))
         {
             return errors;
@@ -30,30 +36,27 @@ public class CreateArticleHandler : IRequestHandler<CreateArticleCommand, OneOf<
 
         if (!user.IsAdmin)
         {
-            return new List<ApplicationError>()
-            {
-                new ApplicationError(
-                    message: $"User is not authorised to create articles.",
-                    path: ["_"],
-                    code: ApplicationErrorCodes.NotAllowed
-                )
-            };
+            return ApplicationErrorFactory.CreateSingleListError(
+                message: $"User is not authorised to create articles.",
+                path: ["_"],
+                code: ApplicationErrorCodes.NotAllowed
+            );
         }
 
-        var article = await _articleRepository.CreateAsync(
-            ArticleFactory.BuildNew(
-                id: request.Id,
-                title: request.Title,
-                content: request.Content,
-                headerImage: request.HeaderImage,
-                authorId: request.AuthorId,
-                tags: request.Tags,
-                isPremium: request.IsPremium
-            )
+        var article = ArticleFactory.BuildNew(
+            id: ArticleId.NewArticleId(),
+            title: request.Title,
+            content: request.Content,
+            headerImage: request.HeaderImage,
+            dateCreated: DateTime.UtcNow,
+            authorId: user.Id,
+            tags: request.Tags,
+            isPremium: request.IsPremium
         );
+        await _articleRepository.CreateAsync(article);
 
         return new CreateArticleResult(
-            article: article
+            id: article.Id.Value
         );
     }
 }

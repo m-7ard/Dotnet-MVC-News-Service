@@ -1,27 +1,32 @@
 using MediatR;
 using MVC_News.Application.Errors;
-using MVC_News.Application.Interfaces.Repositories;
-using MVC_News.Application.Interfaces.Services;
-using MVC_News.Application.Validators;
+using MVC_News.Application.Validators.MatchingPasswordHashValidator;
+using MVC_News.Application.Validators.UserExistsValidator;
+using MVC_News.Domain.ValueObjects.User;
 using OneOf;
-using static MVC_News.Application.Validators.AreMatchingPasswordsValidator;
 
 namespace MVC_News.Application.Handlers.Users.Login;
 
 public class LoginUserHandler : IRequestHandler<LoginUserQuery, OneOf<LoginUserResult, List<ApplicationError>>>
 {
-    private readonly UserWithEmailExistsValidatorAsync _userExistsValidatorAsync;
-    private readonly AreMatchingPasswordsValidator _areMatchingPasswordsValidator;
+    private readonly IUserExistsValidator<UserEmail> _userExistsValidator;
+    private readonly IMatchingPasswordHashValidator<string> _areMatchingPasswordsValidator;
 
-    public LoginUserHandler(IUserRepository userRepository, IPasswordHasher passwordHasher)
+    public LoginUserHandler(IUserExistsValidator<UserEmail> userExistsValidator, IMatchingPasswordHashValidator<string> areMatchingPasswordsValidator)
     {
-        _userExistsValidatorAsync = new UserWithEmailExistsValidatorAsync(userRepository);
-        _areMatchingPasswordsValidator = new AreMatchingPasswordsValidator(passwordHasher);
+        _userExistsValidator = userExistsValidator;
+        _areMatchingPasswordsValidator = areMatchingPasswordsValidator;
     }
 
     public async Task<OneOf<LoginUserResult, List<ApplicationError>>> Handle(LoginUserQuery request, CancellationToken cancellationToken)
     {
-        var userExistsResult = await _userExistsValidatorAsync.Validate(request.Email);
+        var userEmailResult = UserEmail.TryCreate(request.Email);
+        if (userEmailResult.TryPickT1(out var error, out var userEmail))
+        {
+            return ApplicationErrorFactory.CreateSingleListError(message: error, path: [], code: ApplicationErrorCodes.NotAllowed);
+        }
+
+        var userExistsResult = await _userExistsValidator.Validate(userEmail);
         if (userExistsResult.TryPickT1(out var errors, out var user))
         {
             // Different error for security reasons
@@ -32,7 +37,7 @@ public class LoginUserHandler : IRequestHandler<LoginUserQuery, OneOf<LoginUserR
             );
         }
         
-        var areMatchingPasswordsResult = _areMatchingPasswordsValidator.Validate(new Input(hashedPassword: user.PasswordHash, request.Password));
+        var areMatchingPasswordsResult = _areMatchingPasswordsValidator.Validate(hashedPassword: user.PasswordHash, plainPassword: request.Password);
         if (areMatchingPasswordsResult.TryPickT1(out errors, out var _))
         {
             // Different error for security reasons

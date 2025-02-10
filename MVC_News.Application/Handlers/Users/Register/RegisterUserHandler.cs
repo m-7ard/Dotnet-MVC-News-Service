@@ -3,7 +3,9 @@ using MVC_News.Application.Errors;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Application.Interfaces.Services;
 using MVC_News.Application.Validators;
+using MVC_News.Application.Validators.UserExistsValidator;
 using MVC_News.Domain.DomainFactories;
+using MVC_News.Domain.ValueObjects.User;
 using OneOf;
 
 namespace MVC_News.Application.Handlers.Users.Register;
@@ -12,20 +14,25 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, OneOf<Re
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
-    private readonly UserWithEmailExistsValidatorAsync _userExistsValidatorAsync;
+    private readonly IUserExistsValidator<UserEmail> _userExistsValidator;
 
 
-    public RegisterUserHandler(IUserRepository userRepository, IPasswordHasher passwordHasher)
+    public RegisterUserHandler(IUserRepository userRepository, IPasswordHasher passwordHasher, IUserExistsValidator<UserEmail> userExistsValidator)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
-        _userExistsValidatorAsync = new UserWithEmailExistsValidatorAsync(userRepository);
-
+        _userExistsValidator = userExistsValidator;
     }
 
     public async Task<OneOf<RegisterUserResult, List<ApplicationError>>> Handle(RegisterUserCommand request, CancellationToken cancellationToken)
     {
-        var userExistsResult = await _userExistsValidatorAsync.Validate(request.Email);
+        var tryCreateResult = UserEmail.TryCreate(request.Email);
+        if (tryCreateResult.TryPickT1(out var error, out var userEmail))
+        {
+            return ApplicationErrorFactory.CreateSingleListError(message: error, path: [], code: ApplicationErrorCodes.NotAllowed);
+        }
+
+        var userExistsResult = await _userExistsValidator.Validate(userEmail);
         if (userExistsResult.TryPickT0(out var existingUser, out var _))
         {
             return ApplicationErrorFactory.CreateSingleListError(
@@ -35,16 +42,17 @@ public class RegisterUserHandler : IRequestHandler<RegisterUserCommand, OneOf<Re
             );
         }
 
-        var newUser = await _userRepository.CreateAsync(
-            UserFactory.BuildNew(
-                email: request.Email,
-                passwordHash: _passwordHasher.Hash(request.Password),
-                displayName: request.DisplayName,
-                isAdmin: false,
-                subscriptions: []
-            )
+        var newUser = UserFactory.BuildNew(
+            userId: UserId.NewUserId(),
+            email: userEmail,
+            passwordHash: _passwordHasher.Hash(request.Password),
+            displayName: request.DisplayName,
+            isAdmin: false,
+            subscriptions: []
         );
 
-        return new RegisterUserResult(user: newUser);
+        await _userRepository.CreateAsync(newUser);
+
+        return new RegisterUserResult(userId: newUser.Id);
     }
 }

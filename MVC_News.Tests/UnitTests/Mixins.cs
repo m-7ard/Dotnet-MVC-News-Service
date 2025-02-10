@@ -1,6 +1,8 @@
 using MVC_News.Domain.DomainFactories;
 using MVC_News.Domain.Entities;
-using MVC_News.Domain.ValueObjects;
+using MVC_News.Domain.ValueObjects.Article;
+using MVC_News.Domain.ValueObjects.Subscription;
+using MVC_News.Domain.ValueObjects.User;
 
 namespace MVC_News.Tests.UnitTests;
 
@@ -9,7 +11,8 @@ public class Mixins
     public static User CreateUser(int seed, bool isAdmin, List<Subscription> subscriptions)
     {
         var user = UserFactory.BuildNew(
-            email: $"user_{seed}@mail.com",
+            userId: UserId.NewUserId(),
+            email: UserEmail.ExecuteCreate($"user_{seed}@mail.com"),
             passwordHash: $"user_{seed}_passwordHash",
             displayName: $"user_{seed}",
             isAdmin: isAdmin,
@@ -19,10 +22,10 @@ public class Mixins
         return user;
     }
 
-    public static Article CreateArticle(int seed, Guid authorId, bool isPremium = false)
+    public static Article CreateArticle(int seed, UserId authorId, bool isPremium = false)
     {
         var article = ArticleFactory.BuildExisting(
-            id: Guid.NewGuid(),
+            id: ArticleId.NewArticleId(),
             title: $"article_{seed}",
             content: $"content_{seed}",
             headerImage: $"url/${seed}",
@@ -35,11 +38,11 @@ public class Mixins
         return article;
     }
 
-    public static Subscription CreatedValidSubscription(Guid userId)
+    public static Subscription CreatedValidSubscription(UserId userId)
     {
-        var startDate = DateTime.Now;
+        var startDate = DateTime.UtcNow;
         var expirationDate = startDate.AddMonths(1);
-        var subscriptionDates = new SubscriptionDates(
+        var subscriptionDates = SubscriptionDates.ExecuteCreate(
             startDate: startDate,
             expirationDate: expirationDate
         );
@@ -53,13 +56,13 @@ public class Mixins
         return article;
     }
 
-    public static Subscription CreatedExpiredSubscription(Guid userId)
+    public static Subscription CreatedExpiredSubscription(UserId userId)
     {
         var startDate = DateTime.Now;
         startDate = startDate.AddMonths(-2);
         var expirationDate = DateTime.Now;
         expirationDate = expirationDate.AddMonths(-1);
-        var subscriptionDates = new SubscriptionDates(
+        var subscriptionDates = SubscriptionDates.ExecuteCreate(
             startDate: startDate,
             expirationDate: expirationDate
         );

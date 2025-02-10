@@ -23,9 +23,6 @@ public class ArticleConfigurations : IEntityTypeConfiguration<ArticleDbEntity>
         builder.Property(d => d.Content)
             .HasMaxLength(10000);
 
-        builder.Property(d => d.DateCreated)
-            .HasDefaultValueSql("GETDATE()");
-
         builder.Property(e => e.Tags)
             .HasConversion(
                 v => string.Join(',', v),

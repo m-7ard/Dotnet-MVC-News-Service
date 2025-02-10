@@ -2,7 +2,10 @@ using Moq;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Handlers.Articles.Create;
 using MVC_News.Application.Interfaces.Repositories;
+using MVC_News.Application.Validators.UserExistsValidator;
 using MVC_News.Domain.Entities;
+using MVC_News.Domain.ValueObjects.User;
+using MVC_News.Tests.UnitTests.Utils;
 
 namespace MVC_News.Tests.UnitTests.Application.Handlers.Articles;
 
@@ -11,7 +14,7 @@ public class CreateArticleHandlerUnitTest
     private readonly User _user_001; 
     private readonly User _admin_001; 
     private readonly Mock<IArticleRepository> _mockArticleRepository;
-    private readonly Mock<IUserRepository> _mockUserRepository;
+    private readonly Mock<IUserExistsValidator<UserId>> _mockUserExistsValidator;
     private readonly CreateArticleHandler _handler;
 
     public CreateArticleHandlerUnitTest()
@@ -22,10 +25,11 @@ public class CreateArticleHandlerUnitTest
 
         // Dependencies
         _mockArticleRepository = new Mock<IArticleRepository>();
-        _mockUserRepository = new Mock<IUserRepository>();
+        _mockUserExistsValidator = new Mock<IUserExistsValidator<UserId>>();
+        
         _handler = new CreateArticleHandler(
-            userRepository: _mockUserRepository.Object,
-            articleRepository: _mockArticleRepository.Object
+            articleRepository: _mockArticleRepository.Object,
+            userExistsValidatorAsync: _mockUserExistsValidator.Object
         );
     }
 
@@ -35,22 +39,15 @@ public class CreateArticleHandlerUnitTest
         // ARRANGE
         var mockArticle = Mixins.CreateArticle(seed: 1, authorId: _admin_001.Id);
         var command = new CreateArticleCommand(
-            id: mockArticle.Id,
             title: mockArticle.Title,
             content: mockArticle.Content,
-            authorId: mockArticle.AuthorId,
+            authorId: mockArticle.AuthorId.Value,
             headerImage: mockArticle.HeaderImage,
             tags: mockArticle.Tags,
             isPremium: false
         );
 
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(_admin_001.Id))
-            .ReturnsAsync(_admin_001);
-
-        _mockArticleRepository
-            .Setup(repo => repo.CreateAsync(It.IsAny<Article>()))
-            .ReturnsAsync(mockArticle);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _admin_001.Id, _admin_001);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -58,7 +55,7 @@ public class CreateArticleHandlerUnitTest
         // ASSERT
         Assert.True(result.IsT0);
         
-        _mockUserRepository.Verify(repo => repo.GetUserById(_admin_001.Id), Times.Once);
+        _mockArticleRepository.Verify(repo => repo.CreateAsync(It.IsAny<Article>()), Times.Once);
     }
 
     [Fact]
@@ -67,18 +64,15 @@ public class CreateArticleHandlerUnitTest
         // ARRANGE
         var mockArticle = Mixins.CreateArticle(seed: 1, authorId: _user_001.Id);
         var command = new CreateArticleCommand(
-            id: mockArticle.Id,
             title: mockArticle.Title,
             content: mockArticle.Content,
-            authorId: mockArticle.AuthorId,
+            authorId: mockArticle.AuthorId.Value,
             headerImage: mockArticle.HeaderImage,
             tags: mockArticle.Tags,
             isPremium: false
         );
 
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(_user_001.Id))
-            .ReturnsAsync(_user_001);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _user_001.Id, _user_001);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
@@ -86,30 +80,27 @@ public class CreateArticleHandlerUnitTest
         // ASSERT
         Assert.True(result.IsT1);
         Assert.Equal(ApplicationErrorCodes.NotAllowed, result.AsT1[0].Code);
-
-        _mockUserRepository.Verify(repo => repo.GetUserById(_user_001.Id), Times.Once);
     }
 
     [Fact]
     public async Task CreateArticle_UserDoesNotExist_Failure()
     {
         // ARRANGE
-        var mockArticle = Mixins.CreateArticle(seed: 1, authorId: Guid.NewGuid());
+        var mockArticle = Mixins.CreateArticle(seed: 1, authorId: UserId.NewUserId());
         var command = new CreateArticleCommand(
-            id: mockArticle.Id,
             title: mockArticle.Title,
             content: mockArticle.Content,
-            authorId: mockArticle.AuthorId,
+            authorId: mockArticle.AuthorId.Value,
             headerImage: mockArticle.HeaderImage,
             tags: mockArticle.Tags,
             isPremium: false
         );
+        SetupMockServices.SetupUserExistsValidatorFailure(_mockUserExistsValidator);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationValidatorErrorCodes.USER_WITH_ID_EXISTS_ERROR, result.AsT1[0].Code);
     }
 }

@@ -2,10 +2,11 @@ using MediatR;
 using MVC_News.Application.Errors;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Application.Interfaces.Services;
-using MVC_News.Application.Validators;
+using MVC_News.Application.Validators.MatchingPasswordHashValidator;
+using MVC_News.Application.Validators.UserExistsValidator;
 using MVC_News.Domain.DomainFactories;
+using MVC_News.Domain.ValueObjects.User;
 using OneOf;
-using static MVC_News.Application.Validators.AreMatchingPasswordsValidator;
 
 namespace MVC_News.Application.Handlers.Users.ChangePassword;
 
@@ -13,28 +14,35 @@ public class ChangePasswordHandler : IRequestHandler<ChangePasswordCommand, OneO
 {
     private readonly IUserRepository _userRepository;
     private readonly IPasswordHasher _passwordHasher;
-    private readonly UserWithIdExistsValidatorAsync _userExistsValidatorAsync;
-    private readonly AreMatchingPasswordsValidator _areMatchingPasswordsValidator;
+    private readonly IUserExistsValidator<UserId> _userExistsValidator;
+    private readonly IMatchingPasswordHashValidator<string> _areMatchingPasswordsValidator;
 
 
-    public ChangePasswordHandler(IUserRepository userRepository, IPasswordHasher passwordHasher)
+    public ChangePasswordHandler(IUserRepository userRepository, IPasswordHasher passwordHasher, IUserExistsValidator<UserId> userExistsValidator, IMatchingPasswordHashValidator<string> areMatchingPasswordsValidator)
     {
         _userRepository = userRepository;
         _passwordHasher = passwordHasher;
-                
-        _userExistsValidatorAsync = new UserWithIdExistsValidatorAsync(userRepository);
-        _areMatchingPasswordsValidator = new AreMatchingPasswordsValidator(passwordHasher);
+        _userExistsValidator = userExistsValidator;
+        _areMatchingPasswordsValidator = areMatchingPasswordsValidator;
     }
 
     public async Task<OneOf<ChangePasswordResult, List<ApplicationError>>> Handle(ChangePasswordCommand request, CancellationToken cancellationToken)
     {
-        var userExistsResult = await _userExistsValidatorAsync.Validate(request.Id);
+        // User Exists
+        var userIdResult = UserId.TryCreate(request.Id);
+        if (userIdResult.TryPickT1(out var error, out var userId))
+        {
+            return ApplicationErrorFactory.CreateSingleListError(message: error, path: [], code: ApplicationErrorCodes.NotAllowed);
+        }
+
+        var userExistsResult = await _userExistsValidator.Validate(userId);
         if (userExistsResult.TryPickT1(out var errors, out var user))
         {
             return errors;
         }
 
-        var areMatchingPasswordsResult = _areMatchingPasswordsValidator.Validate(new Input(hashedPassword: user.PasswordHash, request.CurrentPassword));
+        // Passwords match
+        var areMatchingPasswordsResult = _areMatchingPasswordsValidator.Validate(hashedPassword: user.PasswordHash, request.CurrentPassword);
         if (areMatchingPasswordsResult.TryPickT1(out errors, out var _))
         {
             return errors;

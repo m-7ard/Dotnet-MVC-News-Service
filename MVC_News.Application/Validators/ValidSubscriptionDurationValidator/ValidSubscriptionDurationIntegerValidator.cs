@@ -1,13 +1,13 @@
 using MVC_News.Application.Errors;
 using OneOf;
 
-namespace MVC_News.Application.Validators;
+namespace MVC_News.Application.Validators.ValidSubscriptionDurationValidator;
 
-public class IsValidSubscriptionDurationValidator : IValidator<int, DateTime>
+public class ValidSubscriptionDurationIntegerValidator : IValidSubscriptionDurationValidator<int>
 {
     public OneOf<DateTime, List<ApplicationError>> Validate(int input)
     {
-        var expirationDate = DateTime.Now;
+        var expirationDate = DateTime.UtcNow;
         if (input == 1)
         {
             expirationDate = expirationDate.AddMonths(1);

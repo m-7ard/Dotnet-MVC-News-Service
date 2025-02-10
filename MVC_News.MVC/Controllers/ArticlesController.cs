@@ -12,6 +12,8 @@ using MVC_News.Application.Handlers.Articles.List;
 using MVC_News.Application.Handlers.Articles.Read;
 using MVC_News.Application.Handlers.Articles.Update;
 using MVC_News.Domain.DomainFactories;
+using MVC_News.Domain.ValueObjects.Article;
+using MVC_News.Domain.ValueObjects.User;
 using MVC_News.MVC.DTOs.Contracts.Articles.Create;
 using MVC_News.MVC.DTOs.Contracts.Articles.List;
 using MVC_News.MVC.DTOs.Contracts.Articles.Manage;
@@ -138,7 +140,6 @@ public class ArticlesController : BaseController
         }
 
         var command = new CreateArticleCommand(
-            id: Guid.NewGuid(),
             title: request.Title,
             content: request.Content,
             headerImage: request.HeaderImage,
@@ -163,7 +164,7 @@ public class ArticlesController : BaseController
         }
 
         Response.StatusCode = (int)HttpStatusCode.Created;
-        return Redirect($"/articles/{value.Article.Id}");
+        return Redirect($"/articles/{value.Id}");
     }
 
     // ***************
@@ -201,7 +202,7 @@ public class ArticlesController : BaseController
 
         Response.StatusCode = (int)HttpStatusCode.OK;
         return View(new UpdateArticlePageModel(
-            id: value.Article.Id,
+            id: value.Article.Id.Value,
             title: title ?? value.Article.Title,
             content: content ?? value.Article.Content,
             headerImage: headerImage ?? value.Article.HeaderImage,
@@ -524,11 +525,12 @@ public class ArticlesController : BaseController
         var parsedUserId = TryReadUserIdFromClaims();
         
         var article = ArticleFactory.BuildNew(
-            id: parsedArticleId,
+            id: ArticleId.ExecuteCreate(parsedArticleId),
             title: request.Title,
             content: request.Content,
             headerImage: request.HeaderImage,
-            authorId: parsedUserId,
+            dateCreated: DateTime.UtcNow,
+            authorId: UserId.ExecuteCreate(parsedUserId),
             tags: tags,
             isPremium: request.IsPremium
         );
@@ -551,11 +553,12 @@ public class ArticlesController : BaseController
         var parsedUserId = TryReadUserIdFromClaims();
 
         var article = ArticleFactory.BuildNew(
-            id: Guid.Empty,
+            id: ArticleId.ExecuteCreate(Guid.Empty),
             title: request.Title,
             content: request.Content,
             headerImage: request.HeaderImage,
-            authorId: parsedUserId,
+            dateCreated: DateTime.UtcNow,
+            authorId: UserId.ExecuteCreate(parsedUserId),
             tags: tags,
             isPremium: request.IsPremium
         );

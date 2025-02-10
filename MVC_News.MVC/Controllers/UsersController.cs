@@ -15,6 +15,7 @@ using MVC_News.Application.Handlers.Users.Login;
 using MVC_News.Application.Handlers.Users.Read;
 using MVC_News.Application.Handlers.Users.Register;
 using MVC_News.Domain.Entities;
+using MVC_News.Domain.ValueObjects.User;
 using MVC_News.MVC.DTOs.Contracts.Users.ChangePassword;
 using MVC_News.MVC.DTOs.Contracts.Users.CheckoutSubscription;
 using MVC_News.MVC.DTOs.Contracts.Users.Login;
@@ -52,7 +53,7 @@ public class UsersController : BaseController
         if (queryResult.TryPickT1(out var queryErrors, out var queryValue))
         {
             var firstError = queryErrors.First();
-            if (firstError.Code is ApplicationValidatorErrorCodes.USER_WITH_ID_EXISTS_ERROR)
+            if (firstError.Code is ApplicationValidatorErrorCodes.USER_EXISTS_ERROR)
             {
                 throw new NotFoundException(firstError.Message);
             }
@@ -63,14 +64,14 @@ public class UsersController : BaseController
         return queryValue;
     }
 
-    private async Task SetCookieUser(User user)
+    private async Task SetCookieUser(string email, string displayName, Guid id, bool isAdmin)
     {
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Name, user.Email),
-            new Claim("DisplayName", user.DisplayName),
-            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-            new Claim(ClaimTypes.Role, user.IsAdmin ? "Admin" : "Reader")
+            new Claim(ClaimTypes.Name, email),
+            new Claim("DisplayName", displayName),
+            new Claim(ClaimTypes.NameIdentifier, id.ToString()),
+            new Claim(ClaimTypes.Role, isAdmin ? "Admin" : "Reader")
 
         };
         var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
@@ -135,16 +136,7 @@ public class UsersController : BaseController
         }
 
         var user = value.User;
-        await SetCookieUser(user);
-
-        Console.WriteLine("returnUrlreturnUrlreturnUrlreturnUrlreturnUrl");
-        Console.WriteLine("returnUrlreturnUrlreturnUrlreturnUrlreturnUrl");
-        Console.WriteLine("returnUrlreturnUrlreturnUrlreturnUrlreturnUrl");
-        Console.WriteLine("returnUrlreturnUrlreturnUrlreturnUrlreturnUrl");
-        Console.WriteLine(returnUrl);
-        Console.WriteLine(returnUrl);
-        Console.WriteLine(returnUrl);
-        Console.WriteLine(returnUrl);
+        await SetCookieUser(email: user.Email.Value, displayName: user.DisplayName, id: user.Id.Value, isAdmin: user.IsAdmin);
 
         return Redirect(returnUrl ?? "/");
     }
@@ -206,8 +198,7 @@ public class UsersController : BaseController
             ));
         }
 
-        var user = value.User;
-        await SetCookieUser(user);
+        await SetCookieUser(email: request.Email, displayName: request.DisplayName, id: value.UserId.Value, isAdmin: false);
 
         Response.StatusCode = (int)HttpStatusCode.Created;
         return Redirect("/");
@@ -299,7 +290,7 @@ public class UsersController : BaseController
         if (result.TryPickT1(out var errors, out var value))
         {
             var firstError = errors.First();
-            if (firstError.Code is ApplicationValidatorErrorCodes.USER_WITH_ID_EXISTS_ERROR)
+            if (firstError.Code is ApplicationValidatorErrorCodes.USER_EXISTS_ERROR)
             {
                 throw new NotFoundException(firstError.Message);
             }
@@ -346,7 +337,7 @@ public class UsersController : BaseController
         if (result.TryPickT1(out var errors, out var value))
         {
             var firstError = errors.First();
-            if (firstError.Code is ApplicationValidatorErrorCodes.USER_WITH_ID_EXISTS_ERROR)
+            if (firstError.Code is ApplicationValidatorErrorCodes.USER_EXISTS_ERROR)
             {
                 throw new NotFoundException(firstError.Message);
             }
@@ -384,7 +375,7 @@ public class UsersController : BaseController
         var userQueryValue = await MakeReadUserQuery(parsedUserId);
         
         var articlesQuery = new ListArticlesQuery(
-            authorId: userQueryValue.User.Id,
+            authorId: userQueryValue.User.Id.Value,
             createdAfter: null,
             createdBefore: null,
             orderBy: null,

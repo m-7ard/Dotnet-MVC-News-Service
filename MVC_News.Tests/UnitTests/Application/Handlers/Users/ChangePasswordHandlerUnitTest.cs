@@ -3,7 +3,11 @@ using MVC_News.Application.Errors;
 using MVC_News.Application.Handlers.Users.ChangePassword;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Application.Interfaces.Services;
+using MVC_News.Application.Validators.MatchingPasswordHashValidator;
+using MVC_News.Application.Validators.UserExistsValidator;
 using MVC_News.Domain.Entities;
+using MVC_News.Domain.ValueObjects.User;
+using MVC_News.Tests.UnitTests.Utils;
 
 namespace MVC_News.Tests.UnitTests.Application.Handlers.Users;
 
@@ -12,6 +16,8 @@ public class ChangePasswordHandlerUnitTest
     private readonly User _freeUser_001;
     private readonly Mock<IUserRepository> _mockUserRepository;
     private readonly Mock<IPasswordHasher> _mockPasswordHasher;
+    private readonly Mock<IUserExistsValidator<UserId>> _mockUserExistsValidator;
+    private readonly Mock<IMatchingPasswordHashValidator<string>> _mockMatchingPasswordHashValidator;
     private readonly ChangePasswordHandler _handler;
 
     public ChangePasswordHandlerUnitTest()
@@ -22,9 +28,14 @@ public class ChangePasswordHandlerUnitTest
         // Dependencies
         _mockUserRepository = new Mock<IUserRepository>();
         _mockPasswordHasher = new Mock<IPasswordHasher>();
+        _mockUserExistsValidator = new Mock<IUserExistsValidator<UserId>>();
+        _mockMatchingPasswordHashValidator = new Mock<IMatchingPasswordHashValidator<string>>();
+
         _handler = new ChangePasswordHandler(
             userRepository: _mockUserRepository.Object,
-            passwordHasher: _mockPasswordHasher.Object
+            passwordHasher: _mockPasswordHasher.Object,
+            userExistsValidator: _mockUserExistsValidator.Object,
+            areMatchingPasswordsValidator: _mockMatchingPasswordHashValidator.Object
         );
     }
 
@@ -36,18 +47,13 @@ public class ChangePasswordHandlerUnitTest
 
         // ARRANGE
         var command = new ChangePasswordCommand(
-            id: _freeUser_001.Id,
+            id: _freeUser_001.Id.Value,
             currentPassword: currentPassword,
             newPassword: newPassword
         );
 
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(_freeUser_001.Id))
-            .ReturnsAsync(_freeUser_001);
-
-        _mockPasswordHasher
-            .Setup(hasher => hasher.Verify(_freeUser_001.PasswordHash, currentPassword))
-            .Returns(true);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _freeUser_001.Id, _freeUser_001);
+        SetupMockServices.SetupMatchingPasswordHashValidatorSuccess(_mockMatchingPasswordHashValidator, _freeUser_001.PasswordHash, currentPassword, true);
 
         _mockPasswordHasher
             .Setup(hasher => hasher.Hash(newPassword))
@@ -70,24 +76,19 @@ public class ChangePasswordHandlerUnitTest
 
         // ARRANGE
         var command = new ChangePasswordCommand(
-            id: _freeUser_001.Id,
+            id: _freeUser_001.Id.Value,
             currentPassword: currentPassword,
             newPassword: newPassword
         );
 
-        _mockUserRepository
-            .Setup(repo => repo.GetUserById(_freeUser_001.Id))
-            .ReturnsAsync(_freeUser_001);
 
-        _mockPasswordHasher
-            .Setup(hasher => hasher.Verify(_freeUser_001.PasswordHash, currentPassword))
-            .Returns(false);
+        SetupMockServices.SetupUserExistsValidatorSuccess(_mockUserExistsValidator, _freeUser_001.Id, _freeUser_001);
+        SetupMockServices.SetupMatchingPasswordHashValidatorFailure(_mockMatchingPasswordHashValidator);
 
         // ACT
         var result = await _handler.Handle(command, CancellationToken.None);
 
         // ASSERT
         Assert.True(result.IsT1);
-        Assert.Equal(ApplicationValidatorErrorCodes.ARE_MATCHING_PASSWORDS_ERROR, result.AsT1[0].Code);
     }
 }

@@ -1,13 +1,11 @@
-using MVC_News.Domain.Entities;
-
 namespace MVC_News.Application.Handlers.Articles.Create;
 
 public class CreateArticleResult
 {
-    public CreateArticleResult(Article article)
+    public CreateArticleResult(Guid id)
     {
-        Article = article;
+        Id = id;
     }
 
-    public Article Article { get; }
+    public Guid Id { get; }
 }

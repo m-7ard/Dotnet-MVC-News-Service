@@ -1,4 +1,5 @@
 using System.Globalization;
+using Api.Services;
 using FluentValidation;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Localization;
@@ -8,7 +9,9 @@ using MVC_News.Application.Handlers.Users.Register;
 using MVC_News.Application.Interfaces.Repositories;
 using MVC_News.Application.Interfaces.Services;
 using MVC_News.Domain.DomainFactories;
+using MVC_News.Domain.ValueObjects.User;
 using MVC_News.Infrastructure;
+using MVC_News.Infrastructure.Interfaces;
 using MVC_News.Infrastructure.Repositories;
 using MVC_News.Infrastructure.Services;
 using MVC_News.MVC.Filters;
@@ -18,6 +21,9 @@ using MVC_News.MVC.Services;
 using MVC_News.MVC.Validators;
 
 var builder = WebApplication.CreateBuilder(args);
+
+var appSettings = BuilderUtils.ReadAppSettings(builder.Configuration);
+var databaseProviderSingleton = new DatabaseProviderSingleton(appSettings.DatabaseProviderValue);
 
 ///
 ///
@@ -62,10 +68,27 @@ var DefaultConnection = Environment.GetEnvironmentVariable("DefaultConnection");
 /// DB / database / dbcontext
 /// 
 
-builder.Services.AddDbContext<NewsDbContext>(options => options.UseSqlServer(
-    builder.Configuration.GetConnectionString("DefaultConnection"), 
-    b => b.MigrationsAssembly("MVC_News.MVC")
-));
+
+builder.Services.AddDbContext<NewsDbContext>(options =>
+    {
+        if (databaseProviderSingleton.IsSQLite)
+        {
+            options.UseSqlite(appSettings.ConnectionString);
+        }
+        else if (databaseProviderSingleton.IsMSSQL)
+        {
+            options.UseSqlServer(appSettings.ConnectionString);
+        }
+        else
+        {
+            throw new InvalidOperationException("Unsupported database provider.");
+        }
+    }
+);
+// builder.Services.AddDbContext<NewsDbContext>(options => options.UseSqlServer(
+//     builder.Configuration.GetConnectionString("DefaultConnection"), 
+//     b => b.MigrationsAssembly("MVC_News.MVC")
+// ));
 
 var services = builder.Services;
 
@@ -106,6 +129,7 @@ builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Regis
 /// Dependency Injection / DI / Services
 /// 
 
+builder.Services.AddSingleton<IDatabaseProviderSingleton>(databaseProviderSingleton);
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IArticleRepository, ArticleRepository>();
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
@@ -160,7 +184,7 @@ using (var scope = app.Services.CreateScope())
     var repo = localService.GetRequiredService<IUserRepository>();
     var hasher = localService.GetRequiredService<IPasswordHasher>();
     await repo.CreateAsync(
-        UserFactory.BuildNew("admin@mail.com", hasher.Hash("adminword"), "admin", true, [])
+        UserFactory.BuildNew(UserId.NewUserId(), UserEmail.ExecuteCreate("admin@mail.com"), hasher.Hash("adminword"), "admin", true, [])
     );
 }
 ///
